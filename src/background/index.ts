@@ -32,7 +32,6 @@ function setupStorage() {
     });
 }
 
-
 chrome.runtime.onInstalled.addListener((params: any) => {
     const reason = params.reason;
     switch (reason) {

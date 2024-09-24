@@ -1,6 +1,6 @@
 {
     "name": "__MSG_extension_name__",
-    "version": "1.1.8",
+    "version": "2.0.0",
     "manifest_version": 3,
     "description": "__MSG_extension_des__",
     "content_scripts": [
@@ -36,7 +36,8 @@
             "resources": [
                 "inject/index.js",
                 "inject/capture.html",
-                "inject/capture.js"
+                "inject/capture.js",
+                "inject/request.js"
             ],
             "matches": [
                 "https://*/*"
@@ -46,6 +47,7 @@
     "homepage_url": "https://videoroll.gomi.site",
     "permissions": [
         "activeTab",
-        "storage"
+        "storage",
+        "scripting"
     ]
 }

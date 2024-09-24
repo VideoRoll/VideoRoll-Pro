@@ -81,56 +81,11 @@ export default function useComponents() {
                         col: 6,
                         title: browser.i18n.getMessage('video_loop'),
                         showTitle: true,
-                        // style: {
-                        //     flexDirection: "column",
-                        //     background: 'none',
-                        //     justifyContent: 'space-between',
-                        // },
                         children: [
-                            // {
-                            //     type: 'row',
-                            //     style: {
-                            //         height: '45px'
-                            //     },
-                            //     children: [
-                            //         {
-                            //             type: 'container',
-                            //             title: browser.i18n.getMessage('video_loop'),
-                            //             showTitle: true,
-                            //             col: 24,
-                            //             children: [
-                            //                 {
-                            //                     type: 'component',
-                            //                     component: defineAsyncComponent(() => import("../components/Loop"))
-                            //                 }
-                            //             ]
-                            //         }
-                            //     ]
-                            // },
                             {
                                 type: 'component',
                                 component: defineAsyncComponent(() => import("../components/Loop"))
-                            },
-                            // {
-                            //     type: 'row',
-                            //     style: {
-                            //         height: '45px'
-                            //     },
-                            //     children: [
-                            //         {
-                            //             type: 'container',
-                            //             title: browser.i18n.getMessage('video_pic'),
-                            //             showTitle: false,
-                            //             col: 24,
-                            //             children: [
-                            //                 {
-                            //                     type: 'component',
-                            //                     component: defineAsyncComponent(() => import("../components/PictureInPicture"))
-                            //                 }
-                            //             ]
-                            //         }
-                            //     ]
-                            // }
+                            }
                         ]
                     },
                     {
@@ -241,7 +196,63 @@ export default function useComponents() {
                         type: 'container',
                         title: 'VR',
                         showTitle: true,
-                        class: 'container-badge-beta',
+                        class: 'container-badge-pro',
+                        col: 6,
+                        children: [
+                            {
+                                type: 'component',
+                                component: defineAsyncComponent(() => import("../components/Vr"))
+                            }
+                        ]
+                    }
+                ],
+            },
+            {
+                type: 'row',
+                style: {
+                    margin: '30px 0',
+                    height: '40px'
+                },
+                children: [
+                    {
+                        type: 'container',
+                        title: browser.i18n.getMessage('video_focus'),
+                        showTitle: true,
+                        col: 6,
+                        children: [
+                            {
+                                type: 'component',
+                                component: defineAsyncComponent(() => import("../components/Focus"))
+                            }
+                        ]
+                    },
+                    {
+                        type: 'container',
+                        title: browser.i18n.getMessage('video_filter'),
+                        showTitle: true,
+                        col: 6,
+                        children: [{
+                            type: 'component',
+                            component: defineAsyncComponent(() => import("../components/Filter"))
+                        }]
+                    },
+                    {
+                        type: 'container',
+                        title: browser.i18n.getMessage('video_screenshot'),
+                        showTitle: true,
+                        col: 6,
+                        children: [
+                            {
+                                type: 'component',
+                                component: defineAsyncComponent(() => import("../components/Capture"))
+                            }
+                        ]
+                    },
+                    {
+                        type: 'container',
+                        title: 'VR',
+                        showTitle: true,
+                        class: 'container-badge-pro',
                         col: 6,
                         children: [
                             {
