@@ -116,8 +116,6 @@ export default class VideoRoll {
             iframes: Array.from(iframes).map((v) => v.src)
         })
 
-        console.log(this.rollConfig, '---rollConfig');
-
         this.documents = [document, ...(iframeEls.map((v) => {
             if (v.contentDocument) {
                 // @ts-ignore
@@ -139,7 +137,6 @@ export default class VideoRoll {
         this.addVrMaskElement();
         // this.clearOriginElementPosition();
         this.clearRealVideoPlayer();
-
         const videos = this.getAllVideosBySelector(videoSelector, this.documents);
 
         this.setVideo(videos);
@@ -871,7 +868,8 @@ export default class VideoRoll {
             checked: v.checked,
             posterUrl: v.posterUrl,
             duration: v.duration,
-            isReal: v.isReal
+            isReal: v.isReal,
+            src: v.src
         }))
     }
 
@@ -916,6 +914,7 @@ export default class VideoRoll {
 
     static getVideoInfo(video: HTMLVideoElement, index: number) {
         const src = this.getSourceElementSrc(video);
+        console.log('---src', src);
         const time = Math.ceil(video.duration * 10 / 60) / 10;
         const duration = isNaN(time) ? 0 : time;
         if (this.rollConfig.crossorigin) {
@@ -932,6 +931,7 @@ export default class VideoRoll {
                     posterUrl: dataURL,
                     duration,
                     name,
+                    src,
                     isReal
                 }
             });
@@ -940,6 +940,7 @@ export default class VideoRoll {
             return Promise.resolve({
                 posterUrl: dataURL,
                 duration,
+                src,
                 name,
                 isReal
             })

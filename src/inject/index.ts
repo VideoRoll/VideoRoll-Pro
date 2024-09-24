@@ -6,9 +6,26 @@
 import { ActionType, VideoListItem } from '../types/type.d';
 import { updateConfig, updateOnMounted, updateStorage, updateBadge, initKeyboardEvent, onHoverVideoElement, updateVideoCheck, updateEnable, capture } from "./update";
 import { sendRuntimeMessage } from "../util";
+import browser from 'webextension-polyfill';
+
+function injectScript() {
+    const injectJs = document.getElementById('video-roll-script');
+
+    if (injectJs) return;
+
+    const src = browser.runtime.getURL('inject/request.js');
+    const script = document.createElement('script');
+    script.setAttribute('id', 'video-roll-script');
+    script.setAttribute('type', 'text/javascript');
+    script.setAttribute('src', src);
+
+    (document.head || document.documentElement).appendChild(script);
+}
 
 (function () {
     let videoNumber: number = 0;
+
+    injectScript();
     /**
      * get message from popup or backgound
      */
