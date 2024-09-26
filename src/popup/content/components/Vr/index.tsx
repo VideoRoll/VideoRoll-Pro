@@ -1,5 +1,5 @@
 import { defineComponent, inject } from "vue";
-import { EyeOutline, EyeOffOutline } from "@vicons/ionicons5";
+import { GlassesOutline } from "@vicons/ionicons5";
 import type { IRollConfig } from "../../../../types/type.d";
 import browser from 'webextension-polyfill'
 import "./index.less";
@@ -19,9 +19,7 @@ export default defineComponent({
                 <div class="video-roll-icon-box">
                     <span class="video-roll-label">
                         {
-                            rollConfig.vr.on ? <EyeOutline
-                            class="video-roll-icon"
-                        ></EyeOutline> : <EyeOffOutline class="video-roll-icon"></EyeOffOutline>
+                            <GlassesOutline class="video-roll-icon"></GlassesOutline>
                         }
                     </span>
                 </div>

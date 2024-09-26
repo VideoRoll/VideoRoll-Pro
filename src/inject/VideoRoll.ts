@@ -33,6 +33,8 @@ export default class VideoRoll {
 
     static observer: MutationObserver | null;
 
+    static eventCallback: Function | null = null
+
     static setRollConfig(rollConfig: IRollConfig) {
         this.rollConfig = rollConfig;
         return this;
@@ -869,7 +871,8 @@ export default class VideoRoll {
             posterUrl: v.posterUrl,
             duration: v.duration,
             isReal: v.isReal,
-            src: v.src
+            src: v.src,
+            percentage: v.percentage ?? 0
         }))
     }
 
@@ -912,9 +915,67 @@ export default class VideoRoll {
         return Promise.resolve(canvas.toDataURL('image/png'));
     }
 
+    static updateBuffered(video: HTMLVideoElement, callback: Function, event?: Event): void {
+        const buffered = video.buffered;
+        const duration = video.duration;
+        const currentTime = video.currentTime;
+        // 确保视频有时长且有缓存数据
+        if (duration > 0 && buffered.length > 0) {
+            let totalBufferedTime = 0;
+
+            let range = 0;
+
+            while (!(buffered.start(range) <= currentTime && currentTime <= buffered.end(range))) {
+                range += 1;
+            }
+            const loadStartPercentage = buffered.start(range) / duration;
+            const loadEndPercentage = buffered.end(range) / duration;
+            let percentage = (loadEndPercentage - loadStartPercentage) * 100;
+            // // 遍历所有缓存的时间段，计算总缓存时间
+            // for (let i = 0; i < buffered.length; i++) {
+            //     console.log(buffered.end(i), buffered.start(i))
+            //     totalBufferedTime += buffered.end(i) - buffered.start(i);
+            // }
+
+            // let percentage = (totalBufferedTime / duration) * 100; // 计算百分比
+            // percentage = Math.min(percentage, 100);
+            // console.log('per', percentage + '%'); // 更新进度条
+
+            const item = this.videoList.find((v) => v.id === video.dataset.rollId);
+
+            if (item) {
+                // console.log('-------')
+                item.percentage = percentage;
+            }
+
+            callback({
+                text: String(this.videoNumbers),
+                videoList: this.buildVideoList()
+            })
+        }
+    }
+    static watchVideoProgress(video: HTMLVideoElement, callback: Function) {
+        this.updateBuffered(video, callback);
+
+        video.removeEventListener('progress', this.eventCallback as any);
+        video.removeEventListener('timeupdate', this.eventCallback as any);
+        // video.removeEventListener('loadedmetadata', this.eventCallback as any);
+        video.removeEventListener('seeking', this.eventCallback as any); // 拖动时更新进度条
+        // video.removeEventListener('waiting', this.eventCallback as any); // 等待事件
+        // video.removeEventListener('canplay', this.eventCallback as any); // 可播放事件
+
+        this.eventCallback = this.updateBuffered.bind(this, video, callback);
+        video.addEventListener('progress', this.eventCallback as any);
+        video.addEventListener('timeupdate', this.eventCallback as any);
+        // video.addEventListener('loadedmetadata', this.eventCallback as any);
+        video.addEventListener('seeking', this.eventCallback as any); // 拖动时更新进度条
+        // video.addEventListener('waiting', this.eventCallback as any); // 等待事件
+        // video.addEventListener('canplay', this.eventCallback as any); // 可播放事件
+    }
+
     static getVideoInfo(video: HTMLVideoElement, index: number) {
         const src = this.getSourceElementSrc(video);
-        console.log('---src', src);
+
         const time = Math.ceil(video.duration * 10 / 60) / 10;
         const duration = isNaN(time) ? 0 : time;
         if (this.rollConfig.crossorigin) {
@@ -962,6 +1023,10 @@ export default class VideoRoll {
                 checked: v.dataset.rollCheck === 'true' ? true : false,
                 ...infos[index]
             };
+
+            setTimeout(() => {
+                this.watchVideoProgress(v, callback);
+            })
 
             // item.visibleObserver = this.getVideoVisibleObserver(v, item, callback)
 

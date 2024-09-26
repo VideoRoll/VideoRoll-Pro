@@ -27,16 +27,33 @@
         background-color: var(--van-sidebar-selected-background);
     }
 
+    .van-button {
+        height: 100% !important;
+    }
+
     .video-poster-box {
-        width: 80px;
+        width: 60px;
         height: 100%;
         display: flex;
+        position: relative;
         .video-poster {
-            width: 80px;
-            height: 45px;
-            object-fit: contain;
+            width: 60px;
+            height: 60px;
+            object-fit: fill;
             border-radius: 5px;
             background: radial-gradient(black, transparent);
+        }
+
+        .video-percentage {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
         }
     }
 
@@ -47,17 +64,28 @@
         /* justify-content: flex-start; */
         padding-left: 10px;
         .video-info-name {
-            width: 150px;
+            width: 170px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
         .video-tags {
-            width: 150px;
+            width: 170px;
             display: flex;
 
             .van-tag:not(:last-child) {
+                margin-right: 5px;
+            }
+        }
+
+        .video-percentage {
+            width: 170px;
+            display: flex;
+            align-items: center;
+
+            .van-progress {
+                width: 160px;
                 margin-right: 5px;
             }
         }
