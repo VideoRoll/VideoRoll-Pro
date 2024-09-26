@@ -37,7 +37,9 @@
                 "inject/index.js",
                 "inject/capture.html",
                 "inject/capture.js",
-                "inject/request.js"
+                "inject/download.js",
+                "download/index.html",
+                "download/index.js"
             ],
             "matches": [
                 "https://*/*"

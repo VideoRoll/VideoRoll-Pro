@@ -13,7 +13,7 @@ function injectScript() {
 
     if (injectJs) return;
 
-    const src = browser.runtime.getURL('inject/request.js');
+    const src = browser.runtime.getURL('inject/download.js');
     const script = document.createElement('script');
     script.setAttribute('id', 'video-roll-script');
     script.setAttribute('type', 'text/javascript');

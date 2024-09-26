@@ -4,5 +4,6 @@
     ],
     "namers": [
         "parcel-namer-hashless"
-    ]
+    ],
+    "reporters": ["@parcel/reporter-bundle-analyzer"]
 }

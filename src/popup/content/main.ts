@@ -44,6 +44,8 @@ import Form from "vant/es/form/index.mjs";
 import Field from "vant/es/field/index.mjs";
 import Empty  from "vant/es/empty/index.mjs";
 import Loading  from "vant/es/loading/index.mjs";
+import Progress from 'vant/es/progress/index.mjs'
+import Circle from 'vant/es/circle/index.mjs'
 
 import "vant/es/sidebar/style/index.mjs";
 import "vant/es/sidebar-item/style/index.mjs";
@@ -76,6 +78,8 @@ import "vant/es/form/style/index.mjs";
 import "vant/es/field/style/index.mjs";
 import "vant/es/empty/style/index.mjs";
 import "vant/es/loading/style/index.mjs";
+import "vant/es/progress/style/index.mjs";
+import "vant/es/circle/style/index.mjs";
 
 createApp(App)
     .use(ConfigProvider)
@@ -109,5 +113,7 @@ createApp(App)
     .use(Field)
     .use(Empty)
     .use(Loading)
+    .use(Progress)
+    .use(Circle)
     .use(FloatingVue)
     .mount("#app");

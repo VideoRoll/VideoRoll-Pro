@@ -216,48 +216,51 @@ export default function useComponents() {
                 children: [
                     {
                         type: 'container',
-                        title: browser.i18n.getMessage('video_focus'),
-                        showTitle: true,
-                        col: 6,
-                        children: [
-                            {
-                                type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Focus"))
-                            }
-                        ]
-                    },
-                    {
-                        type: 'container',
-                        title: browser.i18n.getMessage('video_filter'),
-                        showTitle: true,
-                        col: 6,
-                        children: [{
-                            type: 'component',
-                            component: defineAsyncComponent(() => import("../components/Filter"))
-                        }]
-                    },
-                    {
-                        type: 'container',
-                        title: browser.i18n.getMessage('video_screenshot'),
-                        showTitle: true,
-                        col: 6,
-                        children: [
-                            {
-                                type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Capture"))
-                            }
-                        ]
-                    },
-                    {
-                        type: 'container',
-                        title: 'VR',
+                        title: 'Download',
                         showTitle: true,
                         class: 'container-badge-pro',
                         col: 6,
                         children: [
                             {
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Vr"))
+                                component: defineAsyncComponent(() => import("../components/Download"))
+                            }
+                        ]
+                    },
+                    {
+                        type: 'container',
+                        title: 'Subtitles',
+                        showTitle: true,
+                        class: 'container-badge-pro',
+                        col: 6,
+                        children: [{
+                            type: 'component',
+                            component: defineAsyncComponent(() => import("../components/Subtitles"))
+                        }]
+                    },
+                    {
+                        type: 'container',
+                        title: 'Summary',
+                        showTitle: true,
+                        class: 'container-badge-pro',
+                        col: 6,
+                        children: [
+                            {
+                                type: 'component',
+                                component: defineAsyncComponent(() => import("../components/Summary"))
+                            }
+                        ]
+                    },
+                    {
+                        type: 'container',
+                        title: 'Record',
+                        showTitle: true,
+                        class: 'container-badge-pro',
+                        col: 6,
+                        children: [
+                            {
+                                type: 'component',
+                                component: defineAsyncComponent(() => import("../components/Record"))
                             }
                         ]
                     }

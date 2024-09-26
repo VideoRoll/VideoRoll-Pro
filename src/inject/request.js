@@ -3,6 +3,21 @@
 // 保存原始的 XMLHttpRequest 的 open 和 send 方法
 // const originalXHROpen = XMLHttpRequest.prototype.open;
 // const originalXHRSend = XMLHttpRequest.prototype.send;
+
+const videos = [];
+
+function extractVideoUrls(url) {
+    // 正则表达式匹配以 http 或 https 开头的 mp4, m3u8, m4s URL
+    const regex = /https?:\/\/[^\s]+?\.(mp4|m3u8|m4s)/gi;
+
+    // 从 HTML 字符串中提取所有匹配的 URL
+    const matches = url.test(regex);
+
+    videos.push()
+    // 返回匹配的结果（去重）
+    return matches ? [...new Set(matches)] : [];
+}
+
 async function downloadTSFiles(tsUrls) {
     const tsBlobs = [];
 
@@ -157,9 +172,11 @@ XMLHttpRequest.prototype.send = function () {
 const originalFetch = window.fetch;
 window.fetch = function (...args) {
     const url = args[0];
-    if (url.includes('.m3u8') || url.includes('.mp4')) {
-        console.log('Detected video fetch: ', url);
-        // chrome.runtime.sendMessage({ action: 'video_detected', videoUrl: url });
-    }
+
+    // if (url.includes('.m3u8') || url.includes('.mp4')) {
+    //     console.log('Detected video fetch: ', url);
+    //     // chrome.runtime.sendMessage({ action: 'video_detected', videoUrl: url });
+    // }
+    console.log('Detected video fetch: ', url);
     return originalFetch.apply(this, args);
 };
