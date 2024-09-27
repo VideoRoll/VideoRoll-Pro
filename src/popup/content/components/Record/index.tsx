@@ -12,16 +12,14 @@ import { IRollConfig } from "src/types/type";
 export default defineComponent({
     name: "Record",
     setup() {
-        const update = inject("update") as Function;
+        const record = inject("record") as Function;
         const rollConfig = inject("rollConfig") as IRollConfig;
-
-        const setLoop = () => {
-            rollConfig.loop = !rollConfig.loop;
-            update("loop", rollConfig.loop);
+        const onRecord = () => {
+            record();
         };
 
         return () => (
-            <div v-tooltip={browser.i18n.getMessage('video_loop')} class={`video-roll-focus video-roll-item ${rollConfig.loop ? 'video-roll-on' : 'video-roll-off'}`} onClick={setLoop}>
+            <div v-tooltip={browser.i18n.getMessage('video_loop')} class={`video-roll-focus video-roll-item video-roll-off`} onClick={onRecord}>
                 <div class="video-roll-icon-box">
                     <span class="video-roll-label">
                         <RadioButtonOnOutline class="video-roll-icon"></RadioButtonOnOutline>

@@ -26,7 +26,8 @@ export enum ActionType {
     UPDATE_ENABLE,
     CAPTURE,
     MUTED,
-    UPDATE_IFRAMES
+    UPDATE_IFRAMES,
+    RECORD
 }
 
 export enum FlipType {
@@ -52,6 +53,8 @@ export type VideoListItem = {
     src?: string
     posterUrl?: string;
     isReal?: boolean;
+    percentage?: number;
+    currentTime?: number;
 }
 
 export type Pitch = {

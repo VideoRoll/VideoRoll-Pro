@@ -47,6 +47,21 @@ export default defineComponent({
             checked.value = [...list];
         }, { deep: true });
 
+
+        function formatTime(value: string) {
+            const seconds = Number(value);
+            const h = Math.floor(seconds / 3600); // 小时
+            const m = Math.floor((seconds % 3600) / 60); // 分钟
+            const s = Math.floor(seconds % 60); // 秒
+
+            // 如果小时为 0，不显示小时
+            const formattedHours = h > 0 ? String(h).padStart(2, '0') + ':' : '';
+            const formattedMinutes = String(m).padStart(2, '0');
+            const formattedSeconds = String(s).padStart(2, '0');
+
+            return `${formattedHours}${formattedMinutes}:${formattedSeconds}`;
+        }
+
         return () => (
             <div>
                 <van-notice-bar
@@ -72,10 +87,10 @@ export default defineComponent({
                                         </div>
                                         <div class="video-percentage">
                                             <van-progress percentage={v.percentage}
-                                                // pivot-color="#7232dd"
+                                                track-color="#2d2e31"
                                                 show-pivot={false}
                                                 color="linear-gradient(to right, #be99ff, #7232dd)"></van-progress>
-                                            <div>{Math.round(v.percentage)}%</div>
+                                            <div>{formatTime(v.currentTime)}</div>
                                         </div>
 
                                         <div class="video-tags">
@@ -83,7 +98,7 @@ export default defineComponent({
                                             {
                                                 v.isReal ? <van-tag type="success">{browser.i18n.getMessage('list_main')}</van-tag> : null
                                             }
-                                            <van-button type="primary" size="small" disabled={v.percentage !== 100} onClick={() => onTriggerDownload(v.id)} >下载</van-button>
+                                            {/* <van-button type="primary" size="small" disabled={v.percentage !== 100} onClick={() => onTriggerDownload(v.id)} >下载</van-button> */}
                                         </div>
                                     </div>
                                 </div>
