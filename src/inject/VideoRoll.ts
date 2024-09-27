@@ -9,7 +9,7 @@ import * as THREE from 'three';
 import { Flip, IMove, IFilter, Focus, FilterUnit, IRollConfig, FlipType, VideoSelector, VideoElement, OriginElementPosition, IRealVideoPlayer, VideoListItem, ActionType } from '../types/type.d';
 import { nanoid } from "nanoid";
 import { isVisible, sendRuntimeMessage } from "src/util";
-import debounce from "src/util/debounce";
+import debounce from 'lodash-es/debounce';
 import { getName } from "./utils/getName";
 
 export default class VideoRoll {
@@ -637,16 +637,24 @@ export default class VideoRoll {
         if (!video) return this;
 
         if (!vr.on && mask) {
-            const canvas = document.getElementById('video-roll-vr');
-            canvas?.remove();
+            const dom = document.getElementById('video-roll-vr');
+            dom?.remove();
 
             return this;
         }
 
         if (vr.on && mask) {
+            const dom = document.getElementById('video-roll-vr');
+
+            if (dom) {
+                return this;
+            }
+
             const canvas = document.createElement('canvas');
-            canvas.setAttribute('id', 'video-roll-vr')
             mask.appendChild(canvas);
+            canvas.width = video.offsetWidth * devicePixelRatio;
+            canvas.height = video.offsetHeight * devicePixelRatio;
+            canvas.setAttribute('id', 'video-roll-vr')
 
             // Initialize Three.js scene
             let scene, camera, renderer, sphere, videoTexture;
@@ -658,12 +666,13 @@ export default class VideoRoll {
 
             function init() {
                 // Create Three.js renderer
-                renderer = new THREE.WebGLRenderer({ canvas });
+                renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
                 renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
 
                 // Create scene and camera
                 scene = new THREE.Scene();
-                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100);
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
                 camera.target = new THREE.Vector3(0, 0, 0);
 
                 // Create video texture
@@ -671,14 +680,16 @@ export default class VideoRoll {
                 videoTexture.minFilter = THREE.LinearFilter;
                 videoTexture.magFilter = THREE.LinearFilter;
                 videoTexture.format = THREE.RGBFormat;
+                videoTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
                 // Create a sphere geometry and map video as texture
-                const geometry = new THREE.SphereGeometry(500, 60, 40);
+                const geometry = new THREE.SphereGeometry(500, 240, 120);
                 geometry.scale(-1, 1, 1); // Invert sphere geometry to view from inside
                 const material = new THREE.MeshBasicMaterial({ map: videoTexture });
                 sphere = new THREE.Mesh(geometry, material);
                 scene.add(sphere);
 
+                camera.position.set(0, 0, 0);
                 // Add event listeners for mouse and touch controls
                 document.addEventListener('mousedown', onPointerDown, false);
                 document.addEventListener('mousemove', onPointerMove, false);
@@ -872,7 +883,8 @@ export default class VideoRoll {
             duration: v.duration,
             isReal: v.isReal,
             src: v.src,
-            percentage: v.percentage ?? 0
+            percentage: v.percentage ?? 0,
+            currentTime: v.currentTime ?? 0
         }))
     }
 
@@ -911,66 +923,36 @@ export default class VideoRoll {
         canvas.height = rect.height;
 
         context?.drawImage((video as HTMLVideoElement), 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/png');
+        canvas.remove();
         // 获取canvas内容作为图像
-        return Promise.resolve(canvas.toDataURL('image/png'));
+        return Promise.resolve(dataUrl);
     }
 
-    static updateBuffered(video: HTMLVideoElement, callback: Function, event?: Event): void {
-        const buffered = video.buffered;
-        const duration = video.duration;
+    static updateProgress(video: HTMLVideoElement, callback: Function, event?: Event): void {
+        // 获取当前播放时间
         const currentTime = video.currentTime;
-        // 确保视频有时长且有缓存数据
-        if (duration > 0 && buffered.length > 0) {
-            let totalBufferedTime = 0;
+        // 获取视频的总时长
+        const duration = video.duration;
+        // 计算进度百分比
+        const progress = (currentTime / duration) * 100;
+        const item = this.videoList.find((v) => v.id === video.dataset.rollId);
 
-            let range = 0;
-
-            while (!(buffered.start(range) <= currentTime && currentTime <= buffered.end(range))) {
-                range += 1;
-            }
-            const loadStartPercentage = buffered.start(range) / duration;
-            const loadEndPercentage = buffered.end(range) / duration;
-            let percentage = (loadEndPercentage - loadStartPercentage) * 100;
-            // // 遍历所有缓存的时间段，计算总缓存时间
-            // for (let i = 0; i < buffered.length; i++) {
-            //     console.log(buffered.end(i), buffered.start(i))
-            //     totalBufferedTime += buffered.end(i) - buffered.start(i);
-            // }
-
-            // let percentage = (totalBufferedTime / duration) * 100; // 计算百分比
-            // percentage = Math.min(percentage, 100);
-            // console.log('per', percentage + '%'); // 更新进度条
-
-            const item = this.videoList.find((v) => v.id === video.dataset.rollId);
-
-            if (item) {
-                // console.log('-------')
-                item.percentage = percentage;
-            }
-
-            callback({
-                text: String(this.videoNumbers),
-                videoList: this.buildVideoList()
-            })
+        if (item) {
+            item.percentage = progress;
+            item.currentTime = currentTime;
         }
+
+        callback({
+            text: String(this.videoNumbers),
+            videoList: this.buildVideoList()
+        })
     }
+
     static watchVideoProgress(video: HTMLVideoElement, callback: Function) {
-        this.updateBuffered(video, callback);
-
-        video.removeEventListener('progress', this.eventCallback as any);
         video.removeEventListener('timeupdate', this.eventCallback as any);
-        // video.removeEventListener('loadedmetadata', this.eventCallback as any);
-        video.removeEventListener('seeking', this.eventCallback as any); // 拖动时更新进度条
-        // video.removeEventListener('waiting', this.eventCallback as any); // 等待事件
-        // video.removeEventListener('canplay', this.eventCallback as any); // 可播放事件
-
-        this.eventCallback = this.updateBuffered.bind(this, video, callback);
-        video.addEventListener('progress', this.eventCallback as any);
+        this.eventCallback = this.updateProgress.bind(this, video, callback);
         video.addEventListener('timeupdate', this.eventCallback as any);
-        // video.addEventListener('loadedmetadata', this.eventCallback as any);
-        video.addEventListener('seeking', this.eventCallback as any); // 拖动时更新进度条
-        // video.addEventListener('waiting', this.eventCallback as any); // 等待事件
-        // video.addEventListener('canplay', this.eventCallback as any); // 可播放事件
     }
 
     static getVideoInfo(video: HTMLVideoElement, index: number) {
@@ -981,12 +963,21 @@ export default class VideoRoll {
         if (this.rollConfig.crossorigin) {
             video.setAttribute('crossorigin', 'anonymous');
         }
-        let dataURL = '';
+        let dataURL = video.poster;
         let name = `video ${index + 1}`;
         const isReal = this.realVideoPlayer.player === video;
         try {
             const url = new URL(src);
             name = getName(url);
+            if (dataURL) {
+                return {
+                    posterUrl: dataURL,
+                    duration,
+                    name,
+                    src,
+                    isReal
+                }
+            }
             return this.capture(video).then((dataURL: string) => {
                 return {
                     posterUrl: dataURL,
@@ -1009,6 +1000,16 @@ export default class VideoRoll {
 
     }
 
+    static getProgress(video: HTMLVideoElement) {
+        // 获取当前播放时间
+        const currentTime = video.currentTime;
+        // 获取视频的总时长
+        const duration = video.duration;
+        // 计算进度百分比
+        const progress = (currentTime / duration) * 100;
+        return progress
+    }
+
     static async useVideoChanged(callback: Function) {
         const videoSelector = this.getVideoSelector(this.getHostName())
         this.updateDocuments().updateVideoElements(videoSelector);
@@ -1021,6 +1022,8 @@ export default class VideoRoll {
                 id: v.dataset.rollId,
                 visible: v.dataset.rollVisible === 'true' ? true : false,
                 checked: v.dataset.rollCheck === 'true' ? true : false,
+                currentTime: v.currentTime,
+                percentage: this.getProgress(v),
                 ...infos[index]
             };
 
@@ -1055,9 +1058,9 @@ export default class VideoRoll {
             if (!this.observer) {
                 this.observer = new MutationObserver(debounce((mutationList: any) => {
                     this.useVideoChanged(callback);
-                }, 300));
+                }, 300, { trailing: false, leading: true }));
 
-                this.observer.observe(elementToObserve, { childList: true, subtree: true, attributes: true });
+                this.observer.observe(elementToObserve, { childList: true, subtree: true });
             }
         } catch (err) {
             console.debug(err);

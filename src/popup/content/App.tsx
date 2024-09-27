@@ -42,6 +42,10 @@ export default defineComponent({
             sendTabMessage(rollConfig.tabId, { rollConfig: clone(rollConfig), type: ActionType.CAPTURE })
         }
 
+        const record = () => {
+            sendTabMessage(rollConfig.tabId, { rollConfig: clone(rollConfig), type: ActionType.RECORD })
+        }
+
         // current website config
         const rollConfig = useConfig();
 
@@ -53,6 +57,7 @@ export default defineComponent({
         provide("updateVideoCheck", updateVideoCheck)
         provide("updateEnable", updateEnable)
         provide("capture", capture)
+        provide("record", record)
 
         watch(() => tabId.value, (value: number) => {
             if (!value) return;
