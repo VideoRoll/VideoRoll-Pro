@@ -46,6 +46,15 @@ export default defineComponent({
             sendTabMessage(rollConfig.tabId, { rollConfig: clone(rollConfig), type: ActionType.RECORD })
         }
 
+        const advancedPictureInPicture = () => {
+            browser.windows.create(
+                {
+                    tabId: rollConfig.tabId,
+                    type: 'popup'
+                }
+            )
+        }
+
         // current website config
         const rollConfig = useConfig();
 
@@ -58,6 +67,7 @@ export default defineComponent({
         provide("updateEnable", updateEnable)
         provide("capture", capture)
         provide("record", record)
+        provide("advancedPictureInPicture", advancedPictureInPicture)
 
         watch(() => tabId.value, (value: number) => {
             if (!value) return;

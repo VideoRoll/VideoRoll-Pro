@@ -27,7 +27,9 @@ export enum ActionType {
     CAPTURE,
     MUTED,
     UPDATE_IFRAMES,
-    RECORD
+    RECORD,
+    ADVANCED_PICTURE_IN_PICTURE,
+    BACK_TO_TAB
 }
 
 export enum FlipType {
@@ -102,6 +104,15 @@ export type RollKey = keyof IRollConfig;
 
 export type RollValue = IRollConfig[RollKey];
 
+export type AdvancedPictureInPicture = {
+    on: boolean
+    originWindowId: string
+    width?: number
+    height?: number
+    left?: number
+    top?: number
+}
+
 export interface IRollConfig {
     tabId: number;
     videoNumber: number;
@@ -118,6 +129,7 @@ export interface IRollConfig {
     deg: Deg;
     filter: IFilter;
     pictureInPicture: boolean;
+    advancedPictureInPicture: AdvancedPictureInPicture;
     storeThisTab: boolean;
     store: boolean;
     isInit: boolean;
@@ -129,7 +141,7 @@ export interface IRollConfig {
     document: Document,
     iframes: Iframes,
     vr: Vr
-    [key: string]: number | string | Vr | Iframes | Document | Flip | IFilter | IScale | Zoom | Deg | IMove | Pitch | Focus | boolean | VideoSelector
+    [key: string]: number | string | Vr | AdvancedPictureInPicture | Iframes | Document | Flip | IFilter | IScale | Zoom | Deg | IMove | Pitch | Focus | boolean | VideoSelector
 }
 
 export type VideoSelector = {
