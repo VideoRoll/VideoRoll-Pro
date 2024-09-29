@@ -10,7 +10,7 @@ import browser from 'webextension-polyfill'
 import { IRollConfig } from "src/types/type";
 
 export default defineComponent({
-    name: "Download",
+    name: "ABLoop",
     setup() {
         const update = inject("update") as Function;
         const rollConfig = inject("rollConfig") as IRollConfig;

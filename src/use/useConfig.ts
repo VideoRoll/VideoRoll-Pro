@@ -23,6 +23,14 @@ const defaultConfig = {
     name: '',
     flip: 'unset',
     pictureInPicture: false,
+    advancedPictureInPicture: {
+        on: false,
+        originWindowId: '',
+        width: 300,
+        height: 200,
+        left: 800,
+        top: 800
+    },
     scale: {
         mode: 'auto',
         values: [1, 1],

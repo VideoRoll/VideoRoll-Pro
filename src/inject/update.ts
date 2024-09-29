@@ -91,28 +91,23 @@ export async function updateBadge(options: any) {
     if (tabConfig) {
         tabConfig.document = { title: document.title };
         await getGeneralConfig(tabConfig);
-        if (!tabConfig.storeThisTab) {
-            sessionStorage.removeItem(`video-roll-${tabId}`);
-            tabConfig.store = false;
-        } else {
-            tabConfig.url = window.location.href;
-            const domain = getDomain(tabConfig.url);
-            const key = `video-roll-disabled-${domain}`;
-            const data = await browser.storage.sync.get(key)
-            if (data[key]) {
-                tabConfig.enable = false;
-                if (rollConfig) {
-                    rollConfig.enable = false;
-                }
+        tabConfig.url = window.location.href;
+        const domain = getDomain(tabConfig.url);
+        const key = `video-roll-disabled-${domain}`;
+        const data = await browser.storage.sync.get(key)
+        if (data[key]) {
+            tabConfig.enable = false;
+            if (rollConfig) {
+                rollConfig.enable = false;
             }
-
-            if (!hasConf) tabConfig.store = false;
-            sessionStorage.setItem(`video-roll-${tabId}`, JSON.stringify(tabConfig));
         }
+
+        if (!hasConf) tabConfig.store = false;
+        sessionStorage.setItem(`video-roll-${tabId}`, JSON.stringify(tabConfig));
 
         if (tabConfig.enable === false) return;
 
-        VideoRoll.setRollConfig(tabConfig).addStyleClass(true).updateAudio();
+        VideoRoll.setRollConfig(tabConfig).addStyleClass(true).updateVideo(tabConfig).updateAudio();
     }
 
     if (hasConf) {
@@ -124,10 +119,7 @@ export async function updateBadge(options: any) {
         const data = await browser.storage.sync.get(key)
         if (data[key]) config.enable = false;
 
-        if (tabConfig?.storeThisTab) {
-            config.storeThisTab = tabConfig.storeThisTab;
-            setLocalStorage(config);
-        }
+        setLocalStorage(config);
 
         sessionStorage.setItem(
             `video-roll-${tabId}`,
@@ -237,4 +229,8 @@ export function capture(tabId: number, rollConfig: IRollConfig) {
     VideoRoll.capture().then((url) => {
         sendRuntimeMessage(tabId, { type: ActionType.CAPTURE, imgData: url })
     });
+}
+
+export function advancedPictureInPicture(tabId: number, rollConfig: IRollConfig) {
+    sendRuntimeMessage(tabId, { type: ActionType.ADVANCED_PICTURE_IN_PICTURE })
 }

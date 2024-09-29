@@ -6,11 +6,12 @@
 import WEBSITE from "../website";
 import Audiohacker from "audio-hacker";
 import * as THREE from 'three';
-import { Flip, IMove, IFilter, Focus, FilterUnit, IRollConfig, FlipType, VideoSelector, VideoElement, OriginElementPosition, IRealVideoPlayer, VideoListItem, ActionType } from '../types/type.d';
+import { Flip, IMove, IFilter, Focus, FilterUnit, IRollConfig, FlipType, VideoSelector, VideoElement, OriginElementPosition, IRealVideoPlayer, VideoListItem, ActionType, AdvancedPictureInPicture } from '../types/type.d';
 import { nanoid } from "nanoid";
 import { isVisible, sendRuntimeMessage } from "src/util";
 import debounce from 'lodash-es/debounce';
 import { getName } from "./utils/getName";
+import browser from 'webextension-polyfill';
 
 export default class VideoRoll {
     static rollConfig: IRollConfig;
@@ -137,6 +138,7 @@ export default class VideoRoll {
 
         this.addMaskElement();
         this.addVrMaskElement();
+        this.addPipMaskElement();
         // this.clearOriginElementPosition();
         this.clearRealVideoPlayer();
         const videos = this.getAllVideosBySelector(videoSelector, this.documents);
@@ -284,7 +286,7 @@ export default class VideoRoll {
         rollConfig: IRollConfig
     ) {
         this.setRollConfig(rollConfig);
-        const { deg, flip, scale, zoom, move, filter, focus, pictureInPicture, vr } = rollConfig;
+        const { deg, flip, scale, zoom, move, filter, focus, pictureInPicture, vr, advancedPictureInPicture } = rollConfig;
 
         const videos = this.videoElements.values();
         for (const target of videos) {
@@ -319,7 +321,7 @@ export default class VideoRoll {
         this.updateFocus(this.realVideoPlayer.player as HTMLVideoElement, focus);
         this.togglePictureInPicture(pictureInPicture);
         this.updateVr(this.realVideoPlayer.player as HTMLVideoElement, vr);
-
+        this.updateAdvancedPictureInPicture(this.realVideoPlayer.player as HTMLVideoElement, advancedPictureInPicture)
         return this;
     }
 
@@ -396,8 +398,11 @@ export default class VideoRoll {
      */
     static isExistStyle(doc: Document) {
         const degScale = doc.getElementById("video-roll-deg-scale");
+        const focusStyle = doc.getElementById("video-roll-focus-style");
+        const vrStyle = doc.getElementById("video-roll-vr-style");
+        const pictureInPictureStyle = doc.getElementById("video-roll-pip-style");
 
-        return degScale ?? null;
+        return degScale && focusStyle && vrStyle && pictureInPictureStyle || null;
     }
 
     /**
@@ -440,7 +445,7 @@ export default class VideoRoll {
     static addStyleClass(isClear: boolean = false) {
         const { storeThisTab, store } = this.getRollConfig();
 
-        this.documents.forEach((doc) => {
+        for (const doc of this.documents) {
             const styles = this.isExistStyle(doc);
 
             if (styles) {
@@ -474,21 +479,33 @@ export default class VideoRoll {
             vrStyle.setAttribute("id", "video-roll-vr-style");
             vrStyle.setAttribute("type", "text/css");
 
+            const pictureInPictureStyle = doc.createElement("style");
+            pictureInPictureStyle.innerHTML = ``;
+            pictureInPictureStyle.setAttribute("id", "video-roll-pip-style");
+            pictureInPictureStyle.setAttribute("type", "text/css");
+
+            const overflowHidden = doc.createElement("style");
+            overflowHidden.innerHTML = `.video-roll-overflow-hidden { overflow: hidden !important; }`;
+            overflowHidden.setAttribute("id", "video-roll-overflow-hidden");
+
             const head = doc.getElementsByTagName("head")[0];
 
             if (head) {
                 head.appendChild(degScale);
                 head.appendChild(focusStyle);
                 head.appendChild(vrStyle);
+                head.appendChild(pictureInPictureStyle);
+                head.appendChild(overflowHidden);
             }
 
             this.addMaskElement();
             this.addVrMaskElement();
-        });
-
-        if (storeThisTab) {
-            this.updateVideo(this.rollConfig);
+            this.addPipMaskElement();
         }
+
+        // if (storeThisTab) {
+        //     this.updateVideo(this.rollConfig);
+        // }
 
         return this;
     }
@@ -503,6 +520,50 @@ export default class VideoRoll {
             const mask = document.createElement("div");
             mask.setAttribute("id", "video-roll-root-mask");
             document.body.appendChild(mask);
+        }
+    }
+
+    static showBackToTab = debounce(() => {
+        const backToTab = document.getElementById('video-roll-backToTab')
+
+        if (backToTab) {
+            backToTab.style.display = 'block';
+
+            debounce(() => {
+                backToTab.style.display = 'none';
+            }, 500)
+        }
+    }, 500, { trailing: false, leading: true })
+
+    static backToTab = () => {
+        // browser.windows.create(
+        //     {
+        //         tabId: this.rollConfig.tabId,
+        //         type: 'normal'
+        //     }
+        // )
+        sendRuntimeMessage(this.rollConfig.tabId, { type: ActionType.BACK_TO_TAB, rollConfig: this.rollConfig });
+    }
+
+    static addPipMaskElement() {
+        if (!document.body) return;
+
+        if (!document.getElementById('video-roll-pip-mask')) {
+            const mask = document.createElement("div");
+            mask.setAttribute("id", "video-roll-pip-mask");
+            mask.innerHTML = `<div id="video-roll-backToTab" style="display: none; position: absolute; left: 0; right: 0;
+            top:0; bottom:0; margin: auto; width: 20%; height: 30px; background-color: #a494c6; opacity: 0.8;
+            border-radius: 5px; color: #fff; text-align: center; line-height: 30px; z-index: 1; cursor: pointer;">
+                back to tab
+            </div>`
+            document.body.appendChild(mask);
+
+            mask.removeEventListener('mousemove', this.showBackToTab);
+            mask.addEventListener('mousemove', this.showBackToTab);
+
+            const backToTab = document.getElementById('video-roll-backToTab')
+            backToTab?.removeEventListener('click', this.backToTab)
+            backToTab?.addEventListener('click', this.backToTab)
         }
     }
 
@@ -597,6 +658,69 @@ export default class VideoRoll {
             mask.appendChild(video);
             video.classList.add('video-roll-focus');
 
+            if (!video.controls) {
+                video.classList.add('video-roll-no-controls');
+                video.controls = true;
+            }
+        }
+
+        return this;
+    }
+
+    static updateAdvancedPictureInPicture(video: HTMLVideoElement, advancedPictureInPicture: AdvancedPictureInPicture) {
+        const mask = document.getElementById('video-roll-pip-mask');
+        const pipStyle = document.getElementById('video-roll-pip-style') as HTMLStyleElement;
+
+        if (pipStyle) {
+            pipStyle.innerHTML = `#video-roll-pip-mask {
+                display: ${advancedPictureInPicture.on ? 'block' : 'none'};
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 20000 !important;
+                background-color: #000;
+            }
+            
+            .video-roll-pip {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                margin: auto;
+            }`
+        }
+
+        if (!video) return this;
+
+        if (!advancedPictureInPicture.on && this.originElementPosition && mask) {
+            const { parentElement, nextElementSibling } = this.originElementPosition;
+            document.body.classList.remove('video-roll-overflow-hidden');
+            if (video.parentElement === mask && parentElement) {
+                video.classList.remove('video-roll-pip');
+                if (video.classList.contains('video-roll-no-controls')) {
+                    video.classList.remove('video-roll-no-controls');
+                    video.controls = false;
+                }
+
+                if (nextElementSibling) {
+                    parentElement.insertBefore(video, nextElementSibling)
+                } else {
+                    parentElement.appendChild(video);
+                }
+            }
+
+            return this;
+        }
+
+        if (advancedPictureInPicture.on && this.originElementPosition && mask) {
+            mask.appendChild(video);
+            video.classList.add('video-roll-pip');
+            document.body.classList.add('video-roll-overflow-hidden');
             if (!video.controls) {
                 video.classList.add('video-roll-no-controls');
                 video.controls = true;

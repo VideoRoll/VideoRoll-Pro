@@ -216,26 +216,26 @@ export default function useComponents() {
                 children: [
                     {
                         type: 'container',
-                        title: 'Download',
+                        title: 'A-B Loop',
                         showTitle: true,
                         class: 'container-badge-pro',
                         col: 6,
                         children: [
                             {
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Download"))
+                                component: defineAsyncComponent(() => import("../components/ABLoop"))
                             }
                         ]
                     },
                     {
                         type: 'container',
-                        title: 'Subtitles',
+                        title: 'Advanced PictureInPicture',
                         showTitle: true,
                         class: 'container-badge-pro',
                         col: 6,
                         children: [{
                             type: 'component',
-                            component: defineAsyncComponent(() => import("../components/Subtitles"))
+                            component: defineAsyncComponent(() => import("../components/AdvancedPictureInPicture"))
                         }]
                     },
                     {

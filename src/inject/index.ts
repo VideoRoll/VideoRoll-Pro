@@ -4,7 +4,7 @@
  * @Date: 2022-01-11 23:49:59
  */
 import { ActionType, VideoListItem } from '../types/type.d';
-import { updateConfig, updateOnMounted, updateStorage, updateBadge, initKeyboardEvent, onHoverVideoElement, updateVideoCheck, updateEnable, capture } from "./update";
+import { updateConfig, updateOnMounted, updateStorage, updateBadge, initKeyboardEvent, onHoverVideoElement, updateVideoCheck, updateEnable, capture, advancedPictureInPicture } from "./update";
 import { sendRuntimeMessage } from "../util";
 import browser from 'webextension-polyfill';
 
@@ -25,7 +25,7 @@ function injectScript() {
 (function () {
     let videoNumber: number = 0;
 
-    injectScript();
+    // injectScript();
     /**
      * get message from popup or backgound
      */
@@ -75,6 +75,10 @@ function injectScript() {
                 }
                 case ActionType.CAPTURE: {
                     capture(tabId, { ...rollConfig });
+                    break;
+                }
+                case ActionType.ADVANCED_PICTURE_IN_PICTURE: {
+                    advancedPictureInPicture(tabId, { ...rollConfig })
                     break;
                 }
                 default:

@@ -8,6 +8,7 @@ import { ActionType } from '../types/type.d';
 import { sendTabMessage, setBadge, getBrowser } from '../util';
 import { useShortcuts } from 'src/use/useShortcuts';
 import { useGeneralConfig } from 'src/options/use/useGeneralConfig';
+import browser from 'webextension-polyfill'
 
 let currentTabId: number | undefined;
 
@@ -89,6 +90,15 @@ chrome.runtime.onMessage.addListener((a, b, send) => {
             break;
         case ActionType.UPDATE_BADGE:
             setBadge(tabId, text);
+            break;
+        case ActionType.BACK_TO_TAB:
+            browser.tabs.move(
+                [rollConfig.tabId],
+                {
+                    index: -1,
+                    windowId: rollConfig.originWindowId
+                }
+            )
             break;
         default:
             break;
