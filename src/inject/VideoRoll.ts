@@ -148,6 +148,8 @@ export default class VideoRoll {
         const mask = document.getElementById('video-roll-root-mask');
         if (!this.realVideoPlayer.player || this.realVideoPlayer.player?.parentElement === mask) return;
 
+        if (this.rollConfig.advancedPictureInPicture?.on) return this;
+
         const originElementPosition = this.findOriginElementPosition(this.realVideoPlayer.player as HTMLVideoElement);
         this.setOriginElementPosition(originElementPosition);
         return this;
@@ -536,12 +538,6 @@ export default class VideoRoll {
     }, 500, { trailing: false, leading: true })
 
     static backToTab = () => {
-        // browser.windows.create(
-        //     {
-        //         tabId: this.rollConfig.tabId,
-        //         type: 'normal'
-        //     }
-        // )
         sendRuntimeMessage(this.rollConfig.tabId, { type: ActionType.BACK_TO_TAB, rollConfig: this.rollConfig });
     }
 
@@ -699,6 +695,7 @@ export default class VideoRoll {
 
         if (!advancedPictureInPicture.on && this.originElementPosition && mask) {
             const { parentElement, nextElementSibling } = this.originElementPosition;
+
             document.body.classList.remove('video-roll-overflow-hidden');
             if (video.parentElement === mask && parentElement) {
                 video.classList.remove('video-roll-pip');
@@ -1049,8 +1046,15 @@ export default class VideoRoll {
         context?.drawImage((video as HTMLVideoElement), 0, 0, canvas.width, canvas.height);
         const dataUrl = canvas.toDataURL('image/png');
         canvas.remove();
-        // 获取canvas内容作为图像
-        return Promise.resolve(dataUrl);
+        return Promise.resolve(dataUrl)
+        // return new Promise((resolve) => {
+        //     setTimeout(() => {
+        //         context?.drawImage((video as HTMLVideoElement), 0, 0, canvas.width, canvas.height);
+        //         const dataUrl = canvas.toDataURL('image/png');
+        //         canvas.remove();
+        //         resolve(dataUrl)
+        //     }, 300)
+        // })
     }
 
     static updateProgress(video: HTMLVideoElement, callback: Function, event?: Event): void {
@@ -1080,41 +1084,75 @@ export default class VideoRoll {
     }
 
     static getVideoInfo(video: HTMLVideoElement, index: number) {
-        const src = this.getSourceElementSrc(video);
+        let src = this.getSourceElementSrc(video);
+
+        if (src.startsWith('blob:')) {
+            src = src.replace('blob:', '');
+        }
 
         const time = Math.ceil(video.duration * 10 / 60) / 10;
         const duration = isNaN(time) ? 0 : time;
         if (this.rollConfig.crossorigin) {
             video.setAttribute('crossorigin', 'anonymous');
         }
-        let dataURL = video.poster;
+
+        let poster = video.poster;
         let name = `video ${index + 1}`;
         const isReal = this.realVideoPlayer.player === video;
+
+        if (src === 'no-src') {
+            return {
+                posterUrl: poster,
+                duration,
+                name,
+                src,
+                isReal
+            }
+        }
+
         try {
             const url = new URL(src);
             name = getName(url);
-            if (dataURL) {
+            if (poster) {
                 return {
-                    posterUrl: dataURL,
+                    posterUrl: poster,
                     duration,
                     name,
                     src,
                     isReal
                 }
             }
-            return this.capture(video).then((dataURL: string) => {
-                return {
-                    posterUrl: dataURL,
-                    duration,
-                    name,
-                    src,
-                    isReal
-                }
-            });
+
+            const videoRollPoster = video.getAttribute('data-roll-poster');
+            const videoRollPosterIndex = video.getAttribute('data-roll-poster-index') ?? 0;
+            const index = Number(videoRollPosterIndex);
+            if (index < 5) {
+                return this.capture(video).then((url: string) => {
+                    video.setAttribute('data-roll-poster', url);
+                    const currentIndex = index + 1;
+                    video.setAttribute('data-roll-poster-index', String(currentIndex));
+                    return {
+                        posterUrl: url,
+                        duration,
+                        name,
+                        src,
+                        isReal
+                    }
+                });
+            }
+
+            return {
+                posterUrl: videoRollPoster,
+                duration,
+                name,
+                src,
+                isReal
+            }
+
         } catch (err) {
             console.debug(err);
             return Promise.resolve({
-                posterUrl: dataURL,
+                posterUrl: poster,
                 duration,
                 src,
                 name,
@@ -1166,6 +1204,14 @@ export default class VideoRoll {
         })
     }
 
+    static isVideoChange(mutationItem: any) {
+        if (mutationItem.target.nodeName === 'VIDEO') return true;
+
+        if (Array.from(mutationItem.addedNodes).some((v: any) => v.nodeName === 'VIDEO') || Array.from(mutationItem.removedNodes).some((v: any) => v.nodeName === 'VIDEO')) return true;
+
+        return false;
+    }
+
     /**
      * update video number
      * @param callback 
@@ -1181,10 +1227,16 @@ export default class VideoRoll {
 
             if (!this.observer) {
                 this.observer = new MutationObserver(debounce((mutationList: any) => {
-                    this.useVideoChanged(callback);
-                }, 300, { trailing: false, leading: true }));
+                    for (const item of mutationList) {
+                        console.log('tttttt', item);
+                        if (this.isVideoChange(item)) {
+                            console.log('videoRoll', item);
+                            this.useVideoChanged(callback);
+                        }
+                    }
+                }, 300));
 
-                this.observer.observe(elementToObserve, { childList: true, subtree: true });
+                this.observer.observe(elementToObserve, { childList: true, subtree: true, attributeFilter: ['src'], attributes: true });
             }
         } catch (err) {
             console.debug(err);

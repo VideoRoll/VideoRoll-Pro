@@ -95,10 +95,21 @@ chrome.runtime.onMessage.addListener((a, b, send) => {
             browser.tabs.move(
                 [rollConfig.tabId],
                 {
-                    index: -1,
-                    windowId: rollConfig.originWindowId
+                    windowId: rollConfig.advancedPictureInPicture.originWindowId,
+                    index: -1
                 }
-            )
+            ).then(() => {
+                browser.tabs.update(
+                    currentTabId,
+                    { active: true}
+                ).then(() => {
+                    console.log('highlight')
+                    rollConfig.advancedPictureInPicture.on = false;
+                    sendTabMessage(currentTabId as number, { rollConfig, type: ActionType.UPDATE_CONFIG, tabId });
+                })
+                // sendTabMessage(currentTabId as number, { rollConfig, type: ActionType.UPDATE_CONFIG, tabId });
+            })
+            
             break;
         default:
             break;

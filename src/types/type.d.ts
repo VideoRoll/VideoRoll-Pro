@@ -106,7 +106,7 @@ export type RollValue = IRollConfig[RollKey];
 
 export type AdvancedPictureInPicture = {
     on: boolean
-    originWindowId: string
+    originWindowId: number
     width?: number
     height?: number
     left?: number

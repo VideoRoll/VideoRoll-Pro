@@ -229,7 +229,7 @@ export default function useComponents() {
                     },
                     {
                         type: 'container',
-                        title: 'Advanced PictureInPicture',
+                        title: 'Advanced Pic in Pic',
                         showTitle: true,
                         class: 'container-badge-pro',
                         col: 6,
@@ -240,7 +240,7 @@ export default function useComponents() {
                     },
                     {
                         type: 'container',
-                        title: 'Summary',
+                        title: 'History',
                         showTitle: true,
                         class: 'container-badge-pro',
                         col: 6,

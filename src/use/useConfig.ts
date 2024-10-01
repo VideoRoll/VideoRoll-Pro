@@ -25,9 +25,9 @@ const defaultConfig = {
     pictureInPicture: false,
     advancedPictureInPicture: {
         on: false,
-        originWindowId: '',
-        width: 300,
-        height: 200,
+        originWindowId: 0,
+        width: 366,
+        height: 206,
         left: 800,
         top: 800
     },
