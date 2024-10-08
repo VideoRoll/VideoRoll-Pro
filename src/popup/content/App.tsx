@@ -47,12 +47,7 @@ export default defineComponent({
         }
 
         const advancedPictureInPicture = () => {
-            browser.windows.create(
-                {
-                    tabId: rollConfig.tabId,
-                    type: 'popup'
-                }
-            )
+            sendTabMessage(rollConfig.tabId, { rollConfig: clone(rollConfig), type: ActionType.ADVANCED_PICTURE_IN_PICTURE })
         }
 
         // current website config
@@ -91,7 +86,7 @@ export default defineComponent({
             initRollConfig(rollConfig, tab);
 
             chrome.runtime.onMessage.addListener((a, b, c) => {
-                const { type, rollConfig: config, text, videoList: list, imgData, muted, iframes } = a;
+                const { type, rollConfig: config, text, videoList: list, imgData, muted, iframes, windowConfig } = a;
 
                 if (a.tabId !== tabId.value) {
                     c("not current tab");
@@ -124,6 +119,19 @@ export default defineComponent({
                         break;
                     case ActionType.UPDATE_IFRAMES:
                         rollConfig.iframes = iframes;
+                        break;
+                    case ActionType.ADVANCED_PICTURE_IN_PICTURE:
+                        browser.windows.create(
+                            {
+                                tabId: rollConfig.tabId,
+                                type: 'popup',
+                                width: windowConfig.width,
+                                height: windowConfig.height,
+                                left: windowConfig.leftPosition,
+                                top: windowConfig.topPosition,
+                                focused: true,
+                            }
+                        )
                         break;
                     default:
                         break;

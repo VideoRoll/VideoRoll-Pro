@@ -1228,15 +1228,13 @@ export default class VideoRoll {
             if (!this.observer) {
                 this.observer = new MutationObserver(debounce((mutationList: any) => {
                     for (const item of mutationList) {
-                        console.log('tttttt', item);
                         if (this.isVideoChange(item)) {
-                            console.log('videoRoll', item);
                             this.useVideoChanged(callback);
                         }
                     }
                 }, 300));
 
-                this.observer.observe(elementToObserve, { childList: true, subtree: true, attributeFilter: ['src'], attributes: true });
+                this.observer.observe(elementToObserve, { childList: true, subtree: true, attributeFilter: ['src', 'autoplay', 'mediatype', 'data-xgplayerid', 'playsinline', 'crossorigin'], attributes: true });
             }
         } catch (err) {
             console.debug(err);

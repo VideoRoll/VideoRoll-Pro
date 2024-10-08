@@ -232,5 +232,18 @@ export function capture(tabId: number, rollConfig: IRollConfig) {
 }
 
 export function advancedPictureInPicture(tabId: number, rollConfig: IRollConfig) {
-    sendRuntimeMessage(tabId, { type: ActionType.ADVANCED_PICTURE_IN_PICTURE })
+    // 获取屏幕的宽度和高度
+    const screenWidth = window.screen.availWidth;
+    const screenHeight = window.screen.availHeight;
+
+    const { width, height } = VideoRoll.realVideoPlayer;
+    // 计算窗口的位置（右下角）
+    const leftPosition = screenWidth - width;
+    const topPosition = screenHeight - height;
+    sendRuntimeMessage(tabId, { type: ActionType.ADVANCED_PICTURE_IN_PICTURE, windowConfig: {
+        leftPosition,
+        topPosition,
+        width,
+        height
+    } })
 }

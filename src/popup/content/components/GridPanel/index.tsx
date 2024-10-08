@@ -30,8 +30,15 @@ export default defineComponent({
             renderContent.value = content;
         }
 
+        const onClose = (callback: Function) => {
+            if (typeof callback === 'function') {
+                callback();
+            }
+        }
+
         provide('setPopupShow', setPopupShow);
         provide('updateRenderContent', updateRenderContent)
+        provide('onPopupClose', onClose)
 
         return () => (
             <div class="video-roll-setting-panel">
@@ -41,7 +48,7 @@ export default defineComponent({
                             render(components)
                         }
                     </van-tabs>
-                    <van-popup v-model:show={popupShow.value} round closeable style={{ width: '250px' , height: '250px', padding: '20px', overflow: 'hidden'}}>{
+                    <van-popup v-model:show={popupShow.value} onClose={onClose} round closeable lazy-render style={{ width: '250px' , height: '250px', padding: '20px', overflow: 'hidden'}}>{
                         h(renderContent.value)
                     }</van-popup>
                 </van-config-provider>
