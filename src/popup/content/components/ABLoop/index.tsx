@@ -4,7 +4,7 @@
  * @Date: 2022-09-19 22:53:23
  */
 import { defineComponent, inject, ref, shallowReactive } from "vue";
-import { CloudDownloadOutline } from "@vicons/ionicons5";
+import { CloudDownloadOutline, RepeatOutline } from "@vicons/ionicons5";
 import "./index.less";
 import browser from 'webextension-polyfill'
 import { IRollConfig } from "src/types/type";
@@ -24,7 +24,7 @@ export default defineComponent({
             <div v-tooltip={browser.i18n.getMessage('video_loop')} class={`video-roll-focus video-roll-item ${rollConfig.loop ? 'video-roll-on' : 'video-roll-off'}`} onClick={setLoop}>
                 <div class="video-roll-icon-box">
                     <span class="video-roll-label">
-                        <CloudDownloadOutline class="video-roll-icon"></CloudDownloadOutline>
+                        <RepeatOutline class="video-roll-icon"></RepeatOutline>
                     </span>
                 </div>
             </div>

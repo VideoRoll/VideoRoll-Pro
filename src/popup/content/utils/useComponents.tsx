@@ -172,16 +172,6 @@ export default function useComponents() {
                     },
                     {
                         type: 'container',
-                        title: browser.i18n.getMessage('video_filter'),
-                        showTitle: true,
-                        col: 6,
-                        children: [{
-                            type: 'component',
-                            component: defineAsyncComponent(() => import("../components/Filter"))
-                        }]
-                    },
-                    {
-                        type: 'container',
                         title: browser.i18n.getMessage('video_screenshot'),
                         showTitle: true,
                         col: 6,
@@ -191,6 +181,17 @@ export default function useComponents() {
                                 component: defineAsyncComponent(() => import("../components/Capture"))
                             }
                         ]
+                    },
+                    {
+                        type: 'container',
+                        title: 'QR',
+                        showTitle: true,
+                        class: 'container-badge-pro',
+                        col: 6,
+                        children: [{
+                            type: 'component',
+                            component: defineAsyncComponent(() => import("../components/QR"))
+                        }]
                     },
                     {
                         type: 'container',
@@ -247,7 +248,7 @@ export default function useComponents() {
                         children: [
                             {
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Summary"))
+                                component: defineAsyncComponent(() => import("../components/History"))
                             }
                         ]
                     },
