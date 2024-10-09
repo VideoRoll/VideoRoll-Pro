@@ -96,16 +96,17 @@ chrome.runtime.onMessage.addListener((a, b, send) => {
                 [rollConfig.tabId],
                 {
                     windowId: rollConfig.advancedPictureInPicture.originWindowId,
-                    index: -1
+                    index: rollConfig.advancedPictureInPicture.tabIndex
                 }
             ).then(() => {
                 browser.tabs.update(
-                    currentTabId,
-                    { active: true}
+                    rollConfig.tabId,
+                    { active: true }
                 ).then(() => {
-                    console.log('highlight')
-                    rollConfig.advancedPictureInPicture.on = false;
-                    sendTabMessage(currentTabId as number, { rollConfig, type: ActionType.UPDATE_CONFIG, tabId });
+                    setTimeout(() => {
+                        rollConfig.advancedPictureInPicture.on = false;
+                        sendTabMessage(currentTabId as number, { rollConfig, type: ActionType.UPDATE_CONFIG, tabId });
+                    })
                 })
                 // sendTabMessage(currentTabId as number, { rollConfig, type: ActionType.UPDATE_CONFIG, tabId });
             })
@@ -114,6 +115,14 @@ chrome.runtime.onMessage.addListener((a, b, send) => {
         default:
             break;
     }
+
+
+    // 监听窗口焦点变化
+    // browser.windows.onFocusChanged.addListener(function(windowId) {
+    //     if (popupWindowId && windowId !== popupWindowId) {
+    //         chrome.windows.update(popupWindowId, { focused: true });
+    //     }
+    // });
 
     send("update");
 });

@@ -111,10 +111,12 @@ export type AdvancedPictureInPicture = {
     height?: number
     left?: number
     top?: number
+    tabIndex?: number
 }
 
 export interface IRollConfig {
     tabId: number;
+    tabIndex: number;
     videoNumber: number;
     url: string;
     name: string;

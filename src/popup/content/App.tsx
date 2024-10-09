@@ -26,6 +26,9 @@ export default defineComponent({
             isShow.value = !isShow.value;
         };
 
+        // current website config
+        const rollConfig = useConfig();
+
         const onHoverVideo = (id: string, isIn: boolean) => {
             sendTabMessage(rollConfig.tabId, { id, type: ActionType.ON_HOVER_VIDEO, isIn })
         }
@@ -50,8 +53,6 @@ export default defineComponent({
             sendTabMessage(rollConfig.tabId, { rollConfig: clone(rollConfig), type: ActionType.ADVANCED_PICTURE_IN_PICTURE })
         }
 
-        // current website config
-        const rollConfig = useConfig();
 
         provide("rollConfig", rollConfig);
         provide("update", updateRollConfig.bind(null, rollConfig));

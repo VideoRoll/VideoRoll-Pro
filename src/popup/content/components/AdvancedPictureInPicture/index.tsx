@@ -16,17 +16,17 @@ export default defineComponent({
         const rollConfig = inject("rollConfig") as IRollConfig;
         const update = inject("update") as Function;
 
-        const setAdvancedPictureInPicture = () => {
+        const setAdvancedPictureInPicture = async () => {
             rollConfig.focus.on = false;
             update("focus", rollConfig.focus);
             rollConfig.pictureInPicture = false;
             update("pictureInPicture", rollConfig.pictureInPicture);
             rollConfig.advancedPictureInPicture.on = true;
-            browser.windows.getCurrent().then((res) => {
-                rollConfig.advancedPictureInPicture.originWindowId = res.id as number;
-                update("advancedPictureInPicture", rollConfig.advancedPictureInPicture);
-                advancedPictureInPicture()
-            })
+            const res = await browser.windows.getCurrent();
+            rollConfig.advancedPictureInPicture.originWindowId = res.id as number;
+            rollConfig.advancedPictureInPicture.tabIndex = rollConfig.tabIndex as number;
+            update("advancedPictureInPicture", rollConfig.advancedPictureInPicture);
+            advancedPictureInPicture()
         };
 
         return () => (
