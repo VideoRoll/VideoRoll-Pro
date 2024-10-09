@@ -680,8 +680,8 @@ export default class VideoRoll {
             }
             
             .video-roll-pip {
-                width: 100%;
-                height: 100%;
+                width: 100% !important;
+                height: 100% !important;
                 position: absolute;
                 left: 0;
                 right: 0;

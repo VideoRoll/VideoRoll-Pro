@@ -53,6 +53,7 @@ function reloadPage(tabId: number) {
 function initRollConfig(rollConfig: IRollConfig, tab: any): void {
     const { url } = tab;
     rollConfig.tabId = tab.id;
+    rollConfig.tabIndex = tab.index;
     rollConfig.url = url;
     rollConfig.isInit = false;
 

@@ -66,7 +66,7 @@ export async function updateOnMounted(tabId: number, rollConfig: IRollConfig) {
     const key = `video-roll-disabled-${domain}`;
     const data = await browser.storage.sync.get(`video-roll-disabled-${domain}`)
 
-    config = Object.assign(config, { videoNumber: rollConfig.videoNumber, tabId: rollConfig.tabId, enable: data[key] ? false : true })
+    config = Object.assign(config, { videoNumber: rollConfig.videoNumber, tabId: rollConfig.tabId, tabIndex: rollConfig.tabIndex, enable: data[key] ? false : true })
 
     sendRuntimeMessage(tabId, { rollConfig: config, type: ActionType.UPDATE_STORAGE, tabId })
     if (config.enable === false) return;
@@ -240,10 +240,12 @@ export function advancedPictureInPicture(tabId: number, rollConfig: IRollConfig)
     // 计算窗口的位置（右下角）
     const leftPosition = screenWidth - width;
     const topPosition = screenHeight - height;
+    console.log(rollConfig.tabIndex, 'rollConfig.tabIndex');
     sendRuntimeMessage(tabId, { type: ActionType.ADVANCED_PICTURE_IN_PICTURE, windowConfig: {
         leftPosition,
         topPosition,
         width,
-        height
+        height,
+        tabIndex: rollConfig.tabIndex
     } })
 }

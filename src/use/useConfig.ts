@@ -18,6 +18,7 @@ const defaultFilterConfig = {
 
 const defaultConfig = {
     tabId: 0,
+    tabIndex: -1,
     videoNumber: 1,
     url: '',
     name: '',
@@ -29,7 +30,8 @@ const defaultConfig = {
         width: 366,
         height: 206,
         left: 800,
-        top: 800
+        top: 800,
+        tabIndex: -1
     },
     scale: {
         mode: 'auto',
