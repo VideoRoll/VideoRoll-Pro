@@ -103,12 +103,12 @@ chrome.runtime.onMessage.addListener((a, b, send) => {
                     rollConfig.tabId,
                     { active: true }
                 ).then(() => {
+                    currentTabId = rollConfig.tabId;
                     setTimeout(() => {
                         rollConfig.advancedPictureInPicture.on = false;
                         sendTabMessage(currentTabId as number, { rollConfig, type: ActionType.UPDATE_CONFIG, tabId });
                     })
                 })
-                // sendTabMessage(currentTabId as number, { rollConfig, type: ActionType.UPDATE_CONFIG, tabId });
             })
             
             break;
