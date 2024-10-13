@@ -21,7 +21,7 @@
       "message": "Rotate"
    },
    "video_loop": {
-      "message": "Loop Playback"
+      "message": "Loop"
    },
    "video_pic": {
       "message": "Pic in Pic"
@@ -63,7 +63,7 @@
       "message": "Flip"
    },
    "video_focus": {
-      "message": "Focus Mode"
+      "message": "Focus"
    },
    "video_filter": {
       "message": "Filter"

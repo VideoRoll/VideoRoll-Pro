@@ -30,13 +30,14 @@ export default defineComponent({
             setPopupShow(true);
             updateRenderContent(popupRender)
             setTimeout(() => {
+                const dom = document.getElementById("qr-code");
+                (dom as HTMLElement).innerHTML = '';
                 const qrcode = new QRCode(document.getElementById("qr-code"), {
                     text: rollConfig.url,
-                    width: 200,
-                    height: 200
+                    width: 180,
+                    height: 180
                 });
             }, 100)
-            
         }
 
         return () => (

@@ -2,6 +2,7 @@ import { IRollConfig } from "src/types/type";
 import set from 'lodash-es/set';
 
 export async function getGeneralConfig(rollConfig: IRollConfig) {
+    console.log('---------');
     return chrome.storage.sync.get('generalConfig').then((res) => {
         const data = res?.['generalConfig'];
 

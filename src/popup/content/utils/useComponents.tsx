@@ -141,14 +141,16 @@ export default function useComponents() {
                     },
                     {
                         type: 'container',
-                        title: browser.i18n.getMessage('video_filter'),
+                        title: browser.i18n.getMessage('video_screenshot'),
                         showTitle: true,
                         col: 6,
-                        children: [{
-                            type: 'component',
-                            component: defineAsyncComponent(() => import("../components/Filter"))
-                        }]
-                    },
+                        children: [
+                            {
+                                type: 'component',
+                                component: defineAsyncComponent(() => import("../components/Capture"))
+                            }
+                        ]
+                    }
                 ],
             },
             {
@@ -161,6 +163,7 @@ export default function useComponents() {
                     {
                         type: 'container',
                         title: browser.i18n.getMessage('video_focus'),
+                        class: 'container-badge-pro',
                         showTitle: true,
                         col: 6,
                         children: [
@@ -172,15 +175,14 @@ export default function useComponents() {
                     },
                     {
                         type: 'container',
-                        title: browser.i18n.getMessage('video_screenshot'),
+                        title: browser.i18n.getMessage('video_filter'),
+                        class: 'container-badge-pro',
                         showTitle: true,
                         col: 6,
-                        children: [
-                            {
-                                type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Capture"))
-                            }
-                        ]
+                        children: [{
+                            type: 'component',
+                            component: defineAsyncComponent(() => import("../components/Filter"))
+                        }]
                     },
                     {
                         type: 'container',
@@ -230,7 +232,7 @@ export default function useComponents() {
                     },
                     {
                         type: 'container',
-                        title: 'Advanced Pic in Pic',
+                        title: 'Separate Window',
                         showTitle: true,
                         class: 'container-badge-pro',
                         col: 6,
