@@ -9,6 +9,7 @@ import type { IRollConfig } from "../../../../types/type.d";
 import browser from "webextension-polyfill";
 import "./index.less";
 import { ReloadOutline } from "@vicons/ionicons5";
+import debounce from "lodash-es/debounce";
 
 export default defineComponent({
     name: "Zoom",
@@ -16,10 +17,10 @@ export default defineComponent({
         const update = inject("update") as Function;
         const rollConfig = inject("rollConfig") as IRollConfig;
 
-        const setZoomNum = (value: number) => {
+        const setZoomNum = debounce((value: number) => {
             rollConfig.zoom = value;
             update("zoom", value);
-        };
+        }, 100);
 
         return () => (
             <>

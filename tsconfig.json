@@ -29,7 +29,8 @@
             "node",
             "webextension-polyfill",
             "lodash-es",
-            "three"
+            "three",
+            "file-saver"
         ]
     },
     "allowSyntheticDefaultImports":true,

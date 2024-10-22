@@ -9,6 +9,7 @@ import type { IRollConfig } from "../../../../types/type";
 import { ReloadOutline} from '@vicons/ionicons5'
 import browser from "webextension-polyfill";
 import "./index.less";
+import debounce from "lodash-es/debounce";
 
 export default defineComponent({
     name: "Volume",
@@ -16,10 +17,10 @@ export default defineComponent({
         const update = inject("update") as Function;
         const rollConfig = inject("rollConfig") as IRollConfig;
 
-        const setVolume = (value: number) => {
+        const setVolume = debounce((value: number) => {
             rollConfig.volume = value;
             update("volume", rollConfig.volume);
-        };
+        }, 100);
 
         return () => (
             <>

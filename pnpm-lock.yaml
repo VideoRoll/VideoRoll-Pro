@@ -20,6 +20,9 @@ importers:
       easyqrcodejs:
         specifier: ^4.6.1
         version: 4.6.1
+      file-saver:
+        specifier: ^2.0.5
+        version: 2.0.5
       floating-vue:
         specifier: ^5.2.2
         version: 5.2.2(vue@3.2.47)
@@ -72,6 +75,9 @@ importers:
       '@types/chrome':
         specifier: ^0.0.227
         version: 0.0.227
+      '@types/file-saver':
+        specifier: ^2.0.7
+        version: 2.0.7
       '@types/jest':
         specifier: ^29.0.3
         version: 29.4.0
@@ -844,6 +850,9 @@ packages:
 
   '@types/chrome@0.0.227':
     resolution: {integrity: sha512-l1sVnf/1wZ/oNPw5X7OJMZjQlqVf3tPO50aE/aETHQRbrYhlHZkwv7lcuOWCimRSkFdHvAW4M+RIBAZACblXng==}
+
+  '@types/file-saver@2.0.7':
+    resolution: {integrity: sha512-dNKVfHd/jk0SkR/exKGj2ggkB45MAkzvWCaqLUUgkyjITkGNzH8H+yUwr+BLJUBjZOe9w8X3wgmXhZDRg1ED6A==}
 
   '@types/filesystem@0.0.32':
     resolution: {integrity: sha512-Yuf4jR5YYMR2DVgwuCiP11s0xuVRyPKmz8vo6HBY3CGdeMj8af93CFZX+T82+VD1+UqHOxTq31lO7MI7lepBtQ==}
@@ -1744,6 +1753,9 @@ packages:
   file-entry-cache@6.0.1:
     resolution: {integrity: sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==}
     engines: {node: ^10.12.0 || >=12.0.0}
+
+  file-saver@2.0.5:
+    resolution: {integrity: sha512-P9bmyZ3h/PRG+Nzga+rbdI4OEpNDzAVyy74uVO9ATgzLK6VtAsYybF/+TOCvrc0MO793d6+42lLyZTw7/ArVzA==}
 
   fill-range@7.0.1:
     resolution: {integrity: sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==}
@@ -4337,6 +4349,8 @@ snapshots:
       '@types/filesystem': 0.0.32
       '@types/har-format': 1.2.10
 
+  '@types/file-saver@2.0.7': {}
+
   '@types/filesystem@0.0.32':
     dependencies:
       '@types/filewriter': 0.0.29
@@ -5180,6 +5194,8 @@ snapshots:
   file-entry-cache@6.0.1:
     dependencies:
       flat-cache: 3.0.4
+
+  file-saver@2.0.5: {}
 
   fill-range@7.0.1:
     dependencies:

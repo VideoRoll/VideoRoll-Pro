@@ -1,8 +1,16 @@
-import { defineComponent, ref, onMounted, provide, watch, onUnmounted, onBeforeMount } from "vue";
+import {
+    defineComponent,
+    ref,
+    onMounted,
+    provide,
+    watch,
+    onUnmounted,
+    onBeforeMount,
+} from "vue";
 import browser from "webextension-polyfill";
 import Head from "./components/Head";
 import Footer from "./components/Footer";
-import GridPanel from './components/GridPanel';
+import GridPanel from "./components/GridPanel";
 import { useConfig } from "../../use";
 import { initRollConfig, updateRollConfig, reloadPage } from "./utils";
 import { clone, getSessionStorage, sendTabMessage } from "../../util";
@@ -30,51 +38,80 @@ export default defineComponent({
         const rollConfig = useConfig();
 
         const onHoverVideo = (id: string, isIn: boolean) => {
-            sendTabMessage(rollConfig.tabId, { id, type: ActionType.ON_HOVER_VIDEO, isIn })
-        }
+            sendTabMessage(rollConfig.tabId, {
+                id,
+                type: ActionType.ON_HOVER_VIDEO,
+                isIn,
+            });
+        };
 
         const updateVideoCheck = (ids: string[]) => {
-            sendTabMessage(rollConfig.tabId, { ids, type: ActionType.UPDATE_VIDEO_CHECK })
-        }
+            sendTabMessage(rollConfig.tabId, {
+                ids,
+                type: ActionType.UPDATE_VIDEO_CHECK,
+            });
+        };
 
         const updateEnable = () => {
-            sendTabMessage(rollConfig.tabId, { rollConfig: clone(rollConfig), type: ActionType.UPDATE_ENABLE })
-        }
+            sendTabMessage(rollConfig.tabId, {
+                rollConfig: clone(rollConfig),
+                type: ActionType.UPDATE_ENABLE,
+            });
+        };
 
         const capture = () => {
-            sendTabMessage(rollConfig.tabId, { rollConfig: clone(rollConfig), type: ActionType.CAPTURE })
-        }
+            sendTabMessage(rollConfig.tabId, {
+                rollConfig: clone(rollConfig),
+                type: ActionType.CAPTURE,
+            });
+        };
 
-        const record = () => {
-            sendTabMessage(rollConfig.tabId, { rollConfig: clone(rollConfig), type: ActionType.RECORD })
-        }
+        const startRecord = () => {
+            sendTabMessage(rollConfig.tabId, {
+                rollConfig: clone(rollConfig),
+                type: ActionType.START_RECORD,
+            });
+        };
+
+        const stopRecord = () => {
+            sendTabMessage(rollConfig.tabId, {
+                rollConfig: clone(rollConfig),
+                type: ActionType.STOP_RECORD,
+            });
+        };
 
         const advancedPictureInPicture = () => {
-            sendTabMessage(rollConfig.tabId, { rollConfig: clone(rollConfig), type: ActionType.ADVANCED_PICTURE_IN_PICTURE })
-        }
-
+            sendTabMessage(rollConfig.tabId, {
+                rollConfig: clone(rollConfig),
+                type: ActionType.ADVANCED_PICTURE_IN_PICTURE,
+            });
+        };
 
         provide("rollConfig", rollConfig);
         provide("update", updateRollConfig.bind(null, rollConfig));
         provide("onOpenSetting", onOpenSetting);
         provide("videoList", videoList);
-        provide("onHoverVideo", onHoverVideo)
-        provide("updateVideoCheck", updateVideoCheck)
-        provide("updateEnable", updateEnable)
-        provide("capture", capture)
-        provide("record", record)
-        provide("advancedPictureInPicture", advancedPictureInPicture)
+        provide("onHoverVideo", onHoverVideo);
+        provide("updateVideoCheck", updateVideoCheck);
+        provide("updateEnable", updateEnable);
+        provide("capture", capture);
+        provide("startRecord", startRecord);
+        provide("stopRecord", stopRecord);
+        provide("advancedPictureInPicture", advancedPictureInPicture);
 
-        watch(() => tabId.value, (value: number) => {
-            if (!value) return;
-            const config = getSessionStorage(value);
+        watch(
+            () => tabId.value,
+            (value: number) => {
+                if (!value) return;
+                const config = getSessionStorage(value);
 
-            Object.keys(config).forEach((key) => {
-                if (key in rollConfig && key !== 'tabId') {
-                    rollConfig[key] = config[key];
-                }
-            });
-        })
+                Object.keys(config).forEach((key) => {
+                    if (key in rollConfig && key !== "tabId") {
+                        rollConfig[key] = config[key];
+                    }
+                });
+            }
+        );
         /**
          * 当打开时就获取当前网站的视频信息
          * 添加样式
@@ -87,7 +124,16 @@ export default defineComponent({
             initRollConfig(rollConfig, tab);
 
             chrome.runtime.onMessage.addListener((a, b, c) => {
-                const { type, rollConfig: config, text, videoList: list, imgData, muted, iframes, windowConfig } = a;
+                const {
+                    type,
+                    rollConfig: config,
+                    text,
+                    videoList: list,
+                    imgData,
+                    muted,
+                    iframes,
+                    windowConfig,
+                } = a;
 
                 if (a.tabId !== tabId.value) {
                     c("not current tab");
@@ -110,7 +156,10 @@ export default defineComponent({
                         videoList.value = list;
                         break;
                     case ActionType.CAPTURE:
-                        const newUrl = browser.runtime.getURL('inject/capture.html?imgData=' + encodeURIComponent(imgData));
+                        const newUrl = browser.runtime.getURL(
+                            "inject/capture.html?imgData=" +
+                                encodeURIComponent(imgData)
+                        );
                         browser.tabs.create({ url: newUrl });
                         break;
                     case ActionType.MUTED:
@@ -122,17 +171,18 @@ export default defineComponent({
                         rollConfig.iframes = iframes;
                         break;
                     case ActionType.ADVANCED_PICTURE_IN_PICTURE:
-                        browser.windows.create(
-                            {
-                                tabId: rollConfig.tabId,
-                                type: 'popup',
-                                width: windowConfig.width,
-                                height: windowConfig.height,
-                                left: windowConfig.leftPosition,
-                                top: windowConfig.topPosition,
-                                focused: true,
-                            }
-                        )
+                        browser.windows.create({
+                            tabId: rollConfig.tabId,
+                            type: "popup",
+                            width: windowConfig.width,
+                            height: windowConfig.height,
+                            left: windowConfig.leftPosition,
+                            top: windowConfig.topPosition,
+                            focused: true,
+                        });
+                        break;
+                    case ActionType.STOP_RECORD:
+                        rollConfig.isRecording = false;
                         break;
                     default:
                         break;
@@ -141,35 +191,58 @@ export default defineComponent({
                 c("update");
             });
 
-            sendTabMessage(rollConfig.tabId, { rollConfig: clone(rollConfig), type: ActionType.ON_MOUNTED })
+            sendTabMessage(rollConfig.tabId, {
+                rollConfig: clone(rollConfig),
+                type: ActionType.ON_MOUNTED,
+            });
         });
 
         const renderComponent = () => {
             if (rollConfig.enable) {
-                if (rollConfig.videoNumber === 0) return <Iframe></Iframe>
+                if (rollConfig.videoNumber === 0) return <Iframe></Iframe>;
 
-                return <GridPanel></GridPanel>
+                return <GridPanel></GridPanel>;
             }
 
-            return <div class="empty-box">
-                <Close class="logo-empty" />
-                <div>{browser.i18n.getMessage('tips_disabled')}</div>
-            </div>
-        }
+            return (
+                <div class="empty-box">
+                    <Close class="logo-empty" />
+                    <div>{browser.i18n.getMessage("tips_disabled")}</div>
+                </div>
+            );
+        };
 
         return () => (
-            <div class={rollConfig.enable ? "video-roll-wrapper" : "video-roll-wrapper-empty"}>
-                <Head class="video-roll-wrapper-head" isShow={isShow.value}></Head>
-                <main class={rollConfig.enable ? "video-roll-main" : "video-roll-main-empty"}>
-                    <div class={rollConfig.enable ? "video-roll-content" : "video-roll-content-empty"}>
-                        {
-
-                            renderComponent()
+            <div
+                class={
+                    rollConfig.enable
+                        ? "video-roll-wrapper"
+                        : "video-roll-wrapper-empty"
+                }
+            >
+                <Head
+                    class="video-roll-wrapper-head"
+                    isShow={isShow.value}
+                ></Head>
+                <main
+                    class={
+                        rollConfig.enable
+                            ? "video-roll-main"
+                            : "video-roll-main-empty"
+                    }
+                >
+                    <div
+                        class={
+                            rollConfig.enable
+                                ? "video-roll-content"
+                                : "video-roll-content-empty"
                         }
+                    >
+                        {renderComponent()}
                     </div>
                 </main>
                 <Footer></Footer>
             </div>
         );
-    }
+    },
 });
