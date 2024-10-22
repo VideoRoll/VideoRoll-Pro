@@ -11,7 +11,7 @@ import { nanoid } from "nanoid";
 import { isVisible, sendRuntimeMessage } from "src/util";
 import debounce from 'lodash-es/debounce';
 import { getName } from "./utils/getName";
-import browser from 'webextension-polyfill';
+import Recorder from "./utils/Record";
 
 export default class VideoRoll {
     static rollConfig: IRollConfig;
@@ -35,6 +35,8 @@ export default class VideoRoll {
     static observer: MutationObserver | null;
 
     static eventCallback: Function | null = null
+
+    static recorder: Recorder
 
     static setRollConfig(rollConfig: IRollConfig) {
         this.rollConfig = rollConfig;
@@ -304,7 +306,7 @@ export default class VideoRoll {
             let scaleNum: [number, number] = [1, 1];
 
             if (rollConfig.isAutoChangeSize) {
-                scaleNum = this.rollConfig.isInit || scale.mode === 'custom' ? scale.values : this.getScaleNumber(target, deg);
+                scaleNum = this.rollConfig.isInit || scale.values.some((v) => Number(v) !== 1) ? scale.values : this.getScaleNumber(target, deg);
             }
 
             this.rollConfig.scale.values = scaleNum;
@@ -385,8 +387,13 @@ export default class VideoRoll {
         const degScale = doc.getElementById("video-roll-deg-scale") as HTMLElement;
 
         const filterStyle = filter.mode === 'custom' ? this.getFilterStyle(filter) : filter.mode;
+        
+        const translateStyle = Number(move.x) !== 0 || Number(move.y) !== 0 ? `translate(${move.x}%, ${-move.y}%)` : '';
+        const scaleStyle = scale.some((v) => Number(v) !== 1) ? `scale(${scale[0]}, ${scale[1]})` : '';
+        const zoomStyle = Number(zoom) !== 1 ? `scale3d(${zoom}, ${zoom}, 1)` : ''
+        
         degScale.innerHTML = `.video-roll-deg-scale { 
-            transform: ${FlipType[flip]} rotate(${deg}deg) scale3d(${zoom}, ${zoom}, 1) scale(${scale[0]}, ${scale[1]}) translate(${move.x}%, ${-move.y}%) !important; 
+            transform: ${FlipType[flip]} rotate(${deg}deg) ${zoomStyle} ${scaleStyle} ${translateStyle} !important; 
             filter: ${filterStyle}; 
         }
         `;
@@ -1175,7 +1182,7 @@ export default class VideoRoll {
     static async useVideoChanged(callback: Function) {
         const videoSelector = this.getVideoSelector(this.getHostName())
         this.updateDocuments().updateVideoElements(videoSelector);
-
+        this.recorder = new Recorder();
         const videos = [...this.videoElements];
         const infos = await Promise.all(videos.map((v, index) => this.getVideoInfo(v, index)))
 
@@ -1301,5 +1308,19 @@ export default class VideoRoll {
 
     static restart() {
 
+    }
+
+    static startRecord() {
+        if (!this.recorder) {
+            this.recorder = new Recorder();
+        }
+
+        this.recorder.startRecord(this.realVideoPlayer.player as HTMLVideoElement);
+    }
+
+    static stopRecord() {
+        if (this.recorder) {
+            this.recorder.stopRecord();
+        }
     }
 }

@@ -73,7 +73,7 @@ export default defineComponent({
                 <van-checkbox-group v-model={checked.value} onChange={onChange}>
                     {videoList.value.length ? videoList.value.sort((a: any, b: any) => Number(b.isReal) - Number(a.isReal)).map((v: any) =>
                         <div class="video-item" onMouseleave={() => onHoverVideo(v.id, false)} onMouseenter={() => onHoverVideo(v.id, true)}>
-                            <van-checkbox name={v.id} key={v.id} iconSize={15}>
+                            <van-checkbox shape="square" name={v.id} key={v.id} iconSize={15}>
                                 <div class="video-item-box">
                                     <div class="video-poster-box">
                                         {

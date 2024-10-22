@@ -27,7 +27,8 @@ export enum ActionType {
     CAPTURE,
     MUTED,
     UPDATE_IFRAMES,
-    RECORD,
+    START_RECORD,
+    STOP_RECORD,
     ADVANCED_PICTURE_IN_PICTURE,
     BACK_TO_TAB
 }
@@ -114,6 +115,12 @@ export type AdvancedPictureInPicture = {
     tabIndex?: number
 }
 
+export type Abloop = {
+    on: boolean;
+    a: string;
+    b: string;
+}
+
 export interface IRollConfig {
     tabId: number;
     tabIndex: number;
@@ -142,8 +149,9 @@ export interface IRollConfig {
     enable: boolean;
     document: Document,
     iframes: Iframes,
-    vr: Vr
-    [key: string]: number | string | Vr | AdvancedPictureInPicture | Iframes | Document | Flip | IFilter | IScale | Zoom | Deg | IMove | Pitch | Focus | boolean | VideoSelector
+    vr: Vr,
+    abLoop: Abloop
+    [key: string]: number | string | Abloop | Vr | AdvancedPictureInPicture | Iframes | Document | Flip | IFilter | IScale | Zoom | Deg | IMove | Pitch | Focus | boolean | VideoSelector
 }
 
 export type VideoSelector = {

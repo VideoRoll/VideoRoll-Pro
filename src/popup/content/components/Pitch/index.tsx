@@ -7,6 +7,7 @@
 import { defineComponent, inject, watch } from "vue";
 import type { IRollConfig } from "../../../../types/type";
 import "./index.less";
+import debounce from "lodash-es/debounce";
 
 export default defineComponent({
     name: "Pitch",
@@ -14,10 +15,10 @@ export default defineComponent({
         const update = inject("update") as Function;
         const rollConfig = inject("rollConfig") as IRollConfig;
 
-        const setPitch = (value: number) => {
+        const setPitch = debounce((value: number) => {
             rollConfig.pitch.value = value;
             update("pitch", rollConfig.pitch);
-        };
+        }, 100);
 
         const setPitchOn = () => {
             if (!rollConfig.pitch.on) rollConfig.pitch.value = 0;

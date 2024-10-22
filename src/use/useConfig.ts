@@ -34,7 +34,7 @@ const defaultConfig = {
         tabIndex: -1
     },
     scale: {
-        mode: 'auto',
+        mode: 'custom',
         values: [1, 1],
     },
     move: {
@@ -71,6 +71,13 @@ const defaultConfig = {
     },
     vr: {
         on: false
+    },
+    videoRecord: {},
+    audioRecord: {},
+    abLoop: {
+        on: false,
+        a: 0,
+        b: 0
     },
     crossorigin: false,
     videoSelector: { defaultDom: 'video' }

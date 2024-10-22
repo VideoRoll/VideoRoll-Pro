@@ -10,6 +10,7 @@ import type { IRollConfig } from "../../../../types/type";
 import { getDefaultConfig } from '../../../../use';
 import browser from 'webextension-polyfill'
 import "./index.less";
+import debounce from "lodash-es/debounce";
 
 export default defineComponent({
     name: "Repostion",
@@ -21,15 +22,15 @@ export default defineComponent({
 
         const isDefault = computed(() => JSON.stringify(rollConfig.move) === JSON.stringify(getDefaultConfig().move));
 
-        const setMoveX = (value: number) => {
+        const setMoveX = debounce((value: number) => {
             rollConfig.move.x = value;
             update("move", rollConfig.move);
-        };
+        }, 100);
 
-        const setMoveY = (value: number) => {
+        const setMoveY = debounce((value: number) => {
             rollConfig.move.y = value;
             update("move", rollConfig.move);
-        };
+        }, 100);
 
         const reset = () => {
             setMoveX(getDefaultConfig().move.x);

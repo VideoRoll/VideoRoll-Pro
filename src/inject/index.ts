@@ -3,21 +3,34 @@
  * @Author: Gouxinyu
  * @Date: 2022-01-11 23:49:59
  */
-import { ActionType, VideoListItem } from '../types/type.d';
-import { updateConfig, updateOnMounted, updateStorage, updateBadge, initKeyboardEvent, onHoverVideoElement, updateVideoCheck, updateEnable, capture, advancedPictureInPicture } from "./update";
+import { ActionType, VideoListItem } from "../types/type.d";
+import {
+    updateConfig,
+    updateOnMounted,
+    updateStorage,
+    updateBadge,
+    initKeyboardEvent,
+    onHoverVideoElement,
+    updateVideoCheck,
+    updateEnable,
+    capture,
+    advancedPictureInPicture,
+    startRecord,
+    stopRecord,
+} from "./update";
 import { sendRuntimeMessage } from "../util";
-import browser from 'webextension-polyfill';
+import browser from "webextension-polyfill";
 
 function injectScript() {
-    const injectJs = document.getElementById('video-roll-script');
+    const injectJs = document.getElementById("video-roll-script");
 
     if (injectJs) return;
 
-    const src = browser.runtime.getURL('inject/download.js');
-    const script = document.createElement('script');
-    script.setAttribute('id', 'video-roll-script');
-    script.setAttribute('type', 'text/javascript');
-    script.setAttribute('src', src);
+    const src = browser.runtime.getURL("inject/download.js");
+    const script = document.createElement("script");
+    script.setAttribute("id", "video-roll-script");
+    script.setAttribute("type", "text/javascript");
+    script.setAttribute("src", src);
 
     (document.head || document.documentElement).appendChild(script);
 }
@@ -38,11 +51,21 @@ function injectScript() {
                     updateBadge({
                         tabId,
                         rollConfig,
-                        callback: ({ text, videoList }: { text: string, videoList: VideoListItem[] }) => {
+                        callback: ({
+                            text,
+                            videoList,
+                        }: {
+                            text: string;
+                            videoList: VideoListItem[];
+                        }) => {
                             videoNumber = Number(text);
-                            sendRuntimeMessage(tabId, { text, type: ActionType.UPDATE_BADGE, videoList })
-                        }
-                    })
+                            sendRuntimeMessage(tabId, {
+                                text,
+                                type: ActionType.UPDATE_BADGE,
+                                videoList,
+                            });
+                        },
+                    });
                     break;
                 }
                 // when popup onMounted, set init flip value to background,
@@ -78,9 +101,15 @@ function injectScript() {
                     break;
                 }
                 case ActionType.ADVANCED_PICTURE_IN_PICTURE: {
-                    advancedPictureInPicture(tabId, { ...rollConfig })
+                    advancedPictureInPicture(tabId, { ...rollConfig });
                     break;
                 }
+                case ActionType.START_RECORD:
+                    startRecord(tabId, { ...rollConfig });
+                    break;
+                case ActionType.STOP_RECORD:
+                    stopRecord(tabId, { ...rollConfig });
+                    break;
                 default:
                     return;
             }
