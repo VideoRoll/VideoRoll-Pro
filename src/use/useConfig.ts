@@ -76,8 +76,8 @@ const defaultConfig = {
     audioRecord: {},
     abLoop: {
         on: false,
-        a: 0,
-        b: 0
+        a: "00:00:00",
+        b: "00:00:00"
     },
     crossorigin: false,
     videoSelector: { defaultDom: 'video' }

@@ -10,6 +10,7 @@ import type { IRollConfig } from "../../../../types/type";
 import browser from "webextension-polyfill";
 import "./index.less";
 import debounce from "lodash-es/debounce";
+import { getDefaultConfig } from "src/use";
 
 export default defineComponent({
     name: "Stretch",
@@ -36,9 +37,8 @@ export default defineComponent({
         }, 100);
 
         const reset = () => {
-            rollConfig.scale.values[0] = 1;
-            rollConfig.scale.values[1] = 1;
-            update("scale", rollConfig.scale);
+            setScaleX(getDefaultConfig().scale.values[0]);
+            setScaleY(getDefaultConfig().scale.values[1])
         };
 
         const popupRender = () => (

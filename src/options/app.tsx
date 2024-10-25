@@ -1,5 +1,4 @@
 import { defineComponent, ref, onMounted, provide, Transition, h } from "vue";
-import { ReloadOutline } from "@vicons/ionicons5";
 import Header from "./components/Header";
 import Navbar from "./components/Navbar";
 import AdPanel from "./components/AdPanel";

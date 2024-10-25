@@ -9,6 +9,7 @@ import { sendTabMessage, setBadge, getBrowser } from '../util';
 import { useShortcuts } from 'src/use/useShortcuts';
 import { useGeneralConfig } from 'src/options/use/useGeneralConfig';
 import browser from 'webextension-polyfill'
+import { getUser } from './auth';
 
 let currentTabId: number | undefined;
 
@@ -16,7 +17,7 @@ function setupStorage() {
     // 检查并设置默认值
     chrome.storage.sync.get(['shortcuts', 'generalConfig'], (result) => {
         if (!result.shortcuts) {
-            // 如果没有找到存储的值，就使用默认值
+            // 果没有找到存储的值，就使用默认值
             const shortcutsMap = useShortcuts();
             chrome.storage.sync.set({
                 shortcuts: JSON.parse(JSON.stringify(shortcutsMap.value))
@@ -126,3 +127,5 @@ chrome.runtime.onMessage.addListener((a, b, send) => {
 
     send("update");
 });
+
+getUser();

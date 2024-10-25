@@ -42,7 +42,6 @@ export default defineComponent({
 
         return () => (
             <div class="video-roll-setting-panel">
-                <van-config-provider theme="dark">
                     <van-tabs sticky animated offset-top="40">
                         {
                             render(components)
@@ -51,7 +50,6 @@ export default defineComponent({
                     <van-popup v-model:show={popupShow.value} onClose={onClose} round closeable lazy-render style={{ width: '250px' , height: '250px', padding: '20px', overflow: 'hidden'}}>{
                         h(renderContent.value)
                     }</van-popup>
-                </van-config-provider>
             </div>
         );
     }

@@ -7,7 +7,7 @@ import { shallowReactive } from 'vue';
 import {
     defineAsyncComponent,
 } from "vue";
-import { VideocamOutline, VolumeMediumOutline, ListOutline, EllipsisHorizontalCircleOutline } from '@vicons/ionicons5';
+import { DeviceTv, Headphones, List, Adjustments } from '@vicons/tabler'
 import browser from 'webextension-polyfill';
 import { Tooltip } from 'floating-vue';
 
@@ -58,7 +58,7 @@ export default function useComponents() {
     const components = shallowReactive<ITabConfig[]>([
         {
             type: 'tab',
-            title: <Tooltip><div class="tab-title" v-tooltip={browser.i18n.getMessage('tabs_video')}><VideocamOutline class="tab-icon" /></div></Tooltip>,
+            title: <Tooltip><div class="tab-title" v-tooltip={browser.i18n.getMessage('tabs_video')}><DeviceTv class="tab-icon" /></div></Tooltip>,
             children: [{
                 type: 'row',
                 style: {
@@ -232,7 +232,7 @@ export default function useComponents() {
                     },
                     {
                         type: 'container',
-                        title: 'Separate Window',
+                        title: 'Separate',
                         showTitle: true,
                         class: 'container-badge-pro',
                         col: 6,
@@ -311,7 +311,7 @@ export default function useComponents() {
         },
         {
             type: 'tab',
-            title: <Tooltip><div class="tab-title" v-tooltip={browser.i18n.getMessage('tabs_audio')}><VolumeMediumOutline class="tab-icon" /></div></Tooltip>,
+            title: <Tooltip><div class="tab-title" v-tooltip={browser.i18n.getMessage('tabs_audio')}><Headphones class="tab-icon" /></div></Tooltip>,
             children: [
                 {
                     type: 'row',
@@ -361,6 +361,7 @@ export default function useComponents() {
                         {
                             type: 'container',
                             title: browser.i18n.getMessage('audio_pitch'),
+                            class: 'container-badge-pro',
                             showTitle: true,
                             col: 24,
                             children: [{
@@ -369,12 +370,32 @@ export default function useComponents() {
                             }]
                         },
                     ]
+                },
+                {
+                    type: 'row',
+                    style: {
+                        margin: '30px 0',
+                        height: '40px'
+                    },
+                    children: [
+                        {
+                            type: 'container',
+                            title: 'Sync',
+                            class: 'container-badge-pro',
+                            showTitle: true,
+                            col: 24,
+                            children: [{
+                                type: 'component',
+                                component: defineAsyncComponent(() => import("../components/Sync"))
+                            }]
+                        },
+                    ]
                 }
             ]
         },
         {
             type: 'tab',
-            title: <Tooltip><div class="tab-title" v-tooltip={browser.i18n.getMessage('tabs_list')}><ListOutline class="tab-icon" /></div></Tooltip>,
+            title: <Tooltip><div class="tab-title" v-tooltip={browser.i18n.getMessage('tabs_list')}><List class="tab-icon" /></div></Tooltip>,
             children: [
                 {
                     type: 'component',
@@ -384,7 +405,7 @@ export default function useComponents() {
         },
         {
             type: 'tab',
-            title: <Tooltip><div class="tab-title" v-tooltip={browser.i18n.getMessage('tabs_more')}><EllipsisHorizontalCircleOutline class="tab-icon" /></div></Tooltip>,
+            title: <Tooltip><div class="tab-title" v-tooltip={browser.i18n.getMessage('tabs_more')}><Adjustments class="tab-icon" /></div></Tooltip>,
             children: [
                 {
                     type: 'row',
