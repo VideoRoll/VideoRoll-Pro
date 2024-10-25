@@ -5,13 +5,30 @@
  */
 import WEBSITE from "../website";
 import Audiohacker from "audio-hacker";
-import * as THREE from 'three';
-import { Flip, IMove, IFilter, Focus, FilterUnit, IRollConfig, FlipType, VideoSelector, VideoElement, OriginElementPosition, IRealVideoPlayer, VideoListItem, ActionType, AdvancedPictureInPicture } from '../types/type.d';
+import * as THREE from "three";
+import {
+    Flip,
+    IMove,
+    IFilter,
+    Focus,
+    FilterUnit,
+    IRollConfig,
+    FlipType,
+    VideoSelector,
+    VideoElement,
+    OriginElementPosition,
+    IRealVideoPlayer,
+    VideoListItem,
+    ActionType,
+    AdvancedPictureInPicture,
+    Abloop,
+} from "../types/type.d";
 import { nanoid } from "nanoid";
 import { isVisible, sendRuntimeMessage } from "src/util";
-import debounce from 'lodash-es/debounce';
+import debounce from "lodash-es/debounce";
 import { getName } from "./utils/getName";
-import Recorder from "./utils/Record";
+import Recorder from "./utils/Recorder";
+import Looper from "./utils/Looper";
 
 export default class VideoRoll {
     static rollConfig: IRollConfig;
@@ -28,15 +45,21 @@ export default class VideoRoll {
 
     static videoList: VideoListItem[] = [];
 
-    static realVideoPlayer: IRealVideoPlayer = { width: 0, height: 0, player: null };
+    static realVideoPlayer: IRealVideoPlayer = {
+        width: 0,
+        height: 0,
+        player: null,
+    };
 
     static originElementPosition: OriginElementPosition | null;
 
     static observer: MutationObserver | null;
 
-    static eventCallback: Function | null = null
+    static eventCallback: Function | null = null;
 
-    static recorder: Recorder
+    static recorder: Recorder;
+
+    static looper: Looper;
 
     static setRollConfig(rollConfig: IRollConfig) {
         this.rollConfig = rollConfig;
@@ -51,7 +74,7 @@ export default class VideoRoll {
         // url reg
         const url = window.location.href;
         const urlReg = /^http(s)?:\/\/(.*?)\//;
-        const hostName = urlReg.exec(url)?.[2] ?? '';
+        const hostName = urlReg.exec(url)?.[2] ?? "";
 
         return hostName;
     }
@@ -114,20 +137,27 @@ export default class VideoRoll {
      */
     static updateDocuments() {
         const iframes = document.querySelectorAll("iframe") ?? [];
-        const iframeEls: HTMLIFrameElement[] = Array.from(iframes).filter((v) => v.contentDocument);
+        const iframeEls: HTMLIFrameElement[] = Array.from(iframes).filter(
+            (v) => v.contentDocument
+        );
 
         this.setRollConfig({
             ...this.rollConfig,
-            iframes: Array.from(iframes).map((v) => v.src)
-        })
+            iframes: Array.from(iframes).map((v) => v.src),
+        });
 
-        this.documents = [document, ...(iframeEls.map((v) => {
-            if (v.contentDocument) {
-                // @ts-ignore
-                v.contentDocument.iframeElement = v;
-            }
-            return v.contentDocument as Document;
-        }).filter((v) => v.querySelectorAll('video').length > 0))];
+        this.documents = [
+            document,
+            ...iframeEls
+                .map((v) => {
+                    if (v.contentDocument) {
+                        // @ts-ignore
+                        v.contentDocument.iframeElement = v;
+                    }
+                    return v.contentDocument as Document;
+                })
+                .filter((v) => v.querySelectorAll("video").length > 0),
+        ];
 
         return this;
     }
@@ -143,16 +173,25 @@ export default class VideoRoll {
         this.addPipMaskElement();
         // this.clearOriginElementPosition();
         this.clearRealVideoPlayer();
-        const videos = this.getAllVideosBySelector(videoSelector, this.documents);
+        const videos = this.getAllVideosBySelector(
+            videoSelector,
+            this.documents
+        );
 
         this.setVideo(videos);
 
-        const mask = document.getElementById('video-roll-root-mask');
-        if (!this.realVideoPlayer.player || this.realVideoPlayer.player?.parentElement === mask) return;
+        const mask = document.getElementById("video-roll-root-mask");
+        if (
+            !this.realVideoPlayer.player ||
+            this.realVideoPlayer.player?.parentElement === mask
+        )
+            return;
 
         if (this.rollConfig.advancedPictureInPicture?.on) return this;
 
-        const originElementPosition = this.findOriginElementPosition(this.realVideoPlayer.player as HTMLVideoElement);
+        const originElementPosition = this.findOriginElementPosition(
+            this.realVideoPlayer.player as HTMLVideoElement
+        );
         this.setOriginElementPosition(originElementPosition);
         return this;
     }
@@ -160,7 +199,10 @@ export default class VideoRoll {
     static updateVideoNumbers(videoSelector: VideoSelector) {
         if (!this.documents.length) return;
 
-        const videos = this.getAllVideosBySelector(videoSelector, this.documents);
+        const videos = this.getAllVideosBySelector(
+            videoSelector,
+            this.documents
+        );
 
         this.setVideo(videos);
         return this;
@@ -169,19 +211,25 @@ export default class VideoRoll {
     static getSourceElementSrc(video: HTMLVideoElement) {
         if (!video.src) {
             // twitch has no src
-            const src = video.querySelector('source')?.src ?? 'no-src';
+            const src = video.querySelector("source")?.src ?? "no-src";
             return src;
         }
         return video.src;
     }
 
-    static getAllVideosBySelector(videoSelector: VideoSelector, docs: Document[] | HTMLIFrameElement[]): HTMLVideoElement[] {
+    static getAllVideosBySelector(
+        videoSelector: VideoSelector,
+        docs: Document[] | HTMLIFrameElement[]
+    ): HTMLVideoElement[] {
         const { defaultDom } = videoSelector;
         const videos: HTMLVideoElement[] = [];
         if (defaultDom) {
             docs.forEach((doc) => {
-                const defaultElements: NodeListOf<HTMLVideoElement> = doc.querySelectorAll(defaultDom);
-                const elements = Array.from(defaultElements).filter((element) => this.getSourceElementSrc(element));
+                const defaultElements: NodeListOf<HTMLVideoElement> =
+                    doc.querySelectorAll(defaultDom);
+                const elements = Array.from(defaultElements).filter((element) =>
+                    this.getSourceElementSrc(element)
+                );
 
                 for (const video of elements) {
                     // @ts-ignore
@@ -189,14 +237,14 @@ export default class VideoRoll {
 
                     if (video.dataset.rollId) {
                         continue;
-                    };
+                    }
 
                     video.setAttribute("data-roll-id", `${nanoid()}`);
                     video.setAttribute("data-roll-check", "true");
                 }
 
                 videos.push(...elements);
-            })
+            });
         }
 
         return videos;
@@ -204,9 +252,9 @@ export default class VideoRoll {
 
     /**
      * set videoElements
-     * @param videoSelector 
-     * @param doc 
-     * @returns 
+     * @param videoSelector
+     * @param doc
+     * @returns
      */
     static setVideo(videos: HTMLVideoElement[]) {
         this.videoElements.forEach((item) => {
@@ -214,7 +262,7 @@ export default class VideoRoll {
             if (!videos.some((v) => v === item)) {
                 this.videoElements.delete(item);
             }
-        })
+        });
 
         for (let i = 0; i < videos.length; i++) {
             const video = videos[i];
@@ -245,7 +293,7 @@ export default class VideoRoll {
         this.realVideoPlayer = {
             width: realPlayer.offsetWidth,
             height: realPlayer.offsetHeight,
-            player: realPlayer
+            player: realPlayer,
         };
     }
 
@@ -265,12 +313,14 @@ export default class VideoRoll {
     }
 
     static isRealVideoPlayer(player: HTMLVideoElement): boolean {
-        const isSmaller = player.offsetWidth < this.realVideoPlayer.width || player.offsetHeight < this.realVideoPlayer.height;
+        const isSmaller =
+            player.offsetWidth < this.realVideoPlayer.width ||
+            player.offsetHeight < this.realVideoPlayer.height;
 
         // this may be ads video player
         if (player.muted && player.loop && isSmaller) return false;
 
-        if ('readyState' in player && player.readyState === 0) return false;
+        if ("readyState" in player && player.readyState === 0) return false;
 
         if (isSmaller && player.readyState === 0) return false;
 
@@ -286,34 +336,51 @@ export default class VideoRoll {
      * @param rollConfig
      * @returns
      */
-    static updateVideo(
-        rollConfig: IRollConfig
-    ) {
+    static updateVideo(rollConfig: IRollConfig) {
         this.setRollConfig(rollConfig);
-        const { deg, flip, scale, zoom, move, filter, focus, pictureInPicture, vr, advancedPictureInPicture } = rollConfig;
+        const {
+            deg,
+            flip,
+            scale,
+            zoom,
+            move,
+            filter,
+            focus,
+            pictureInPicture,
+            vr,
+            advancedPictureInPicture,
+            abLoop,
+        } = rollConfig;
 
         const videos = this.videoElements.values();
         for (const target of videos) {
-            if (target.dataset.rollCheck === 'false') {
+            if (target.dataset.rollCheck === "false") {
                 target.classList.remove("video-roll-deg-scale");
                 target.setAttribute("data-roll", "false");
                 this.toggleLoop(target, false);
                 continue;
-            };
+            }
 
             const dom = target;
 
             let scaleNum: [number, number] = [1, 1];
 
             if (rollConfig.isAutoChangeSize) {
-                scaleNum = this.rollConfig.isInit || scale.values.some((v) => Number(v) !== 1) ? scale.values : this.getScaleNumber(target, deg);
+                scaleNum =
+                    this.rollConfig.isInit ||
+                    scale.values.some((v) => Number(v) !== 1)
+                        ? scale.values
+                        : this.getScaleNumber(target, deg);
             }
 
             this.rollConfig.scale.values = scaleNum;
             this.rollConfig.document = { title: document.title };
             this.documents.forEach((doc) => {
                 if (!this.isExistStyle(doc)) return;
-                this.replaceClass({ deg, flip, scale: scaleNum, zoom, move, filter, focus }, doc);
+                this.replaceClass(
+                    { deg, flip, scale: scaleNum, zoom, move, filter, focus },
+                    doc
+                );
             });
 
             dom.classList.add("video-roll-deg-scale");
@@ -322,10 +389,17 @@ export default class VideoRoll {
             this.toggleLoop(dom, rollConfig.loop);
         }
 
-        this.updateFocus(this.realVideoPlayer.player as HTMLVideoElement, focus);
+        this.updateFocus(
+            this.realVideoPlayer.player as HTMLVideoElement,
+            focus
+        );
         this.togglePictureInPicture(pictureInPicture);
+        this.updateLoop(abLoop);
         this.updateVr(this.realVideoPlayer.player as HTMLVideoElement, vr);
-        this.updateAdvancedPictureInPicture(this.realVideoPlayer.player as HTMLVideoElement, advancedPictureInPicture)
+        this.updateAdvancedPictureInPicture(
+            this.realVideoPlayer.player as HTMLVideoElement,
+            advancedPictureInPicture
+        );
         return this;
     }
 
@@ -344,25 +418,32 @@ export default class VideoRoll {
      * web muted
      */
     static toggleMuted() {
-        sendRuntimeMessage(this.rollConfig.tabId, { type: ActionType.MUTED, muted: this.rollConfig.muted })
+        sendRuntimeMessage(this.rollConfig.tabId, {
+            type: ActionType.MUTED,
+            muted: this.rollConfig.muted,
+        });
     }
 
     static resetAudio() {
         this.audioController.forEach((v) => {
             v.setPitchOffset(0);
             v.setVolume(1);
-        })
+        });
         this.videoElements.forEach((video) => {
             (video as HTMLMediaElement).playbackRate = 1;
-        })
+        });
     }
 
     static getFilterStyle(filter: IFilter) {
-        let filterStyle = '';
+        let filterStyle = "";
 
-        Object.keys(filter).filter((type) => type !== 'mode').forEach((type: string) => {
-            filterStyle += ` ${type}(${filter[type as keyof IFilter]}${(FilterUnit as any)[type]})`;
-        });
+        Object.keys(filter)
+            .filter((type) => type !== "mode")
+            .forEach((type: string) => {
+                filterStyle += ` ${type}(${filter[type as keyof IFilter]}${
+                    (FilterUnit as any)[type]
+                })`;
+            });
 
         return filterStyle;
     }
@@ -372,26 +453,38 @@ export default class VideoRoll {
      * @param deg
      * @param scaleNum
      */
-    static replaceClass(rollConfig: {
-        deg: number,
-        flip: Flip,
-        scale: [number, number],
-        zoom: number,
-        move: IMove,
-        filter: IFilter,
-        focus: Focus
-    },
+    static replaceClass(
+        rollConfig: {
+            deg: number;
+            flip: Flip;
+            scale: [number, number];
+            zoom: number;
+            move: IMove;
+            filter: IFilter;
+            focus: Focus;
+        },
         doc = document
     ) {
         const { deg, flip, scale, zoom, move, filter, focus } = rollConfig;
-        const degScale = doc.getElementById("video-roll-deg-scale") as HTMLElement;
+        const degScale = doc.getElementById(
+            "video-roll-deg-scale"
+        ) as HTMLElement;
 
-        const filterStyle = filter.mode === 'custom' ? this.getFilterStyle(filter) : filter.mode;
-        
-        const translateStyle = Number(move.x) !== 0 || Number(move.y) !== 0 ? `translate(${move.x}%, ${-move.y}%)` : '';
-        const scaleStyle = scale.some((v) => Number(v) !== 1) ? `scale(${scale[0]}, ${scale[1]})` : '';
-        const zoomStyle = Number(zoom) !== 1 ? `scale3d(${zoom}, ${zoom}, 1)` : ''
-        
+        const filterStyle =
+            filter.mode === "custom"
+                ? this.getFilterStyle(filter)
+                : filter.mode;
+
+        const translateStyle =
+            Number(move.x) !== 0 || Number(move.y) !== 0
+                ? `translate(${move.x}%, ${-move.y}%)`
+                : "";
+        const scaleStyle = scale.some((v) => Number(v) !== 1)
+            ? `scale(${scale[0]}, ${scale[1]})`
+            : "";
+        const zoomStyle =
+            Number(zoom) !== 1 ? `scale3d(${zoom}, ${zoom}, 1)` : "";
+
         degScale.innerHTML = `.video-roll-deg-scale { 
             transform: ${FlipType[flip]} rotate(${deg}deg) ${zoomStyle} ${scaleStyle} ${translateStyle} !important; 
             filter: ${filterStyle}; 
@@ -409,9 +502,13 @@ export default class VideoRoll {
         const degScale = doc.getElementById("video-roll-deg-scale");
         const focusStyle = doc.getElementById("video-roll-focus-style");
         const vrStyle = doc.getElementById("video-roll-vr-style");
-        const pictureInPictureStyle = doc.getElementById("video-roll-pip-style");
+        const pictureInPictureStyle = doc.getElementById(
+            "video-roll-pip-style"
+        );
 
-        return degScale && focusStyle && vrStyle && pictureInPictureStyle || null;
+        return (
+            (degScale && focusStyle && vrStyle && pictureInPictureStyle) || null
+        );
     }
 
     /**
@@ -421,7 +518,7 @@ export default class VideoRoll {
      */
     static getVideoSelector(hostName: string) {
         let videoSelector = {
-            defaultDom: 'video'
+            defaultDom: "video",
         };
 
         if (!hostName) {
@@ -525,55 +622,62 @@ export default class VideoRoll {
     static addMaskElement() {
         if (!document.body) return;
 
-        if (!document.getElementById('video-roll-root-mask')) {
+        if (!document.getElementById("video-roll-root-mask")) {
             const mask = document.createElement("div");
             mask.setAttribute("id", "video-roll-root-mask");
             document.body.appendChild(mask);
         }
     }
 
-    static showBackToTab = debounce(() => {
-        const backToTab = document.getElementById('video-roll-backToTab')
+    static showBackToTab = debounce(
+        () => {
+            const backToTab = document.getElementById("video-roll-backToTab");
 
-        if (backToTab) {
-            backToTab.style.display = 'block';
+            if (backToTab) {
+                backToTab.style.display = "block";
 
-            debounce(() => {
-                backToTab.style.display = 'none';
-            }, 500)
-        }
-    }, 500, { trailing: false, leading: true })
+                debounce(() => {
+                    backToTab.style.display = "none";
+                }, 500);
+            }
+        },
+        500,
+        { trailing: false, leading: true }
+    );
 
     static backToTab = () => {
-        sendRuntimeMessage(this.rollConfig.tabId, { type: ActionType.BACK_TO_TAB, rollConfig: this.rollConfig });
-    }
+        sendRuntimeMessage(this.rollConfig.tabId, {
+            type: ActionType.BACK_TO_TAB,
+            rollConfig: this.rollConfig,
+        });
+    };
 
     static addPipMaskElement() {
         if (!document.body) return;
 
-        if (!document.getElementById('video-roll-pip-mask')) {
+        if (!document.getElementById("video-roll-pip-mask")) {
             const mask = document.createElement("div");
             mask.setAttribute("id", "video-roll-pip-mask");
             mask.innerHTML = `<div id="video-roll-backToTab" style="display: none; position: absolute; left: 0; right: 0;
             top:0; bottom:0; margin: auto; width: 20%; height: 30px; background-color: #a494c6; opacity: 0.8;
             border-radius: 5px; color: #fff; text-align: center; line-height: 30px; z-index: 1; cursor: pointer;">
                 back to tab
-            </div>`
+            </div>`;
             document.body.appendChild(mask);
 
-            mask.removeEventListener('mousemove', this.showBackToTab);
-            mask.addEventListener('mousemove', this.showBackToTab);
+            mask.removeEventListener("mousemove", this.showBackToTab);
+            mask.addEventListener("mousemove", this.showBackToTab);
 
-            const backToTab = document.getElementById('video-roll-backToTab')
-            backToTab?.removeEventListener('click', this.backToTab)
-            backToTab?.addEventListener('click', this.backToTab)
+            const backToTab = document.getElementById("video-roll-backToTab");
+            backToTab?.removeEventListener("click", this.backToTab);
+            backToTab?.addEventListener("click", this.backToTab);
         }
     }
 
     static addVrMaskElement() {
         if (!document.body) return;
 
-        if (!document.getElementById('video-roll-vr-mask')) {
+        if (!document.getElementById("video-roll-vr-mask")) {
             const mask = document.createElement("div");
             mask.setAttribute("id", "video-roll-vr-mask");
             document.body.appendChild(mask);
@@ -587,38 +691,41 @@ export default class VideoRoll {
      * @returns
      */
     static findOriginElementPosition(video: HTMLVideoElement): any {
-        const { parentElement, previousElementSibling, nextElementSibling } = video;
+        const { parentElement, previousElementSibling, nextElementSibling } =
+            video;
         return {
             parentElement,
             previousElementSibling,
             nextElementSibling,
             style: {
                 width: video.offsetWidth,
-                height: video.offsetHeight
-            }
-        }
+                height: video.offsetHeight,
+            },
+        };
     }
 
     /**
      * update focus mode
      * @param doc
-     * @param video 
+     * @param video
      * @param focus
      * @returns
      */
     static updateFocus(video: HTMLVideoElement, focus: Focus) {
-        const mask = document.getElementById('video-roll-root-mask');
-        const focusStyle = document.getElementById('video-roll-focus-style') as HTMLStyleElement;
+        const mask = document.getElementById("video-roll-root-mask");
+        const focusStyle = document.getElementById(
+            "video-roll-focus-style"
+        ) as HTMLStyleElement;
 
         if (focusStyle) {
             focusStyle.innerHTML = `#video-roll-root-mask {
-                display: ${focus.on ? 'block' : 'none'};
+                display: ${focus.on ? "block" : "none"};
                 position: fixed;
                 left: 0;
                 top: 0;
                 width: 100%;
                 height: 100%;
-                backdrop-filter: ${focus.blur ? 'blur(10px)' : 'unset'};
+                backdrop-filter: ${focus.blur ? "blur(10px)" : "unset"};
                 z-index: 20000 !important;
                 background-color: ${focus.backgroundColor};
             }
@@ -632,23 +739,24 @@ export default class VideoRoll {
                 top: 0;
                 bottom: 0;
                 margin: auto;
-                border-radius: ${focus.rounded ? '10px' : 'unset'}
-            }`
+                border-radius: ${focus.rounded ? "10px" : "unset"}
+            }`;
         }
 
         if (!video) return this;
 
         if (!focus.on && this.originElementPosition && mask) {
-            const { parentElement, nextElementSibling } = this.originElementPosition;
+            const { parentElement, nextElementSibling } =
+                this.originElementPosition;
             if (video.parentElement === mask && parentElement) {
-                video.classList.remove('video-roll-focus');
-                if (video.classList.contains('video-roll-no-controls')) {
-                    video.classList.remove('video-roll-no-controls');
+                video.classList.remove("video-roll-focus");
+                if (video.classList.contains("video-roll-no-controls")) {
+                    video.classList.remove("video-roll-no-controls");
                     video.controls = false;
                 }
 
                 if (nextElementSibling) {
-                    parentElement.insertBefore(video, nextElementSibling)
+                    parentElement.insertBefore(video, nextElementSibling);
                 } else {
                     parentElement.appendChild(video);
                 }
@@ -659,10 +767,10 @@ export default class VideoRoll {
 
         if (focus.on && this.originElementPosition && mask) {
             mask.appendChild(video);
-            video.classList.add('video-roll-focus');
+            video.classList.add("video-roll-focus");
 
             if (!video.controls) {
-                video.classList.add('video-roll-no-controls');
+                video.classList.add("video-roll-no-controls");
                 video.controls = true;
             }
         }
@@ -670,13 +778,18 @@ export default class VideoRoll {
         return this;
     }
 
-    static updateAdvancedPictureInPicture(video: HTMLVideoElement, advancedPictureInPicture: AdvancedPictureInPicture) {
-        const mask = document.getElementById('video-roll-pip-mask');
-        const pipStyle = document.getElementById('video-roll-pip-style') as HTMLStyleElement;
+    static updateAdvancedPictureInPicture(
+        video: HTMLVideoElement,
+        advancedPictureInPicture: AdvancedPictureInPicture
+    ) {
+        const mask = document.getElementById("video-roll-pip-mask");
+        const pipStyle = document.getElementById(
+            "video-roll-pip-style"
+        ) as HTMLStyleElement;
 
         if (pipStyle) {
             pipStyle.innerHTML = `#video-roll-pip-mask {
-                display: ${advancedPictureInPicture.on ? 'block' : 'none'};
+                display: ${advancedPictureInPicture.on ? "block" : "none"};
                 position: fixed;
                 left: 0;
                 top: 0;
@@ -695,24 +808,29 @@ export default class VideoRoll {
                 top: 0;
                 bottom: 0;
                 margin: auto;
-            }`
+            }`;
         }
 
         if (!video) return this;
 
-        if (!advancedPictureInPicture.on && this.originElementPosition && mask) {
-            const { parentElement, nextElementSibling } = this.originElementPosition;
+        if (
+            !advancedPictureInPicture.on &&
+            this.originElementPosition &&
+            mask
+        ) {
+            const { parentElement, nextElementSibling } =
+                this.originElementPosition;
 
-            document.body.classList.remove('video-roll-overflow-hidden');
+            document.body.classList.remove("video-roll-overflow-hidden");
             if (video.parentElement === mask && parentElement) {
-                video.classList.remove('video-roll-pip');
-                if (video.classList.contains('video-roll-no-controls')) {
-                    video.classList.remove('video-roll-no-controls');
+                video.classList.remove("video-roll-pip");
+                if (video.classList.contains("video-roll-no-controls")) {
+                    video.classList.remove("video-roll-no-controls");
                     video.controls = false;
                 }
 
                 if (nextElementSibling) {
-                    parentElement.insertBefore(video, nextElementSibling)
+                    parentElement.insertBefore(video, nextElementSibling);
                 } else {
                     parentElement.appendChild(video);
                 }
@@ -723,10 +841,10 @@ export default class VideoRoll {
 
         if (advancedPictureInPicture.on && this.originElementPosition && mask) {
             mask.appendChild(video);
-            video.classList.add('video-roll-pip');
-            document.body.classList.add('video-roll-overflow-hidden');
+            video.classList.add("video-roll-pip");
+            document.body.classList.add("video-roll-overflow-hidden");
             if (!video.controls) {
-                video.classList.add('video-roll-no-controls');
+                video.classList.add("video-roll-no-controls");
                 video.controls = true;
             }
         }
@@ -735,12 +853,14 @@ export default class VideoRoll {
     }
 
     static updateVr(video: HTMLVideoElement, vr: any) {
-        const mask = document.getElementById('video-roll-vr-mask');
-        const vrStyle = document.getElementById('video-roll-vr-style') as HTMLStyleElement;
+        const mask = document.getElementById("video-roll-vr-mask");
+        const vrStyle = document.getElementById(
+            "video-roll-vr-style"
+        ) as HTMLStyleElement;
 
         if (vrStyle) {
             vrStyle.innerHTML = `#video-roll-vr-mask {
-                display: ${vr.on ? 'block' : 'none'};
+                display: ${vr.on ? "block" : "none"};
                 position: fixed;
                 left: 0;
                 top: 0;
@@ -759,48 +879,61 @@ export default class VideoRoll {
                 top: 0;
                 bottom: 0;
                 margin: auto;
-            }`
+            }`;
         }
 
         if (!video) return this;
 
         if (!vr.on && mask) {
-            const dom = document.getElementById('video-roll-vr');
+            const dom = document.getElementById("video-roll-vr");
             dom?.remove();
 
             return this;
         }
 
         if (vr.on && mask) {
-            const dom = document.getElementById('video-roll-vr');
+            const dom = document.getElementById("video-roll-vr");
 
             if (dom) {
                 return this;
             }
 
-            const canvas = document.createElement('canvas');
+            const canvas = document.createElement("canvas");
             mask.appendChild(canvas);
             canvas.width = video.offsetWidth * devicePixelRatio;
             canvas.height = video.offsetHeight * devicePixelRatio;
-            canvas.setAttribute('id', 'video-roll-vr')
+            canvas.setAttribute("id", "video-roll-vr");
 
             // Initialize Three.js scene
             let scene, camera, renderer, sphere, videoTexture;
-            let lon = 0, lat = 0;
-            let phi = 0, theta = 0;
+            let lon = 0,
+                lat = 0;
+            let phi = 0,
+                theta = 0;
             let isUserInteracting = false;
-            let onPointerDownPointerX = 0, onPointerDownPointerY = 0;
-            let onPointerDownLon = 0, onPointerDownLat = 0;
+            let onPointerDownPointerX = 0,
+                onPointerDownPointerY = 0;
+            let onPointerDownLon = 0,
+                onPointerDownLat = 0;
 
             function init() {
                 // Create Three.js renderer
-                renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+                renderer = new THREE.WebGLRenderer({
+                    canvas,
+                    antialias: true,
+                    alpha: true,
+                });
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 renderer.setPixelRatio(window.devicePixelRatio);
 
                 // Create scene and camera
                 scene = new THREE.Scene();
-                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera = new THREE.PerspectiveCamera(
+                    75,
+                    window.innerWidth / window.innerHeight,
+                    0.1,
+                    1000
+                );
                 camera.target = new THREE.Vector3(0, 0, 0);
 
                 // Create video texture
@@ -808,27 +941,30 @@ export default class VideoRoll {
                 videoTexture.minFilter = THREE.LinearFilter;
                 videoTexture.magFilter = THREE.LinearFilter;
                 videoTexture.format = THREE.RGBFormat;
-                videoTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                videoTexture.anisotropy =
+                    renderer.capabilities.getMaxAnisotropy();
 
                 // Create a sphere geometry and map video as texture
                 const geometry = new THREE.SphereGeometry(500, 240, 120);
                 geometry.scale(-1, 1, 1); // Invert sphere geometry to view from inside
-                const material = new THREE.MeshBasicMaterial({ map: videoTexture });
+                const material = new THREE.MeshBasicMaterial({
+                    map: videoTexture,
+                });
                 sphere = new THREE.Mesh(geometry, material);
                 scene.add(sphere);
 
                 camera.position.set(0, 0, 0);
                 // Add event listeners for mouse and touch controls
-                document.addEventListener('mousedown', onPointerDown, false);
-                document.addEventListener('mousemove', onPointerMove, false);
-                document.addEventListener('mouseup', onPointerUp, false);
+                document.addEventListener("mousedown", onPointerDown, false);
+                document.addEventListener("mousemove", onPointerMove, false);
+                document.addEventListener("mouseup", onPointerUp, false);
 
-                document.addEventListener('touchstart', onPointerDown, false);
-                document.addEventListener('touchmove', onPointerMove, false);
-                document.addEventListener('touchend', onPointerUp, false);
+                document.addEventListener("touchstart", onPointerDown, false);
+                document.addEventListener("touchmove", onPointerMove, false);
+                document.addEventListener("touchend", onPointerUp, false);
 
                 // Resize canvas when window resizes
-                window.addEventListener('resize', onWindowResize, false);
+                window.addEventListener("resize", onWindowResize, false);
             }
 
             function onWindowResize() {
@@ -855,8 +991,12 @@ export default class VideoRoll {
                     const clientX = event.clientX || event.touches[0].clientX;
                     const clientY = event.clientY || event.touches[0].clientY;
 
-                    lon = (onPointerDownPointerX - clientX) * 0.1 + onPointerDownLon;
-                    lat = (clientY - onPointerDownPointerY) * 0.1 + onPointerDownLat;
+                    lon =
+                        (onPointerDownPointerX - clientX) * 0.1 +
+                        onPointerDownLon;
+                    lat =
+                        (clientY - onPointerDownPointerY) * 0.1 +
+                        onPointerDownLat;
                 }
             }
 
@@ -891,14 +1031,16 @@ export default class VideoRoll {
         if (!audioCtx) return;
 
         this.videoElements.forEach((video) => {
-            const node = audioCtx.createMediaElementSource(video as HTMLMediaElement);
+            const node = audioCtx.createMediaElementSource(
+                video as HTMLMediaElement
+            );
             this.audioController.push(new Audiohacker(audioCtx, node));
         });
     }
 
     /**
      * update pitch
-     * @returns 
+     * @returns
      */
     static async updatePitch() {
         const { on, value } = this.rollConfig.pitch;
@@ -908,9 +1050,9 @@ export default class VideoRoll {
                 // set to 0
                 this.audioController.forEach((v) => {
                     v.setPitchOffset(value);
-                })
+                });
                 return this;
-            };
+            }
 
             if (!on && !this.audioCtx) {
                 return this;
@@ -920,7 +1062,7 @@ export default class VideoRoll {
                 this.audioCtx = new AudioContext();
                 const { audioCtx } = this;
 
-                if (audioCtx.state !== 'running') {
+                if (audioCtx.state !== "running") {
                     await audioCtx.resume();
                 }
 
@@ -930,7 +1072,7 @@ export default class VideoRoll {
             if (this.audioController.length && on) {
                 this.audioController.forEach((v) => {
                     v.setPitchOffset(value);
-                })
+                });
             }
         } catch (err) {
             console.debug(err);
@@ -941,7 +1083,7 @@ export default class VideoRoll {
 
     /**
      * update volume
-     * @returns 
+     * @returns
      */
     static async updateVolume() {
         const volume = this.rollConfig.volume;
@@ -951,7 +1093,7 @@ export default class VideoRoll {
                 this.audioCtx = new AudioContext();
                 const { audioCtx } = this;
 
-                if (audioCtx.state !== 'running') {
+                if (audioCtx.state !== "running") {
                     await audioCtx.resume();
                 }
                 this.createAudiohacker();
@@ -975,7 +1117,7 @@ export default class VideoRoll {
         try {
             this.videoElements.forEach((video) => {
                 (video as HTMLMediaElement).playbackRate = playbackRate;
-            })
+            });
         } catch (err) {
             console.debug(err);
         }
@@ -991,10 +1133,16 @@ export default class VideoRoll {
         }
 
         try {
-            if (pictureInPicture && document.pictureInPictureEnabled && this.realVideoPlayer.player) {
+            if (
+                pictureInPicture &&
+                document.pictureInPictureEnabled &&
+                this.realVideoPlayer.player
+            ) {
                 this.realVideoPlayer.player.requestPictureInPicture();
             }
-        } catch (err) { console.debug(err); }
+        } catch (err) {
+            console.debug(err);
+        }
     }
 
     static toggleLoop(video: HTMLVideoElement, loop: boolean) {
@@ -1012,29 +1160,33 @@ export default class VideoRoll {
             isReal: v.isReal,
             src: v.src,
             percentage: v.percentage ?? 0,
-            currentTime: v.currentTime ?? 0
-        }))
+            currentTime: v.currentTime ?? 0,
+        }));
     }
 
-    static getVideoVisibleObserver(video: HTMLVideoElement, item: any, callback: Function) {
+    static getVideoVisibleObserver(
+        video: HTMLVideoElement,
+        item: any,
+        callback: Function
+    ) {
         const intersectionObserver = new IntersectionObserver((entries) => {
             if (entries[0].intersectionRatio <= 0) {
-                video.setAttribute('data-roll-visible', 'false');
+                video.setAttribute("data-roll-visible", "false");
                 item.visible = isVisible(video);
 
                 callback({
                     text: String(this.videoNumbers),
-                    videoList: this.buildVideoList()
-                })
+                    videoList: this.buildVideoList(),
+                });
                 return;
             }
 
-            video.setAttribute('data-roll-visible', 'true');
+            video.setAttribute("data-roll-visible", "true");
             item.visible = isVisible(video);
             callback({
                 text: String(this.videoNumbers),
-                videoList: this.buildVideoList()
-            })
+                videoList: this.buildVideoList(),
+            });
         });
 
         intersectionObserver.observe(video);
@@ -1044,27 +1196,29 @@ export default class VideoRoll {
 
     static capture(video = this.realVideoPlayer.player): Promise<any> {
         const rect = (video as HTMLVideoElement).getBoundingClientRect();
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
 
-        canvas.width = rect.width;
-        canvas.height = rect.height;
+        canvas.width = video?.videoWidth ?? rect.width;
+        canvas.height = video?.videoHeight ?? rect.height;
 
-        context?.drawImage((video as HTMLVideoElement), 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL('image/png');
+        context?.drawImage(
+            video as HTMLVideoElement,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+        const dataUrl = canvas.toDataURL("image/png");
         canvas.remove();
-        return Promise.resolve(dataUrl)
-        // return new Promise((resolve) => {
-        //     setTimeout(() => {
-        //         context?.drawImage((video as HTMLVideoElement), 0, 0, canvas.width, canvas.height);
-        //         const dataUrl = canvas.toDataURL('image/png');
-        //         canvas.remove();
-        //         resolve(dataUrl)
-        //     }, 300)
-        // })
+        return Promise.resolve(dataUrl);
     }
 
-    static updateProgress(video: HTMLVideoElement, callback: Function, event?: Event): void {
+    static updateProgress(
+        video: HTMLVideoElement,
+        callback: Function,
+        event?: Event
+    ): void {
         // 获取当前播放时间
         const currentTime = video.currentTime;
         // 获取视频的总时长
@@ -1080,41 +1234,41 @@ export default class VideoRoll {
 
         callback({
             text: String(this.videoNumbers),
-            videoList: this.buildVideoList()
-        })
+            videoList: this.buildVideoList(),
+        });
     }
 
     static watchVideoProgress(video: HTMLVideoElement, callback: Function) {
-        video.removeEventListener('timeupdate', this.eventCallback as any);
+        video.removeEventListener("timeupdate", this.eventCallback as any);
         this.eventCallback = this.updateProgress.bind(this, video, callback);
-        video.addEventListener('timeupdate', this.eventCallback as any);
+        video.addEventListener("timeupdate", this.eventCallback as any);
     }
 
     static getVideoInfo(video: HTMLVideoElement, index: number) {
         let src = this.getSourceElementSrc(video);
 
-        if (src.startsWith('blob:')) {
-            src = src.replace('blob:', '');
+        if (src.startsWith("blob:")) {
+            src = src.replace("blob:", "");
         }
 
-        const time = Math.ceil(video.duration * 10 / 60) / 10;
+        const time = Math.ceil((video.duration * 10) / 60) / 10;
         const duration = isNaN(time) ? 0 : time;
         if (this.rollConfig.crossorigin) {
-            video.setAttribute('crossorigin', 'anonymous');
+            video.setAttribute("crossorigin", "anonymous");
         }
 
         let poster = video.poster;
         let name = `video ${index + 1}`;
         const isReal = this.realVideoPlayer.player === video;
 
-        if (src === 'no-src') {
+        if (src === "no-src") {
             return {
                 posterUrl: poster,
                 duration,
                 name,
                 src,
-                isReal
-            }
+                isReal,
+            };
         }
 
         try {
@@ -1126,25 +1280,29 @@ export default class VideoRoll {
                     duration,
                     name,
                     src,
-                    isReal
-                }
+                    isReal,
+                };
             }
 
-            const videoRollPoster = video.getAttribute('data-roll-poster');
-            const videoRollPosterIndex = video.getAttribute('data-roll-poster-index') ?? 0;
+            const videoRollPoster = video.getAttribute("data-roll-poster");
+            const videoRollPosterIndex =
+                video.getAttribute("data-roll-poster-index") ?? 0;
             const index = Number(videoRollPosterIndex);
             if (index < 5) {
                 return this.capture(video).then((url: string) => {
-                    video.setAttribute('data-roll-poster', url);
+                    video.setAttribute("data-roll-poster", url);
                     const currentIndex = index + 1;
-                    video.setAttribute('data-roll-poster-index', String(currentIndex));
+                    video.setAttribute(
+                        "data-roll-poster-index",
+                        String(currentIndex)
+                    );
                     return {
                         posterUrl: url,
                         duration,
                         name,
                         src,
-                        isReal
-                    }
+                        isReal,
+                    };
                 });
             }
 
@@ -1153,9 +1311,8 @@ export default class VideoRoll {
                 duration,
                 name,
                 src,
-                isReal
-            }
-
+                isReal,
+            };
         } catch (err) {
             console.debug(err);
             return Promise.resolve({
@@ -1163,10 +1320,9 @@ export default class VideoRoll {
                 duration,
                 src,
                 name,
-                isReal
-            })
+                isReal,
+            });
         }
-
     }
 
     static getProgress(video: HTMLVideoElement) {
@@ -1176,52 +1332,64 @@ export default class VideoRoll {
         const duration = video.duration;
         // 计算进度百分比
         const progress = (currentTime / duration) * 100;
-        return progress
+        return progress;
     }
 
     static async useVideoChanged(callback: Function) {
-        const videoSelector = this.getVideoSelector(this.getHostName())
+        const videoSelector = this.getVideoSelector(this.getHostName());
         this.updateDocuments().updateVideoElements(videoSelector);
-        this.recorder = new Recorder();
+        if (!this.recorder) this.recorder = new Recorder();
+        if (!this.looper) this.looper = new Looper();
+
         const videos = [...this.videoElements];
-        const infos = await Promise.all(videos.map((v, index) => this.getVideoInfo(v, index)))
+        const infos = await Promise.all(
+            videos.map((v, index) => this.getVideoInfo(v, index))
+        );
 
         this.videoList = videos.map((v, index) => {
             const item: any = {
                 id: v.dataset.rollId,
-                visible: v.dataset.rollVisible === 'true' ? true : false,
-                checked: v.dataset.rollCheck === 'true' ? true : false,
+                visible: v.dataset.rollVisible === "true" ? true : false,
+                checked: v.dataset.rollCheck === "true" ? true : false,
                 currentTime: v.currentTime,
                 percentage: this.getProgress(v),
-                ...infos[index]
+                ...infos[index],
             };
 
             setTimeout(() => {
                 this.watchVideoProgress(v, callback);
-            })
+            });
 
             // item.visibleObserver = this.getVideoVisibleObserver(v, item, callback)
 
-            return item
+            return item;
         });
 
         callback({
             text: String(this.videoNumbers),
-            videoList: this.buildVideoList()
-        })
+            videoList: this.buildVideoList(),
+        });
     }
 
     static isVideoChange(mutationItem: any) {
-        if (mutationItem.target.nodeName === 'VIDEO') return true;
+        if (mutationItem.target.nodeName === "VIDEO") return true;
 
-        if (Array.from(mutationItem.addedNodes).some((v: any) => v.nodeName === 'VIDEO') || Array.from(mutationItem.removedNodes).some((v: any) => v.nodeName === 'VIDEO')) return true;
+        if (
+            Array.from(mutationItem.addedNodes).some(
+                (v: any) => v.nodeName === "VIDEO"
+            ) ||
+            Array.from(mutationItem.removedNodes).some(
+                (v: any) => v.nodeName === "VIDEO"
+            )
+        )
+            return true;
 
         return false;
     }
 
     /**
      * update video number
-     * @param callback 
+     * @param callback
      */
     static observeVideo(callback: Function) {
         if (this.rollConfig?.enable === false) return this;
@@ -1233,15 +1401,29 @@ export default class VideoRoll {
             if (!elementToObserve) return this;
 
             if (!this.observer) {
-                this.observer = new MutationObserver(debounce((mutationList: any) => {
-                    for (const item of mutationList) {
-                        if (this.isVideoChange(item)) {
-                            this.useVideoChanged(callback);
+                this.observer = new MutationObserver(
+                    debounce((mutationList: any) => {
+                        for (const item of mutationList) {
+                            if (this.isVideoChange(item)) {
+                                this.useVideoChanged(callback);
+                            }
                         }
-                    }
-                }, 300));
+                    }, 300)
+                );
 
-                this.observer.observe(elementToObserve, { childList: true, subtree: true, attributeFilter: ['src', 'autoplay', 'mediatype', 'data-xgplayerid', 'playsinline', 'crossorigin'], attributes: true });
+                this.observer.observe(elementToObserve, {
+                    childList: true,
+                    subtree: true,
+                    attributeFilter: [
+                        "src",
+                        "autoplay",
+                        "mediatype",
+                        "data-xgplayerid",
+                        "playsinline",
+                        "crossorigin",
+                    ],
+                    attributes: true,
+                });
             }
         } catch (err) {
             console.debug(err);
@@ -1252,10 +1434,12 @@ export default class VideoRoll {
 
     static updateVideoCheck(ids: any[]) {
         const elements = Array.from(this.videoElements);
-        this.videoList.forEach(v => {
-            const video = elements.find(x => x.dataset.rollId === v.id);
+        this.videoList.forEach((v) => {
+            const video = elements.find((x) => x.dataset.rollId === v.id);
             if (video) {
-                video.dataset.rollCheck = ids.includes(video.dataset.rollId) ? 'true' : 'false';
+                video.dataset.rollCheck = ids.includes(video.dataset.rollId)
+                    ? "true"
+                    : "false";
             }
         });
 
@@ -1273,8 +1457,8 @@ export default class VideoRoll {
         target.classList.remove("video-roll-deg-scale");
         target.classList.remove("video-roll-focus");
 
-        document.getElementById('video-roll-deg-scale')?.remove();
-        document.getElementById('video-roll-focus-style')?.remove();
+        document.getElementById("video-roll-deg-scale")?.remove();
+        document.getElementById("video-roll-focus-style")?.remove();
     }
 
     static stop() {
@@ -1284,8 +1468,13 @@ export default class VideoRoll {
         this.resetAudio();
 
         if (this.rollConfig.focus.on) {
-            this.updateFocus(this.realVideoPlayer.player as HTMLVideoElement, { on: false } as Focus);
-            const mask = document.getElementById('video-roll-root-mask') as HTMLElement;
+            this.updateFocus(
+                this.realVideoPlayer.player as HTMLVideoElement,
+                { on: false } as Focus
+            );
+            const mask = document.getElementById(
+                "video-roll-root-mask"
+            ) as HTMLElement;
             mask?.remove();
         }
 
@@ -1306,21 +1495,48 @@ export default class VideoRoll {
         this.videoList = [];
     }
 
-    static restart() {
-
-    }
+    static restart() {}
 
     static startRecord() {
         if (!this.recorder) {
             this.recorder = new Recorder();
         }
 
-        this.recorder.startRecord(this.realVideoPlayer.player as HTMLVideoElement);
+        this.recorder.startRecord(
+            this.realVideoPlayer.player as HTMLVideoElement
+        );
     }
 
     static stopRecord() {
         if (this.recorder) {
             this.recorder.stopRecord();
+        }
+    }
+
+    static updateLoop(abLoop: Abloop) {
+        if (abLoop.on === true) {
+            this.startLoop(abLoop);
+        } else {
+            this.stopLoop();
+        }
+    }
+
+    static startLoop(abLoop: Abloop) {
+        if (!this.looper) {
+            this.looper = new Looper();
+        }
+
+        this.looper.startLoop(
+            this.realVideoPlayer.player as HTMLVideoElement,
+            abLoop
+        );
+    }
+
+    static stopLoop() {
+        if (this.looper) {
+            this.looper.stopLoop(
+                this.realVideoPlayer.player as HTMLVideoElement
+            );
         }
     }
 }

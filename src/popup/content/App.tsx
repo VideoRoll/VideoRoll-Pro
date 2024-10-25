@@ -220,28 +220,30 @@ export default defineComponent({
                         : "video-roll-wrapper-empty"
                 }
             >
-                <Head
-                    class="video-roll-wrapper-head"
-                    isShow={isShow.value}
-                ></Head>
-                <main
-                    class={
-                        rollConfig.enable
-                            ? "video-roll-main"
-                            : "video-roll-main-empty"
-                    }
-                >
-                    <div
+                <van-config-provider theme="dark">
+                    <Head
+                        class="video-roll-wrapper-head"
+                        isShow={isShow.value}
+                    ></Head>
+                    <main
                         class={
                             rollConfig.enable
-                                ? "video-roll-content"
-                                : "video-roll-content-empty"
+                                ? "video-roll-main"
+                                : "video-roll-main-empty"
                         }
                     >
-                        {renderComponent()}
-                    </div>
-                </main>
-                <Footer></Footer>
+                        <div
+                            class={
+                                rollConfig.enable
+                                    ? "video-roll-content"
+                                    : "video-roll-content-empty"
+                            }
+                        >
+                            {renderComponent()}
+                        </div>
+                    </main>
+                    <Footer></Footer>
+                </van-config-provider>
             </div>
         );
     },

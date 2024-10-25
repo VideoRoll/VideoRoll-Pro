@@ -50,6 +50,7 @@
     "permissions": [
         "activeTab",
         "storage",
-        "scripting"
+        "scripting",
+        "cookies"
     ]
 }
