@@ -22,17 +22,19 @@ import { sendRuntimeMessage } from "../util";
 import browser from "webextension-polyfill";
 
 function injectScript() {
-    const injectJs = document.getElementById("video-roll-script");
+    if (window.location.href.startsWith("https://localhost:3000/signin")) {
+        const injectJs = document.getElementById("video-roll-script");
 
-    if (injectJs) return;
+        if (injectJs) return;
 
-    const src = browser.runtime.getURL("inject/download.js");
-    const script = document.createElement("script");
-    script.setAttribute("id", "video-roll-script");
-    script.setAttribute("type", "text/javascript");
-    script.setAttribute("src", src);
+        const src = browser.runtime.getURL("inject/auth.js");
+        const script = document.createElement("script");
+        script.setAttribute("id", "video-roll-script");
+        script.setAttribute("type", "text/javascript");
+        script.setAttribute("src", src);
 
-    (document.head || document.documentElement).appendChild(script);
+        (document.head || document.documentElement).appendChild(script);
+    }
 }
 
 (function () {

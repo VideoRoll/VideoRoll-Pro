@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "packages": {
+    "audio-hacker": {
+      "signature": "5e286fa2dd85490b8d4110375ed89489",
+      "file": true,
+      "replaced": "^1.0.6"
+    }
+  }
+}

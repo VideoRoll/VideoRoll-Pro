@@ -409,6 +409,7 @@ export default class VideoRoll {
     static async updateAudio() {
         await this.updatePitch();
         await this.updateVolume();
+        await this.updateDelay();
         this.updatePlaybackRate();
         this.toggleMuted();
         return this;
@@ -1103,6 +1104,32 @@ export default class VideoRoll {
             if (this.audioController.length) {
                 this.audioController.forEach((v) => {
                     v.setVolume(volume);
+                });
+                return;
+            }
+        } catch (err) {
+            console.debug(err);
+        }
+    }
+
+    static async updateDelay() {
+        const delay = this.rollConfig.delay;
+
+        try {
+            if (delay > 0 && !this.audioCtx) {
+                this.audioCtx = new AudioContext();
+                const { audioCtx } = this;
+
+                if (audioCtx.state !== "running") {
+                    await audioCtx.resume();
+                }
+                this.createAudiohacker();
+                return;
+            }
+
+            if (this.audioController.length) {
+                this.audioController.forEach((v) => {
+                    v.setSync(delay);
                 });
                 return;
             }

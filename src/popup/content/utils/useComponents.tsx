@@ -162,16 +162,13 @@ export default function useComponents() {
                 children: [
                     {
                         type: 'container',
-                        title: browser.i18n.getMessage('video_focus'),
-                        class: 'container-badge-pro',
+                        title: 'QR',
                         showTitle: true,
                         col: 6,
-                        children: [
-                            {
-                                type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Focus"))
-                            }
-                        ]
+                        children: [{
+                            type: 'component',
+                            component: defineAsyncComponent(() => import("../components/QR"))
+                        }]
                     },
                     {
                         type: 'container',
@@ -186,14 +183,16 @@ export default function useComponents() {
                     },
                     {
                         type: 'container',
-                        title: 'QR',
-                        showTitle: true,
+                        title: browser.i18n.getMessage('video_focus'),
                         class: 'container-badge-pro',
+                        showTitle: true,
                         col: 6,
-                        children: [{
-                            type: 'component',
-                            component: defineAsyncComponent(() => import("../components/QR"))
-                        }]
+                        children: [
+                            {
+                                type: 'component',
+                                component: defineAsyncComponent(() => import("../components/Focus"))
+                            }
+                        ]
                     },
                     {
                         type: 'container',
@@ -380,13 +379,13 @@ export default function useComponents() {
                     children: [
                         {
                             type: 'container',
-                            title: 'Sync',
+                            title: 'Delay',
                             class: 'container-badge-pro',
                             showTitle: true,
                             col: 24,
                             children: [{
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Sync"))
+                                component: defineAsyncComponent(() => import("../components/Delay"))
                             }]
                         },
                     ]

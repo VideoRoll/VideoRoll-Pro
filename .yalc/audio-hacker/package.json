@@ -1,0 +1,28 @@
+{
+  "name": "audio-hacker",
+  "version": "1.0.7",
+  "description": "A magical library for controlling audio pitch and volume, based on jungle.js",
+  "scripts": {
+    "build": "vite build",
+    "publish:local": "yalc publish"
+  },
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "keywords": [
+    "Web Audio",
+    "pitch",
+    "volume",
+    "jungle",
+    "video",
+    "audio"
+  ],
+  "homepage": "https://github.com/gxy5202/audio-hacker#readme",
+  "repository": "https://github.com/gxy5202/audio-hacker",
+  "author": "Gomi",
+  "license": "MIT",
+  "yalcSig": "5e286fa2dd85490b8d4110375ed89489"
+}

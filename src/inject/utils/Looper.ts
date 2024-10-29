@@ -35,13 +35,12 @@ export default class Looper {
         video.addEventListener("timeupdate", this.eventCallback as any);
 
         const time = timeStringToSeconds(abLoop.a);
-        console.log("------currentTime", video.currentTime, time);
 
         video.currentTime = time;
         video.play();
     }
 
     stopLoop(video: HTMLVideoElement) {
-        video.removeEventListener("timeupdate", this.eventCallback as any);
+        video?.removeEventListener("timeupdate", this.eventCallback as any);
     }
 }
