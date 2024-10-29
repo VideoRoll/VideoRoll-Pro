@@ -130,6 +130,7 @@ export interface IRollConfig {
     flip: Flip;
     scale: IScale;
     pitch: Pitch;
+    delay: number;
     volume: number;
     zoom: Zoom;
     playbackRate: number;

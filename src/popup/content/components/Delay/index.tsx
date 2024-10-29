@@ -17,29 +17,29 @@ export default defineComponent({
         const update = inject("update") as Function;
         const rollConfig = inject("rollConfig") as IRollConfig;
 
-        const setVolume = debounce((value: number) => {
-            rollConfig.volume = value;
-            update("volume", rollConfig.volume);
+        const setDelay = debounce((value: number) => {
+            rollConfig.delay = value;
+            update("delay", rollConfig.delay);
         }, 100);
 
         return () => (
             <>
                 <div class="video-roll-long-box">
-                    <div v-tooltip={browser.i18n.getMessage('action_reset')} class={`video-roll-switch ${rollConfig.volume !== 1 ? 'video-roll-switch-on' : 'video-roll-switch-off'}`} onClick={() => setVolume(1)}>
+                    <div v-tooltip={browser.i18n.getMessage('action_reset')} class={`video-roll-switch ${rollConfig.delay > 0 ? 'video-roll-switch-on' : 'video-roll-switch-off'}`} onClick={() => setDelay(0)}>
                         <ReloadOutline class="reset-icon"></ReloadOutline>
                     </div>
                     <div class="video-roll-pitch">
                         <van-slider
-                            v-model={rollConfig.volume}
+                            v-model={rollConfig.delay}
                             min={0}
-                            max={6}
-                            step={0.01}
+                            max={180}
+                            step={1}
                             bar-height="4px"
-                            onUpdate:modelValue={setVolume}
+                            onUpdate:modelValue={setDelay}
                             v-slots={{
                                 button: () => (
                                     <div class="custom-button">
-                                        {rollConfig.volume}
+                                        {rollConfig.delay}
                                     </div>
                                 ),
                             }}

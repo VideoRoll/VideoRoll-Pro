@@ -48,6 +48,7 @@ const defaultConfig = {
         blur: false,
         rounded: false
     },
+    delay: 0,
     pitch: {
         on: false,
         value: 0
