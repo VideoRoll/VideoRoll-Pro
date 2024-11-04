@@ -33,9 +33,9 @@ export default defineComponent({
                         <van-slider
                             class="video-roll-nobackground-slider"
                             v-model={rollConfig.pitch.value}
-                            min={-1}
-                            max={1}
-                            step={0.01}
+                            min={-2}
+                            max={2}
+                            step={0.1}
                             bar-height="4px"
                             disabled={!rollConfig.pitch.on}
                             onUpdate:modelValue={setPitch}

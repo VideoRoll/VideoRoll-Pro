@@ -132,6 +132,8 @@ export interface IRollConfig {
     pitch: Pitch;
     delay: number;
     volume: number;
+    stereo: number;
+    panner: boolean;
     zoom: Zoom;
     playbackRate: number;
     focus: Focus;

@@ -32,8 +32,8 @@ export default defineComponent({
                         <van-slider
                             v-model={rollConfig.volume}
                             min={0}
-                            max={6}
-                            step={0.01}
+                            max={10}
+                            step={1}
                             bar-height="4px"
                             onUpdate:modelValue={setVolume}
                             v-slots={{

@@ -57,8 +57,8 @@ export default class Record {
             // drawVideoOnCanvas();
 
             //截取到媒体流
-            const stream = video?.captureStream(); // 25 FPS
-            console.log(stream, 'stream');
+            const stream = video?.captureStream?.(60); // 25 FPS
+
             this.mediaRecorder = new MediaRecorder(stream);
             // 当有数据可用时，处理数据
             this.mediaRecorder.ondataavailable = (event: any) => {

@@ -323,10 +323,21 @@ export default function useComponents() {
                             type: 'container',
                             title: browser.i18n.getMessage('audio_muted'),
                             showTitle: true,
-                            col: 24,
+                            col: 12,
                             children: [{
                                 type: 'component',
                                 component: defineAsyncComponent(() => import("../components/Mute"))
+                            }]
+                        },
+                        {
+                            type: 'container',
+                            title: 'Surround',
+                            class: 'container-badge-pro',
+                            showTitle: true,
+                            col: 12,
+                            children: [{
+                                type: 'component',
+                                component: defineAsyncComponent(() => import("../components/Panner"))
                             }]
                         },
                     ]
@@ -386,6 +397,26 @@ export default function useComponents() {
                             children: [{
                                 type: 'component',
                                 component: defineAsyncComponent(() => import("../components/Delay"))
+                            }]
+                        },
+                    ]
+                },
+                {
+                    type: 'row',
+                    style: {
+                        margin: '30px 0',
+                        height: '40px'
+                    },
+                    children: [
+                        {
+                            type: 'container',
+                            title: 'Stereo',
+                            class: 'container-badge-pro',
+                            showTitle: true,
+                            col: 24,
+                            children: [{
+                                type: 'component',
+                                component: defineAsyncComponent(() => import("../components/Stereo"))
                             }]
                         },
                     ]

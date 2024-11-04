@@ -24,7 +24,7 @@ const video = document.querySelector('video');
 
 const source = audioCtx.createMediaElementSource(video);
 
-const audioController = new Audiohacker(audioCtx, source);
+const audioHacker = new Audiohacker(audioCtx, source);
 
 ```
 
@@ -32,8 +32,8 @@ const audioController = new Audiohacker(audioCtx, source);
 ```javascript
 
 // best step 0.01
-audioController.setPitchOffset(0.22);
-audioController.setPitchOffset(-0.12);
+audioHacker.setPitchOffset(0.22);
+audioHacker.setPitchOffset(-0.12);
 
 ```
 
@@ -41,15 +41,31 @@ audioController.setPitchOffset(-0.12);
 ```javascript
 
 // minimum value is 0;
-audioController.setVolume(0.3);
-audioController.setVolume(3.3);
+audioHacker.setVolume(0.3);
+audioHacker.setVolume(3.3);
+
+```
+
+# Update panner
+```javascript
+
+audioHacker.setPanner(true);
+audioHacker.setPanner(false);
+
+```
+
+# Update stereoPanner
+```javascript
+
+audioHacker.setStereoPanner(1);
+audioHacker.setStereoPanner(-1);
 
 ```
 
 # Disconnect
 ```javascript
 
-audioController.disconnect();
+audioHacker.disconnect();
 
 ```
 

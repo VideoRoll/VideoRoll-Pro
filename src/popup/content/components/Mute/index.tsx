@@ -16,7 +16,7 @@ export default defineComponent({
 
         const setMuted = () => {
             rollConfig.muted = !rollConfig.muted;
-            update("focus", rollConfig.focus);
+            update("muted", rollConfig.muted);
         };
         return () => (
             <div title='Muted' class={`video-roll-focus video-roll-item ${rollConfig.muted ? 'video-roll-on' : 'video-roll-off'}`} onClick={setMuted}>
