@@ -2,9 +2,9 @@
   "version": "v1",
   "packages": {
     "audio-hacker": {
-      "signature": "5e286fa2dd85490b8d4110375ed89489",
+      "signature": "f001dbcdf7d7e3dc676e298f8611250e",
       "file": true,
-      "replaced": "^1.0.6"
+      "replaced": "^1.0.7"
     }
   }
 }

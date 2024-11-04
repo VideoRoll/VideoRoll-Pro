@@ -12,34 +12,34 @@ import "./index.less";
 import debounce from "lodash-es/debounce";
 
 export default defineComponent({
-    name: "Delay",
+    name: "Stereo",
     setup() {
         const update = inject("update") as Function;
         const rollConfig = inject("rollConfig") as IRollConfig;
 
-        const setDelay = debounce((value: number) => {
-            rollConfig.delay = value;
-            update("delay", rollConfig.delay);
+        const setStereo = debounce((value: number) => {
+            rollConfig.stereo = value;
+            update("stereo", rollConfig.stereo);
         }, 100);
 
         return () => (
             <>
                 <div class="video-roll-long-box">
-                    <div v-tooltip={browser.i18n.getMessage('action_reset')} class={`video-roll-switch ${rollConfig.delay > 0 ? 'video-roll-switch-on' : 'video-roll-switch-off'}`} onClick={() => setDelay(0)}>
+                    <div v-tooltip={browser.i18n.getMessage('action_reset')} class={`video-roll-switch ${rollConfig.stereo !== 0 ? 'video-roll-switch-on' : 'video-roll-switch-off'}`} onClick={() => setStereo(0)}>
                         <ReloadOutline class="reset-icon"></ReloadOutline>
                     </div>
                     <div class="video-roll-pitch">
                         <van-slider
-                            v-model={rollConfig.delay}
-                            min={0}
-                            max={100}
-                            step={1}
+                            v-model={rollConfig.stereo}
+                            min={-1}
+                            max={1}
+                            step={0.01}
                             bar-height="4px"
-                            onUpdate:modelValue={setDelay}
+                            onUpdate:modelValue={setStereo}
                             v-slots={{
                                 button: () => (
                                     <div class="custom-button">
-                                        {rollConfig.delay}
+                                        {rollConfig.stereo}
                                     </div>
                                 ),
                             }}

@@ -53,6 +53,7 @@ const defaultConfig = {
         on: false,
         value: 0
     },
+    stereo: 0,
     volume: 1,
     filter: {
         ...defaultFilterConfig
@@ -65,6 +66,7 @@ const defaultConfig = {
     isAutoChangeSize: true,
     loop: false,
     muted: false,
+    panner: false,
     enable: true,
     iframes: [],
     document: {

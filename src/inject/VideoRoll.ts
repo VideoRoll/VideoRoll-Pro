@@ -410,6 +410,8 @@ export default class VideoRoll {
         await this.updatePitch();
         await this.updateVolume();
         await this.updateDelay();
+        await this.updatePanner();
+        await this.updateStereoPanner();
         this.updatePlaybackRate();
         this.toggleMuted();
         return this;
@@ -1028,13 +1030,17 @@ export default class VideoRoll {
     }
 
     static createAudiohacker() {
+        if (this.videoElements.size === 0) return;
+
         const audioCtx = this.audioCtx as AudioContext;
+
         if (!audioCtx) return;
 
         this.videoElements.forEach((video) => {
             const node = audioCtx.createMediaElementSource(
                 video as HTMLMediaElement
             );
+
             this.audioController.push(new Audiohacker(audioCtx, node));
         });
     }
@@ -1047,19 +1053,19 @@ export default class VideoRoll {
         const { on, value } = this.rollConfig.pitch;
 
         try {
-            if (!on && this.audioController.length) {
-                // set to 0
-                this.audioController.forEach((v) => {
-                    v.setPitchOffset(value);
-                });
-                return this;
-            }
+            // if (!on && this.audioController.length) {
+            //     // set to 0
+            //     this.audioController.forEach((v) => {
+            //         v.setPitchOffset(value);
+            //     });
+            //     return this;
+            // }
 
-            if (!on && !this.audioCtx) {
-                return this;
-            }
+            // if (!on && !this.audioCtx) {
+            //     return this;
+            // }
 
-            if (!this.audioCtx) {
+            if (!this.audioCtx && this.videoElements.size > 0) {
                 this.audioCtx = new AudioContext();
                 const { audioCtx } = this;
 
@@ -1070,7 +1076,7 @@ export default class VideoRoll {
                 this.createAudiohacker();
             }
 
-            if (this.audioController.length && on) {
+            if (this.audioController.length) {
                 this.audioController.forEach((v) => {
                     v.setPitchOffset(value);
                 });
@@ -1090,7 +1096,7 @@ export default class VideoRoll {
         const volume = this.rollConfig.volume;
 
         try {
-            if (volume !== 1 && !this.audioCtx) {
+            if (volume !== 1 && !this.audioCtx && this.videoElements.size > 0) {
                 this.audioCtx = new AudioContext();
                 const { audioCtx } = this;
 
@@ -1116,7 +1122,7 @@ export default class VideoRoll {
         const delay = this.rollConfig.delay;
 
         try {
-            if (delay > 0 && !this.audioCtx) {
+            if (!this.audioCtx && this.videoElements.size > 0) {
                 this.audioCtx = new AudioContext();
                 const { audioCtx } = this;
 
@@ -1129,13 +1135,63 @@ export default class VideoRoll {
 
             if (this.audioController.length) {
                 this.audioController.forEach((v) => {
-                    v.setSync(delay);
+                    v.setDelay(delay);
                 });
                 return;
             }
         } catch (err) {
             console.debug(err);
         }
+    }
+
+    static async updatePanner() {
+        const panner = this.rollConfig.panner;
+
+        try {
+            if (!this.audioCtx && this.videoElements.size > 0) {
+                this.audioCtx = new AudioContext();
+                const { audioCtx } = this;
+
+                if (audioCtx.state !== "running") {
+                    await audioCtx.resume();
+                }
+                this.createAudiohacker();
+                return;
+            }
+
+            if (this.audioController.length) {
+                this.audioController.forEach((v) => {
+                    v.setPanner(panner);
+                });
+                return;
+            }
+        } catch (err) {
+            console.debug(err);
+        }
+    }
+
+    static async updateStereoPanner() {
+        const stereo = this.rollConfig.stereo;
+
+        try {
+            if (!this.audioCtx && this.videoElements.size > 0) {
+                this.audioCtx = new AudioContext();
+                const { audioCtx } = this;
+
+                if (audioCtx.state !== "running") {
+                    await audioCtx.resume();
+                }
+                this.createAudiohacker();
+                return;
+            }
+
+            if (this.audioController.length) {
+                this.audioController.forEach((v) => {
+                    v.setStereoPanner(stereo);
+                });
+                return;
+            }
+        } catch (err) {}
     }
 
     static updatePlaybackRate() {
