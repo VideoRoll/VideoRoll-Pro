@@ -206,7 +206,7 @@ export default defineComponent({
 
             return (
                 <div class="empty-box">
-                    <Close class="logo-empty" />
+                    <Close class="logo-empty"/>
                     <div>{browser.i18n.getMessage("tips_disabled")}</div>
                 </div>
             );

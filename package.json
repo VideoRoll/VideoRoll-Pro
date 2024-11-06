@@ -7,7 +7,7 @@
         "test": "jest",
         "watch:manifest-chromium": "cross-env BROWSER=\"chromium\" node scripts/hmr.js",
         "watch:manifest-firefox": "cross-env BROWSER=\"firefox\" node scripts/hmr.js",
-        "watch:entry": "parcel watch src/inject/capture.html src/popup/index.html src/inject/index.ts src/background/index.ts src/options/index.html --no-cache --no-hmr -p 18160",
+        "watch:entry": "parcel watch src/inject/capture.html src/popup/index.html src/inject/index.ts src/background/index.ts src/options/index.html --no-cache --no-hmr",
         "dev:chromium": "pnpm run clean && pnpm run copy:static && concurrently \"pnpm run watch:entry\" \"pnpm run watch:manifest-chromium\" \"pnpm run build:manifest-chromium\"",
         "dev:firefox": "pnpm run clean && pnpm run copy:static && concurrently \"pnpm run watch:entry\" \"pnpm run watch:manifest-firefox\" \"pnpm run build:manifest-firefox\"",
         "build:popup": "parcel build src/popup/index.html --dist-dir dist/popup/ --no-source-maps --no-content-hash",
