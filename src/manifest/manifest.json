@@ -5,12 +5,8 @@
     "description": "__MSG_extension_des__",
     "content_scripts": [
         {
-            "matches": [
-                "<all_urls>"
-            ],
-            "js": [
-                "inject/index.js"
-            ],
+            "matches": ["<all_urls>"],
+            "js": ["inject/index.js"],
             "run_at": "document_start"
         }
     ],
@@ -36,21 +32,14 @@
             "resources": [
                 "inject/index.js",
                 "inject/capture.html",
-                "inject/capture.js",
-                "inject/download.js",
-                "download/index.html",
-                "download/index.js"
+                "inject/screenshot.js"
             ],
-            "matches": [
-                "https://*/*"
-            ]
+            "matches": ["https://*/*"]
         }
     ],
     "homepage_url": "https://videoroll.gomi.site",
-    "permissions": [
-        "activeTab",
-        "storage",
-        "scripting",
-        "cookies"
-    ]
+    "content_security_policy": {
+        "extension_pages": "connect-src ws://localhost:18160; script-src 'self'; object-src 'self'"
+    },
+    "permissions": ["activeTab", "storage", "scripting"]
 }
