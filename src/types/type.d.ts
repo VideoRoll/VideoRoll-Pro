@@ -30,7 +30,8 @@ export enum ActionType {
     START_RECORD,
     STOP_RECORD,
     ADVANCED_PICTURE_IN_PICTURE,
-    BACK_TO_TAB
+    BACK_TO_TAB,
+    USER_INFO
 }
 
 export enum FlipType {

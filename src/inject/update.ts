@@ -65,6 +65,9 @@ export async function updateOnMounted(tabId: number, rollConfig: IRollConfig) {
     const domain = getDomain(rollConfig.url);
     const key = `video-roll-disabled-${domain}`;
     const data = await browser.storage.sync.get(`video-roll-disabled-${domain}`)
+    const user = await browser.storage.local.get('user');
+
+    sendRuntimeMessage(tabId, { type: ActionType.USER_INFO, tabId, user })
 
     config = Object.assign(config, { videoNumber: rollConfig.videoNumber, tabId: rollConfig.tabId, tabIndex: rollConfig.tabIndex, enable: data[key] ? false : true, isRecording: VideoRoll.recorder.status === 'recording' })
 

@@ -8,8 +8,10 @@
         "watch:manifest-chromium": "cross-env BROWSER=\"chromium\" node scripts/hmr.js",
         "watch:manifest-firefox": "cross-env BROWSER=\"firefox\" node scripts/hmr.js",
         "watch:entry": "parcel watch src/inject/capture.html src/popup/index.html src/inject/index.ts src/background/index.ts src/options/index.html --no-cache --no-hmr",
-        "dev:chromium": "pnpm run clean && pnpm run copy:static && concurrently \"pnpm run watch:entry\" \"pnpm run watch:manifest-chromium\" \"pnpm run build:manifest-chromium\"",
-        "dev:firefox": "pnpm run clean && pnpm run copy:static && concurrently \"pnpm run watch:entry\" \"pnpm run watch:manifest-firefox\" \"pnpm run build:manifest-firefox\"",
+        "watch:dist": "pnpm run wait-for-dist && web-ext run --source-dir=dist --target chromium --chromium-profile=\"C:/Users/GomiGXY/AppData/Local/Google/Chrome/User Data\"",
+        "wait-for-dist": "wait-on dist/background/index.js dist/inject/index.js dist/manifest.json && sleep 1",
+        "dev:chromium": "pnpm run clean && pnpm run copy:static && concurrently \"pnpm run watch:entry\" \"pnpm run watch:manifest-chromium\" \"pnpm run build:manifest-chromium\" \"pnpm run watch:dist\"",
+        "dev:firefox": "pnpm run clean && pnpm run copy:static && concurrently \"pnpm run watch:entry\" \"pnpm run watch:manifest-firefox\" \"pnpm run build:manifest-firefox\" \"pnpm run watch:dist\"",
         "build:popup": "parcel build src/popup/index.html --dist-dir dist/popup/ --no-source-maps --no-content-hash",
         "build:popup-report": "pnpm run build:popup --reporter @parcel/reporter-bundle-analyzer",
         "build:inject": "parcel build src/inject/index.ts --dist-dir dist/inject --no-source-maps --no-content-hash",
@@ -38,9 +40,6 @@
         "src/background/index.ts"
     ],
     "type": "module",
-    "parcel-namer-hashless": {
-        "mode": "all"
-    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/gxy5202/video-roll.git"
@@ -108,12 +107,13 @@
         "jest": "^29.0.3",
         "jest-environment-jsdom": "^29.0.3",
         "less": "^4.1.2",
-        "parcel": "^2.8.3",
-        "parcel-namer-hashless": "^1.0.6",
+        "parcel": "^2.12.0",
+        "parcel-namer-hashless": "^1.0.7",
         "process": "^0.11.10",
         "ts-jest": "^29.0.2",
         "ts-node": "^10.9.1",
         "typescript": "^4.8.4",
+        "wait-on": "^8.0.1",
         "web-ext": "^8.3.0"
     }
 }

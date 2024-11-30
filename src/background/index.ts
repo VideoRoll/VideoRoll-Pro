@@ -9,7 +9,7 @@ import { sendTabMessage, setBadge, getBrowser } from '../util';
 import { useShortcuts } from 'src/use/useShortcuts';
 import { useGeneralConfig } from 'src/options/use/useGeneralConfig';
 import browser from 'webextension-polyfill'
-import { getUser } from './auth';
+import { getUser, injectAuth } from './auth';
 
 let currentTabId: number | undefined;
 
@@ -59,7 +59,7 @@ chrome.runtime.onInstalled.addListener((params: any) => {
  */
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     currentTabId = tabId;
-
+    console.log('onUpdated', changeInfo)
     setupStorage();
     sendTabMessage(tabId, { type: ActionType.GET_BADGE, tabId }, (response: any) => {
         sendTabMessage(tabId, { type: ActionType.INIT_SHORT_CUT_KEY });
@@ -70,7 +70,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.tabs.onActivated.addListener((activeInfo) => {
     const { tabId } = activeInfo;
     currentTabId = tabId;
-
+    console.log('activeTabId', activeInfo)
     setupStorage();
     sendTabMessage(tabId, { type: ActionType.GET_BADGE, tabId }, (response: any) => {
         sendTabMessage(tabId, { type: ActionType.INIT_SHORT_CUT_KEY });
@@ -128,4 +128,4 @@ chrome.runtime.onMessage.addListener((a, b, send) => {
     send("update");
 });
 
-getUser();
+injectAuth();

@@ -2,7 +2,6 @@ import chalk from "chalk";
 import { mkdir, readFile, writeFile, copyFile } from "node:fs/promises";
 import path from "node:path";
 import { dirname } from "dirname-filename-esm";
-import { nextTick } from "node:process";
 
 const logger = console.log;
 
@@ -19,50 +18,42 @@ export default async function generateManifest(browserType) {
         await mkdir("dist");
     } catch (e) {}
 
-    nextTick(async () => {
-        await copyFile(baseManifestPath, distManifestPath);
+    await copyFile(baseManifestPath, distManifestPath);
 
-        if (!browserType && !process.env.BROWSER) {
-            logger(
-                chalk.greenBright(
-                    "VideoRoll: generate manifest.json from the base"
-                )
-            );
-            return;
-        }
+    if (!browserType && !process.env.BROWSER) {
+        logger(
+            chalk.greenBright("VideoRoll: generate manifest.json from the base")
+        );
+        return;
+    }
 
-        const currentManifestPath = path.join(
-            __dirname,
-            `../src/manifest/manifest.${
-                process.env.BROWSER ?? browserType
-            }.json`
+    const currentManifestPath = path.join(
+        __dirname,
+        `../src/manifest/manifest.${process.env.BROWSER ?? browserType}.json`
+    );
+
+    try {
+        const currentManifest = await readFile(currentManifestPath, {
+            encoding: "utf8",
+        });
+        const baseManifest = await readFile(baseManifestPath, {
+            encoding: "utf8",
+        });
+
+        const newManifest = Object.assign(
+            JSON.parse(baseManifest),
+            JSON.parse(currentManifest)
         );
 
-        try {
-            const currentManifest = await readFile(currentManifestPath, {
-                encoding: "utf8",
-            });
-            const baseManifest = await readFile(baseManifestPath, {
-                encoding: "utf8",
-            });
+        await writeFile(
+            distManifestPath,
+            JSON.stringify(newManifest, null, "\t")
+        );
 
-            const newManifest = Object.assign(
-                JSON.parse(baseManifest),
-                JSON.parse(currentManifest)
-            );
-
-            await writeFile(
-                distManifestPath,
-                JSON.stringify(newManifest, null, "\t")
-            );
-
-            logger(
-                chalk.greenBright("VideoRoll: generate manifest.json success")
-            );
-        } catch (err) {
-            logger(chalk.red(`VideoRoll: generate manifest.json faild ${err}`));
-        }
-    });
+        logger(chalk.greenBright("VideoRoll: generate manifest.json success"));
+    } catch (err) {
+        logger(chalk.red(`VideoRoll: generate manifest.json faild ${err}`));
+    }
 }
 
 if (process.env.BROWSER) {

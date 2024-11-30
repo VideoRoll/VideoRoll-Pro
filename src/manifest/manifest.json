@@ -27,6 +27,8 @@
         "512": "/icons/icon_512.png",
         "64": "/icons/icon_64.png"
     },
+    "omnibox": { "keyword" : "videoroll" },
+    "host_permissions": [ "http://localhost:3000", "\u003Call_urls>" ],
     "web_accessible_resources": [
         {
             "resources": [
@@ -34,12 +36,12 @@
                 "inject/capture.html",
                 "inject/screenshot.js"
             ],
-            "matches": ["https://*/*"]
+            "matches": ["\u003Call_urls>"]
         }
     ],
     "homepage_url": "https://videoroll.gomi.site",
     "content_security_policy": {
         "extension_pages": "connect-src ws://localhost:18160; script-src 'self'; object-src 'self'"
     },
-    "permissions": ["activeTab", "storage", "scripting"]
+    "permissions": ["tabs", "storage", "unlimitedStorage", "activeTab", "scripting"]
 }

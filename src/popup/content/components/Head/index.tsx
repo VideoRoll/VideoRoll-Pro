@@ -4,7 +4,7 @@
  * @Date: 2022-09-19 22:53:23
  */
 
-import { defineComponent, inject } from "vue";
+import { defineComponent, inject, watch } from "vue";
 import {
     LogoGithub,
     SettingsSharp,
@@ -26,6 +26,7 @@ export default defineComponent({
         const updateEnable = inject("updateEnable") as Function;
         const rollConfig = inject("rollConfig") as IRollConfig;
         const update = inject("update") as Function;
+        const user = inject("user");
 
         const toGithub = () => {
             createURL("https://github.com/gxy5202/VideoRoll");
@@ -52,11 +53,22 @@ export default defineComponent({
             createURL("https://github.com/VideoRoll/VideoRoll/issues");
         };
 
+        const toUser = () => {
+            createURL("http://localhost:3000");
+        };
+
         const setEnable = (value: boolean) => {
             rollConfig.enable = value;
             update("enable", rollConfig.enable);
             updateEnable(rollConfig.enable);
         };
+
+        watch(
+            () => user.value,
+            (val) => {
+                console.log(val.user_metadata);
+            }
+        );
 
         return () => (
             <div class="video-roll-header">
@@ -117,15 +129,36 @@ export default defineComponent({
                                 >
                                     <LogoGithub class="logo-usd"></LogoGithub>
                                 </div> */}
-                                <div
-                                    class="video-roll-setting-btn"
-                                    onClick={toIssue}
-                                    v-tooltip={browser.i18n.getMessage(
-                                        "tips_feedback"
-                                    )}
-                                >
-                                    <UserExclamation class="logo-usd"></UserExclamation>
-                                </div>
+                                {user.value ? (
+                                    <div
+                                        class="video-roll-setting-btn"
+                                        onClick={toUser}
+                                        v-tooltip={browser.i18n.getMessage(
+                                            "tips_feedback"
+                                        )}
+                                    >
+                                        <van-image
+                                            round
+                                            width="20px"
+                                            height="20px"
+                                            src={
+                                                user.value.user_metadata
+                                                    ?.avatar_url
+                                            }
+                                        />
+                                        {/* <UserExclamation class="logo-usd"></UserExclamation> */}
+                                    </div>
+                                ) : (
+                                    <div
+                                        class="video-roll-setting-btn"
+                                        onClick={toUser}
+                                        v-tooltip={browser.i18n.getMessage(
+                                            "tips_feedback"
+                                        )}
+                                    >
+                                        <UserExclamation class="logo-usd"></UserExclamation>
+                                    </div>
+                                )}
                             </van-space>
                         </div>
                     </van-space>
