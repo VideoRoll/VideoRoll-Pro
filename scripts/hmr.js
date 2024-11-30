@@ -1,11 +1,8 @@
 import { watch } from "node:fs";
 import { exec } from "node:child_process"
-import path from "node:path";
 
 // 要监听的文件夹路径
 const directoryPath = "src/manifest";
-
-console.log("开始监听");
 
 const watcher = watch(directoryPath, (eventType, filename) => {
     console.log("开始监听");

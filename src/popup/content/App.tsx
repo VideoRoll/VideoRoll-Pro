@@ -26,7 +26,7 @@ export default defineComponent({
         const isShow = ref(false);
         const tabId = ref(0);
         const videoList = ref([]);
-
+        const user = ref();
         /**
          * open settings panel
          */
@@ -98,6 +98,7 @@ export default defineComponent({
         provide("startRecord", startRecord);
         provide("stopRecord", stopRecord);
         provide("advancedPictureInPicture", advancedPictureInPicture);
+        provide("user", user);
 
         watch(
             () => tabId.value,
@@ -133,6 +134,7 @@ export default defineComponent({
                     muted,
                     iframes,
                     windowConfig,
+                    user: userInfo
                 } = a;
 
                 if (a.tabId !== tabId.value) {
@@ -183,6 +185,10 @@ export default defineComponent({
                         break;
                     case ActionType.STOP_RECORD:
                         rollConfig.isRecording = false;
+                        break;
+                    case ActionType.USER_INFO:
+                        console.log(userInfo, '2222user----');
+                        user.value = userInfo?.user;
                         break;
                     default:
                         break;

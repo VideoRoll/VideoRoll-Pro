@@ -46,6 +46,7 @@ import Empty  from "vant/es/empty/index.mjs";
 import Loading  from "vant/es/loading/index.mjs";
 import Progress from 'vant/es/progress/index.mjs'
 import Circle from 'vant/es/circle/index.mjs'
+import Image from 'vant/es/image/index.mjs'
 
 import "vant/es/sidebar/style/index.mjs";
 import "vant/es/sidebar-item/style/index.mjs";
@@ -80,6 +81,7 @@ import "vant/es/empty/style/index.mjs";
 import "vant/es/loading/style/index.mjs";
 import "vant/es/progress/style/index.mjs";
 import "vant/es/circle/style/index.mjs";
+import "vant/es/image/style/index.mjs";
 
 createApp(App)
     .use(ConfigProvider)
@@ -115,5 +117,6 @@ createApp(App)
     .use(Loading)
     .use(Progress)
     .use(Circle)
+    .use(Image)
     .use(FloatingVue)
     .mount("#app");
