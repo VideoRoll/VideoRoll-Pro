@@ -29,15 +29,16 @@ import debounce from "lodash-es/debounce";
 import { getName } from "./utils/getName";
 import Recorder from "./utils/Recorder";
 import Looper from "./utils/Looper";
+import AudioController from "./utils/AudioController";
 
 export default class VideoRoll {
     static rollConfig: IRollConfig;
 
-    static audioCtx: AudioContext | null = null;
-
-    static audioController: Audiohacker[] = [];
+    static audioController: AudioController;
 
     static videoElements: Set<HTMLVideoElement> = new Set();
+
+    static audioElements: Set<HTMLAudioElement> = new Set();
 
     static documents: Document[] = [];
 
@@ -407,11 +408,30 @@ export default class VideoRoll {
      * update audio
      */
     static async updateAudio() {
-        await this.updatePitch();
-        await this.updateVolume();
-        await this.updateDelay();
-        await this.updatePanner();
-        await this.updateStereoPanner();
+        if (!this.audioController) {
+            this.audioController = new AudioController(
+                this.videoElements,
+                this.audioElements
+            );
+
+            this.audioController.done(async () => {
+                await this.updatePitch();
+                await this.updateVolume();
+                await this.updateDelay();
+                await this.updatePanner();
+                await this.updateStereoPanner();
+            });
+        } else {
+            if (!this.audioController.hasInstance()) {
+                await this.audioController.createAudioContext();
+            }
+            await this.updatePitch();
+            await this.updateVolume();
+            await this.updateDelay();
+            await this.updatePanner();
+            await this.updateStereoPanner();
+        }
+
         this.updatePlaybackRate();
         this.toggleMuted();
         return this;
@@ -428,10 +448,7 @@ export default class VideoRoll {
     }
 
     static resetAudio() {
-        this.audioController.forEach((v) => {
-            v.setPitchOffset(0);
-            v.setVolume(1);
-        });
+        this.audioController.reset()
         this.videoElements.forEach((video) => {
             (video as HTMLMediaElement).playbackRate = 1;
         });
@@ -1029,21 +1046,6 @@ export default class VideoRoll {
         }
     }
 
-    static createAudiohacker() {
-        if (this.videoElements.size === 0) return;
-
-        const audioCtx = this.audioCtx as AudioContext;
-
-        if (!audioCtx) return;
-
-        this.videoElements.forEach((video) => {
-            const node = audioCtx.createMediaElementSource(
-                video as HTMLMediaElement
-            );
-
-            this.audioController.push(new Audiohacker(audioCtx, node));
-        });
-    }
 
     /**
      * update pitch
@@ -1053,33 +1055,19 @@ export default class VideoRoll {
         const { on, value } = this.rollConfig.pitch;
 
         try {
-            // if (!on && this.audioController.length) {
-            //     // set to 0
-            //     this.audioController.forEach((v) => {
-            //         v.setPitchOffset(value);
-            //     });
-            //     return this;
-            // }
-
-            // if (!on && !this.audioCtx) {
-            //     return this;
-            // }
-
-            if (!this.audioCtx && this.videoElements.size > 0) {
-                this.audioCtx = new AudioContext();
-                const { audioCtx } = this;
-
-                if (audioCtx.state !== "running") {
-                    await audioCtx.resume();
-                }
-
-                this.createAudiohacker();
+            if (!on && this.audioController.hasInstance()) {
+                // set to 0
+                this.audioController.setPitchOffset(value);
+                return this;
             }
 
-            if (this.audioController.length) {
-                this.audioController.forEach((v) => {
-                    v.setPitchOffset(value);
-                });
+            if (!on && !this.audioController.hasInstance()) {
+                return this;
+            }
+
+            if (this.audioController.hasInstance()) {
+                this.audioController.setPitchOffset(value);
+                return this;
             }
         } catch (err) {
             console.debug(err);
@@ -1096,22 +1084,9 @@ export default class VideoRoll {
         const volume = this.rollConfig.volume;
 
         try {
-            if (volume !== 1 && !this.audioCtx && this.videoElements.size > 0) {
-                this.audioCtx = new AudioContext();
-                const { audioCtx } = this;
-
-                if (audioCtx.state !== "running") {
-                    await audioCtx.resume();
-                }
-                this.createAudiohacker();
-                return;
-            }
-
-            if (this.audioController.length) {
-                this.audioController.forEach((v) => {
-                    v.setVolume(volume);
-                });
-                return;
+            if (this.audioController.hasInstance()) {
+                this.audioController.setVolume(volume);
+                return this;
             }
         } catch (err) {
             console.debug(err);
@@ -1122,22 +1097,9 @@ export default class VideoRoll {
         const delay = this.rollConfig.delay;
 
         try {
-            if (!this.audioCtx && this.videoElements.size > 0) {
-                this.audioCtx = new AudioContext();
-                const { audioCtx } = this;
-
-                if (audioCtx.state !== "running") {
-                    await audioCtx.resume();
-                }
-                this.createAudiohacker();
-                return;
-            }
-
-            if (this.audioController.length) {
-                this.audioController.forEach((v) => {
-                    v.setDelay(delay);
-                });
-                return;
+            if (this.audioController.hasInstance()) {
+                this.audioController.setDelay(delay);
+                return this;
             }
         } catch (err) {
             console.debug(err);
@@ -1148,22 +1110,9 @@ export default class VideoRoll {
         const panner = this.rollConfig.panner;
 
         try {
-            if (!this.audioCtx && this.videoElements.size > 0) {
-                this.audioCtx = new AudioContext();
-                const { audioCtx } = this;
-
-                if (audioCtx.state !== "running") {
-                    await audioCtx.resume();
-                }
-                this.createAudiohacker();
-                return;
-            }
-
-            if (this.audioController.length) {
-                this.audioController.forEach((v) => {
-                    v.setPanner(panner);
-                });
-                return;
+            if (this.audioController.hasInstance()) {
+                this.audioController.setPanner(panner);
+                return this;
             }
         } catch (err) {
             console.debug(err);
@@ -1174,22 +1123,9 @@ export default class VideoRoll {
         const stereo = this.rollConfig.stereo;
 
         try {
-            if (!this.audioCtx && this.videoElements.size > 0) {
-                this.audioCtx = new AudioContext();
-                const { audioCtx } = this;
-
-                if (audioCtx.state !== "running") {
-                    await audioCtx.resume();
-                }
-                this.createAudiohacker();
-                return;
-            }
-
-            if (this.audioController.length) {
-                this.audioController.forEach((v) => {
-                    v.setStereoPanner(stereo);
-                });
-                return;
+            if (this.audioController.hasInstance()) {
+                this.audioController.setStereoPanner(stereo);
+                return this;
             }
         } catch (err) {}
     }
