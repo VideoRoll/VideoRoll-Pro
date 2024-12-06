@@ -11,7 +11,7 @@
 </p>
 
 <h1 align="center">
-Video Roll
+Video Roll Pro
 </h1>
 
 <div align="center">
