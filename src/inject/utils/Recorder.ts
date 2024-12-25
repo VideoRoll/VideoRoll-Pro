@@ -54,6 +54,7 @@ export default class Record {
         }
 
         if (!video.paused && video.readyState === 4) {
+            // if user chooses only video
             // drawVideoOnCanvas();
 
             //截取到媒体流
