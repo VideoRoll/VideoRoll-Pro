@@ -1,4 +1,5 @@
 ### ✨ Change Log
+-   v1.1.6
 -   v1.1.5:
     -   ✨Features:
         - Brand new UI, better user experience!
