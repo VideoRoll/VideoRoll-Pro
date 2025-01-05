@@ -1,4 +1,4 @@
-import Audiohacker from "audio-hacker";
+import Audiohacker from "./audiohacker";
 
 export default class AudioController {
     audioHackers: Audiohacker[] = [];

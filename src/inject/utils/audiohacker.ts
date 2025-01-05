@@ -69,10 +69,10 @@ export default class Audiohacker {
 
     constructor(
         context: AudioContext,
-        // mediaSource: MediaElementAudioSourceNode
+        mediaSource: MediaElementAudioSourceNode
     ) {
         this.context = context;
-        // this.mediaSource = mediaSource;
+        this.mediaSource = mediaSource;
         // Create nodes for the input and output of this "module".
         const input = context.createGain();
         const output = context.createGain();
@@ -184,7 +184,7 @@ export default class Audiohacker {
         this.setPitchDelay(delayTime);
 
         this.output.connect(this.context.destination);
-        // mediaSource.connect(this.input);
+        mediaSource.connect(this.input);
     }
 
     createFadeBuffer(
@@ -283,26 +283,26 @@ export default class Audiohacker {
 
     setDelay(delay: number): void {
         // this.mediaSource.disconnect(this.delay);
-        // this.mediaSource.connect(this.input);
+        this.mediaSource.connect(this.input);
         if (!this.delay) {
             this.delay = this.context.createDelay(120.0);
         }
         if (delay === 0 && this.delay?.delayTime.value > 0) {
             this.delay.delayTime.value = 0;
             try {
-                // this.mediaSource.disconnect(this.delay);
+                this.mediaSource.disconnect(this.delay);
                 this.delay.disconnect(this.context.destination);
             } catch (e) {}
 
             this.delay = null;
-            // this.mediaSource.connect(this.input);
+            this.mediaSource.connect(this.input);
         } else if (delay > 0) {
             try {
-                // this.mediaSource.disconnect(this.input);
+                this.mediaSource.disconnect(this.input);
             } catch (e) {}
 
             // this.delay.connect(this.input);
-            // this.mediaSource.connect(this.delay);
+            this.mediaSource.connect(this.delay);
             this.delay.connect(this.context.destination);
             this.delay.delayTime.value = delay;
         }
@@ -319,16 +319,16 @@ export default class Audiohacker {
 
         if (value !== 0) {
             try {
-                // this.mediaSource?.disconnect(this.input);
-                // this.mediaSource?.connect(this.stereo);
+                this.mediaSource?.disconnect(this.input);
+                this.mediaSource?.connect(this.stereo);
                 this.stereo.connect(this.context.destination);
             } catch (e) {}
         } else {
             if ((this.delay && this.delay.delayTime.value === 0) && !this.panner) {
-                // this.mediaSource?.connect(this.input);
+                this.mediaSource?.connect(this.input);
             }
 
-            // this.mediaSource?.disconnect(this.stereo);
+            this.mediaSource?.disconnect(this.stereo);
             this.stereo?.disconnect(this.context.destination);
 
             this.stereo = null;
@@ -346,7 +346,7 @@ export default class Audiohacker {
         }
         if (isOn === true) {
             try {
-                // this.mediaSource.disconnect(this.input);
+                this.mediaSource.disconnect(this.input);
                 // this.pannerGain.disconnect(this.pannerGain);
                 // this.mediaSource.disconnect(this.delay);
                 // this.delay.disconnect(this.context.destination);
@@ -396,14 +396,14 @@ export default class Audiohacker {
 
             // // this.panner.connect(this.input);
             // this.panner.connect(this.pannerGain);
-            // this.mediaSource.connect(this.panner);
+            this.mediaSource.connect(this.panner);
             this.panner.connect(this.context.destination);
         } else {
             try {
-                // this.mediaSource?.disconnect(this.panner);
+                this.mediaSource?.disconnect(this.panner);
                 this.panner?.disconnect(this.context.destination);
                 if ((this.delay && this.delay.delayTime.value === 0) && !this.stereo) {
-                    // this.mediaSource?.connect(this.input);
+                    this.mediaSource?.connect(this.input);
                 }
             } catch (e) {}
             this.panner = null;
