@@ -58,8 +58,15 @@ export default class AudioController {
         }
     }
 
+    async checkInstance() {
+        if (!this.audioCtx) {
+            await this.createAudioContext()
+        }
+        return this;
+    }
+
     async createAudioContext() {
-        if (this.videoElements.size === 0 && this.audioElements.size === 0)
+        if (this.videoElements?.size === 0 && this.audioElements?.size === 0)
             return this;
 
         console.log(this.videoElements, "this.videoElements");
@@ -74,7 +81,8 @@ export default class AudioController {
 
             this.createAudiohacker();
         } catch (err) {
-            
+            this.audioCtx = null;
+            console.error("err", err);
         }
 
         return this;
@@ -117,32 +125,42 @@ export default class AudioController {
     }
 
     setPitchOffset(value: number) {
-        this.audioHackers.forEach((v) => {
-            v.setPitchOffset(value);
+        this.checkInstance().then(() => {
+            this.audioHackers.forEach((v) => {
+                v.setPitchOffset(value);
+            });
         });
+        
     }
 
     setVolume(value: number) {
-        this.audioHackers.forEach((v) => {
-            v.setVolume(value);
+        this.checkInstance().then(() => {
+            this.audioHackers.forEach((v) => {
+                v.setVolume(value);
+            });
         });
     }
 
     setDelay(value: number) {
-        this.audioHackers.forEach((v) => {
-            v.setDelay(value);
+        this.checkInstance().then(() => {
+            this.audioHackers.forEach((v) => {
+                v.setDelay(value);
+            });
         });
     }
 
     setPanner(value: boolean) {
+        this.checkInstance();
         this.audioHackers.forEach((v) => {
             v.setPanner(value);
         });
     }
 
     setStereoPanner(value: number) {
-        this.audioHackers.forEach((v) => {
-            v.setStereoPanner(value);
+        this.checkInstance().then(() => {
+            this.audioHackers.forEach((v) => {
+                v.setStereoPanner(value);
+            });
         });
     }
 }

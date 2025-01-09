@@ -34,7 +34,7 @@ import AudioController from "./utils/AudioController";
 export default class VideoRoll {
     static rollConfig: IRollConfig;
 
-    static audioController: AudioController;
+    static audioController: AudioController | null;
 
     static videoElements: Set<HTMLVideoElement> = new Set();
 
@@ -57,6 +57,8 @@ export default class VideoRoll {
     static observer: MutationObserver | null;
 
     static eventCallback: Function | null = null;
+
+    static playCallback: Function | null = null;
 
     static recorder: Recorder;
 
@@ -409,18 +411,23 @@ export default class VideoRoll {
      */
     static async updateAudio() {
         if (!this.audioController) {
-            this.audioController = new AudioController(
-                this.videoElements,
-                this.audioElements
-            );
+            try {
+                this.audioController = new AudioController(
+                    this.videoElements,
+                    this.audioElements
+                );
 
-            this.audioController.done(async () => {
-                await this.updatePitch();
-                await this.updateVolume();
-                await this.updateDelay();
-                await this.updatePanner();
-                await this.updateStereoPanner();
-            });
+                this.audioController.done(async () => {
+                    await this.updatePitch();
+                    await this.updateVolume();
+                    await this.updateDelay();
+                    await this.updatePanner();
+                    await this.updateStereoPanner();
+                });
+            } catch (err) {
+                console.error("Failed to create AudioController:", err);
+                this.audioController = null;
+            }
         } else {
             if (!this.audioController.hasInstance()) {
                 await this.audioController.createAudioContext();
@@ -448,7 +455,7 @@ export default class VideoRoll {
     }
 
     static resetAudio() {
-        this.audioController.reset()
+        this.audioController.reset();
         this.videoElements.forEach((video) => {
             (video as HTMLMediaElement).playbackRate = 1;
         });
@@ -1046,7 +1053,6 @@ export default class VideoRoll {
         }
     }
 
-
     /**
      * update pitch
      * @returns
@@ -1257,10 +1263,27 @@ export default class VideoRoll {
         });
     }
 
+    static updatePlay(
+        video: HTMLVideoElement,
+        callback: Function,
+        event?: Event
+    ) {
+        callback({
+            text: String(this.videoNumbers),
+            videoList: this.buildVideoList(),
+        });
+    }
+
     static watchVideoProgress(video: HTMLVideoElement, callback: Function) {
         video.removeEventListener("timeupdate", this.eventCallback as any);
         this.eventCallback = this.updateProgress.bind(this, video, callback);
         video.addEventListener("timeupdate", this.eventCallback as any);
+    }
+
+    static watchVideoPlay(video: HTMLVideoElement, callback: Function) {
+        video.removeEventListener("play", this.updateAudio as any);
+        this.playCallback = this.updateAudio.bind(this);
+        video.addEventListener("play", this.playCallback as any);
     }
 
     static getVideoInfo(video: HTMLVideoElement, index: number) {
@@ -1377,6 +1400,7 @@ export default class VideoRoll {
 
             setTimeout(() => {
                 this.watchVideoProgress(v, callback);
+                this.watchVideoPlay(v, callback);
             });
 
             // item.visibleObserver = this.getVideoVisibleObserver(v, item, callback)
