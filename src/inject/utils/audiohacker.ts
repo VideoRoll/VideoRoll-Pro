@@ -328,10 +328,12 @@ export default class Audiohacker {
                 this.mediaSource?.connect(this.input);
             }
 
-            this.mediaSource?.disconnect(this.stereo);
-            this.stereo?.disconnect(this.context.destination);
-
-            this.stereo = null;
+            try {
+                this.mediaSource?.disconnect(this.stereo);
+                this.stereo?.disconnect(this.context.destination);
+            } catch(err) {}
+            
+            // this.stereo = null;
         }
         this.stereo.pan.value = value;
     }

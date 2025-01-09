@@ -73,7 +73,7 @@ export async function updateOnMounted(tabId: number, rollConfig: IRollConfig) {
 
     sendRuntimeMessage(tabId, { rollConfig: config, type: ActionType.UPDATE_STORAGE, tabId })
     if (config.enable === false) return;
-    VideoRoll.setRollConfig(config).updateDocuments().addStyleClass().updateAudio();
+    VideoRoll.setRollConfig(config).updateDocuments().addStyleClass();
     sendRuntimeMessage(tabId, { videoList: VideoRoll.videoList, type: ActionType.UPDATE_VIDEO_LIST, tabId })
     sendRuntimeMessage(tabId, { iframes: VideoRoll.getRollConfig().iframes, type: ActionType.UPDATE_IFRAMES, tabId })
 }
@@ -110,7 +110,7 @@ export async function updateBadge(options: any) {
 
         if (tabConfig.enable === false) return;
 
-        VideoRoll.setRollConfig(tabConfig).addStyleClass(true).updateVideo(tabConfig).updateAudio();
+        VideoRoll.setRollConfig(tabConfig).addStyleClass(true).updateVideo(tabConfig);
     }
 
     if (hasConf) {
@@ -131,7 +131,7 @@ export async function updateBadge(options: any) {
 
         if (config.enable === false) return;
 
-        VideoRoll.setRollConfig(config).addStyleClass(true).updateVideo(rollConfig ?? config).updateAudio();
+        VideoRoll.setRollConfig(config).addStyleClass(true).updateVideo(rollConfig ?? config);
     }
 }
 
