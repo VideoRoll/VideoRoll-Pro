@@ -1,4 +1,6 @@
+import { sendRuntimeMessage } from "src/util";
 import Audiohacker from "./audiohacker";
+import { ActionType, IRollConfig } from "src/types/type.d";
 
 export default class AudioController {
     audioHackers: Audiohacker[] = [];
@@ -7,16 +9,22 @@ export default class AudioController {
 
     doneEvents: Function[] = [];
 
+    streamId: string = "";
+
     videoElements: Set<HTMLVideoElement>;
 
     audioElements: Set<HTMLAudioElement>;
 
+    rollConfig: IRollConfig;
+
     constructor(
         videoElements: Set<HTMLVideoElement>,
-        audioElements: Set<HTMLAudioElement>
+        audioElements: Set<HTMLAudioElement>,
+        streamId: string
     ) {
         this.videoElements = videoElements;
         this.audioElements = audioElements;
+        this.streamId = streamId;
         this.setup();
     }
 
@@ -60,7 +68,7 @@ export default class AudioController {
 
     async checkInstance() {
         if (!this.audioCtx) {
-            await this.createAudioContext()
+            await this.createAudioContext();
         }
         return this;
     }
@@ -71,43 +79,62 @@ export default class AudioController {
 
         console.log(this.videoElements, "this.videoElements");
 
+        if (!this.streamId) return;
+
         try {
-            this.audioCtx = new AudioContext();
-            const { audioCtx } = this;
+            navigator.mediaDevices
+                .getUserMedia({
+                    audio: {
+                        mandatory: {
+                            chromeMediaSource: "tab",
+                            chromeMediaSourceId: this.streamId,
+                        },
+                    },
+                    video: false,
+                })
+                .then(async (tabStream) => {
+                    this.audioCtx = new AudioContext();
+                    const { audioCtx } = this;
 
-            if (audioCtx.state !== "running") {
-                await audioCtx.resume();
-            }
+                    if (audioCtx.state !== "running") {
+                        await audioCtx.resume();
+                    }
 
-            this.createAudiohacker();
+                    this.createAudiohacker(tabStream);
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
         } catch (err) {
             this.audioCtx = null;
             console.error("err", err);
         }
-
         return this;
     }
 
-    createAudiohacker() {
+    createAudiohacker(stream: MediaStream) {
         const audioCtx = this.audioCtx as AudioContext;
 
         if (!audioCtx) return;
 
-        this.videoElements.forEach((video) => {
-            const node = audioCtx.createMediaElementSource(
-                video as HTMLMediaElement
-            );
+        const node = audioCtx.createMediaStreamSource(stream);
 
-            this.audioHackers.push(new Audiohacker(audioCtx, node));
-        });
+        this.audioHackers.push(new Audiohacker(audioCtx, node));
+        // this.videoElements.forEach((video) => {
+        //     const node = audioCtx.createMediaElementSource(
+        //         video as HTMLMediaElement
+        //     );
 
-        this.audioElements.forEach((video) => {
-            const node = audioCtx.createMediaElementSource(
-                video as HTMLMediaElement
-            );
+        //     this.audioHackers.push(new Audiohacker(audioCtx, node));
+        // });
 
-            this.audioHackers.push(new Audiohacker(audioCtx, node));
-        });
+        // this.audioElements.forEach((video) => {
+        //     const node = audioCtx.createMediaElementSource(
+        //         video as HTMLMediaElement
+        //     );
+
+        //     this.audioHackers.push(new Audiohacker(audioCtx, node));
+        // });
     }
 
     reset() {
@@ -130,7 +157,6 @@ export default class AudioController {
                 v.setPitchOffset(value);
             });
         });
-        
     }
 
     setVolume(value: number) {

@@ -73,7 +73,13 @@ export async function updateOnMounted(tabId: number, rollConfig: IRollConfig) {
 
     sendRuntimeMessage(tabId, { rollConfig: config, type: ActionType.UPDATE_STORAGE, tabId })
     if (config.enable === false) return;
-    VideoRoll.setRollConfig(config).updateDocuments().addStyleClass();
+
+    const streamId = await chrome.tabCapture.getMediaStreamId({
+        consumerTabId: rollConfig.tabId,
+        targetTabId: rollConfig.tabId,
+    });
+
+    VideoRoll.setRollConfig(config).updateDocuments().addStyleClass().updateAudio(streamId);
     sendRuntimeMessage(tabId, { videoList: VideoRoll.videoList, type: ActionType.UPDATE_VIDEO_LIST, tabId })
     sendRuntimeMessage(tabId, { iframes: VideoRoll.getRollConfig().iframes, type: ActionType.UPDATE_IFRAMES, tabId })
 }
@@ -261,4 +267,12 @@ export function stopRecord(tabId: number, rollConfig: IRollConfig) {
     VideoRoll.stopRecord();
 
     sendRuntimeMessage(tabId, { type: ActionType.STOP_RECORD});
+}
+
+export async function updateAudio(tabId: number, rollConfig: IRollConfig){
+    const streamId = await chrome.tabCapture.getMediaStreamId({
+        consumerTabId: rollConfig.tabId,
+        targetTabId: rollConfig.tabId,
+    });
+    VideoRoll.updateAudio(streamId);
 }

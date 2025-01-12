@@ -17,6 +17,7 @@ import {
     advancedPictureInPicture,
     startRecord,
     stopRecord,
+    updateAudio
 } from "./update";
 import { sendRuntimeMessage } from "../util";
 import browser from "webextension-polyfill";
@@ -57,7 +58,7 @@ function injectScript() {
      * get message from popup or backgound
      */
     chrome.runtime.onMessage.addListener(async (data, b, send) => {
-        const { rollConfig, tabId, type, id, isIn, ids } = data;
+        const { rollConfig, tabId, type, id, isIn, ids, streamId } = data;
 
         try {
             switch (type) {
@@ -124,6 +125,8 @@ function injectScript() {
                 case ActionType.STOP_RECORD:
                     stopRecord(tabId, { ...rollConfig });
                     break;
+                case ActionType.AUDIO_CAPTURE:
+                    updateAudio(tabId, { ...rollConfig }, streamId)
                 default:
                     return;
             }
