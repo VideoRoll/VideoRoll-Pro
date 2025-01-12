@@ -31,7 +31,8 @@ export enum ActionType {
     STOP_RECORD,
     ADVANCED_PICTURE_IN_PICTURE,
     BACK_TO_TAB,
-    USER_INFO
+    USER_INFO,
+    AUDIO_CAPTURE,
 }
 
 export enum FlipType {

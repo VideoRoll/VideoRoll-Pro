@@ -43,5 +43,5 @@
     "content_security_policy": {
         "extension_pages": "connect-src ws://localhost:18160; script-src 'self'; object-src 'self'"
     },
-    "permissions": ["tabs", "storage", "unlimitedStorage", "activeTab", "scripting"]
+    "permissions": ["tabs", "storage", "unlimitedStorage", "activeTab", "scripting", "tabCapture"]
 }

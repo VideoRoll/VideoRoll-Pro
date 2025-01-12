@@ -124,7 +124,7 @@ export default defineComponent({
             tabId.value = tab.id as number;
             initRollConfig(rollConfig, tab);
 
-            chrome.runtime.onMessage.addListener((a, b, c) => {
+            chrome.runtime.onMessage.addListener((info, b, c) => {
                 const {
                     type,
                     rollConfig: config,
@@ -135,9 +135,9 @@ export default defineComponent({
                     iframes,
                     windowConfig,
                     user: userInfo
-                } = a;
+                } = info;
 
-                if (a.tabId !== tabId.value) {
+                if (info.tabId !== tabId.value) {
                     c("not current tab");
                     return;
                 }

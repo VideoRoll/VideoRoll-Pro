@@ -409,12 +409,13 @@ export default class VideoRoll {
     /**
      * update audio
      */
-    static async updateAudio() {
+    static async updateAudio(streamId: string) {
         if (!this.audioController) {
             try {
                 this.audioController = new AudioController(
                     this.videoElements,
-                    this.audioElements
+                    this.audioElements,
+                    streamId
                 );
 
                 this.audioController.done(async () => {
@@ -1400,7 +1401,7 @@ export default class VideoRoll {
 
             setTimeout(() => {
                 this.watchVideoProgress(v, callback);
-                this.watchVideoPlay(v, callback);
+                // this.watchVideoPlay(v, callback);
             });
 
             // item.visibleObserver = this.getVideoVisibleObserver(v, item, callback)
