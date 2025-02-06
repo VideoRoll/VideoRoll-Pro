@@ -7,7 +7,7 @@
         "test": "jest",
         "watch:manifest-chromium": "cross-env BROWSER=\"chromium\" node scripts/hmr.js",
         "watch:manifest-firefox": "cross-env BROWSER=\"firefox\" node scripts/hmr.js",
-        "watch:entry": "parcel watch src/inject/capture.html src/popup/index.html src/inject/index.ts src/background/index.ts src/options/index.html --no-cache --no-hmr",
+        "watch:entry": "parcel watch src/inject/capture.html src/popup/index.html src/inject/index.ts src/background/index.ts src/options/index.html src/offscreen/index.html --no-cache --no-hmr",
         "watch:dist": "pnpm run wait-for-dist && web-ext run --source-dir=dist --target chromium --chromium-profile=\"C:/Users/GomiGXY/AppData/Local/Google/Chrome/User Data\"",
         "wait-for-dist": "wait-on dist/background/index.js dist/inject/index.js dist/manifest.json && sleep 1",
         "dev:chromium": "pnpm run clean && pnpm run copy:static && concurrently \"pnpm run watch:entry\" \"pnpm run watch:manifest-chromium\" \"pnpm run build:manifest-chromium\" \"pnpm run watch:dist\"",

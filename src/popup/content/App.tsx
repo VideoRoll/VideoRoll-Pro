@@ -120,6 +120,18 @@ export default defineComponent({
         onMounted(async () => {
             const queryOptions = { active: true, currentWindow: true };
             const [tab] = await browser.tabs.query(queryOptions);
+            
+            const streamId = await chrome.tabCapture.getMediaStreamId({
+                consumerTabId: tab.id,
+                targetTabId: tab.id,
+            });
+
+            // sendTabMessage(rollConfig.tabId, {
+            //     rollConfig: clone(rollConfig),
+            //     type: ActionType.AUDIO_CAPTURE,
+            // });
+            // const port = browser.runtime.connect();
+            // port.postMessage({type: 'audio-capture'});
 
             tabId.value = tab.id as number;
             initRollConfig(rollConfig, tab);
@@ -200,6 +212,12 @@ export default defineComponent({
             sendTabMessage(rollConfig.tabId, {
                 rollConfig: clone(rollConfig),
                 type: ActionType.ON_MOUNTED,
+            });
+
+            sendTabMessage(rollConfig.tabId, {
+                rollConfig: clone(rollConfig),
+                streamId,
+                type: ActionType.AUDIO_CAPTURE,
             });
         });
 
