@@ -15,8 +15,6 @@ export default class AudioController {
 
     audioElements: Set<HTMLAudioElement>;
 
-    rollConfig: IRollConfig;
-
     constructor(
         videoElements: Set<HTMLVideoElement>,
         audioElements: Set<HTMLAudioElement>,
@@ -30,7 +28,7 @@ export default class AudioController {
 
     async setup() {
         try {
-            await this.createAudioContext();
+            await this.checkInstance()
 
             if (this.audioCtx) {
                 for (const event of this.doneEvents) {
@@ -43,7 +41,7 @@ export default class AudioController {
             window.addEventListener(
                 "mousedown",
                 async () => {
-                    await this.createAudioContext();
+                    await this.checkInstance()
 
                     if (this.audioCtx) {
                         for (const event of this.doneEvents) {
@@ -80,7 +78,7 @@ export default class AudioController {
         console.log(this.videoElements, "this.videoElements");
 
         if (!this.streamId) return;
-
+        console.log(this.streamId, "sssstreamId");
         try {
             navigator.mediaDevices
                 .getUserMedia({
@@ -90,21 +88,36 @@ export default class AudioController {
                             chromeMediaSourceId: this.streamId,
                         },
                     },
-                    video: false,
+                    video: false
                 })
                 .then(async (tabStream) => {
+                    console.log(this.streamId, "this.streamId");
                     this.audioCtx = new AudioContext();
-                    const { audioCtx } = this;
 
-                    if (audioCtx.state !== "running") {
-                        await audioCtx.resume();
-                    }
-
-                    this.createAudiohacker(tabStream);
+                    // if (this.audioCtx.state !== "running") {
+                    //     await this.audioCtx.resume();
+                    // }
+                    console.log('tabStream', tabStream)
+                    const node = this.audioCtx.createMediaStreamSource(tabStream);
+                    const gainNode = this.audioCtx.createGain();
+                    // gainNode.gain.value = 3.5; // 设置音量
+                    node.connect(gainNode).connect(this.audioCtx.destination);
+                    // console.log('成功')
+                    // // const stream = video?.captureStream?.(60)
+                    // this.createAudiohacker(tabStream);
                 })
                 .catch((err) => {
                     console.error(err);
                 });
+
+            // this.audioCtx = new AudioContext();
+            // const { audioCtx } = this;
+
+            // if (audioCtx.state !== "running") {
+            //     await audioCtx.resume();
+            // }
+
+            // this.createAudiohacker();
         } catch (err) {
             this.audioCtx = null;
             console.error("err", err);
@@ -112,17 +125,20 @@ export default class AudioController {
         return this;
     }
 
-    createAudiohacker(stream: MediaStream) {
+    createAudiohacker(stream: any) {
         const audioCtx = this.audioCtx as AudioContext;
 
         if (!audioCtx) return;
 
         const node = audioCtx.createMediaStreamSource(stream);
-
-        this.audioHackers.push(new Audiohacker(audioCtx, node));
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.value = 1.5; // 设置音量
+        node.connect(gainNode).connect(audioCtx.destination);
+        // this.audioHackers.push(new Audiohacker(audioCtx, node));
         // this.videoElements.forEach((video) => {
-        //     const node = audioCtx.createMediaElementSource(
-        //         video as HTMLMediaElement
+        //     const stream = video?.captureStream?.(60);
+        //     const node = audioCtx.createMediaStreamSource(
+        //         stream
         //     );
 
         //     this.audioHackers.push(new Audiohacker(audioCtx, node));

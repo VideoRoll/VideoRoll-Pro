@@ -419,11 +419,11 @@ export default class VideoRoll {
                 );
 
                 this.audioController.done(async () => {
-                    await this.updatePitch();
-                    await this.updateVolume();
-                    await this.updateDelay();
-                    await this.updatePanner();
-                    await this.updateStereoPanner();
+                    // await this.updatePitch();
+                    // await this.updateVolume();
+                    // await this.updateDelay();
+                    // await this.updatePanner();
+                    // await this.updateStereoPanner();
                 });
             } catch (err) {
                 console.error("Failed to create AudioController:", err);
@@ -433,11 +433,11 @@ export default class VideoRoll {
             if (!this.audioController.hasInstance()) {
                 await this.audioController.createAudioContext();
             }
-            await this.updatePitch();
-            await this.updateVolume();
-            await this.updateDelay();
-            await this.updatePanner();
-            await this.updateStereoPanner();
+            // await this.updatePitch();
+            // await this.updateVolume();
+            // await this.updateDelay();
+            // await this.updatePanner();
+            // await this.updateStereoPanner();
         }
 
         this.updatePlaybackRate();

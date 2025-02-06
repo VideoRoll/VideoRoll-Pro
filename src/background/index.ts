@@ -60,6 +60,43 @@ async function getStreamId() {
     return streamId;
 }
 
+// chrome.runtime.onConnect.addListener(async (port) => {
+//     console.log("currentTabId", currentTabId);
+
+//     const existingContexts = await chrome.runtime.getContexts({});
+
+//     const offscreenDocument = existingContexts.find(
+//         (c) => c.contextType === "OFFSCREEN_DOCUMENT"
+//     );
+
+//     // If an offscreen document is not already open, create one.
+//     if (!offscreenDocument) {
+//         // Create an offscreen document.
+//         await chrome.offscreen.createDocument({
+//             url: "offscreen.html",
+//             reasons: ["USER_MEDIA"],
+//             justification: "Streaming from chrome.tabCapture API",
+//         });
+//     }
+
+//     port.onMessage.addListener(async (msg) => {
+//         console.log("popup received: ", msg);
+//         if (msg.type === "audio-capture") {
+//             const streamId = await getStreamId();
+//             console.log("streamId: ", streamId);
+//             sendTabMessage(
+//                 currentTabId,
+//                 {
+//                     type: ActionType.AUDIO_CAPTURE,
+//                     tabId: currentTabId,
+//                     streamId,
+//                 },
+//                 () => {}
+//             );
+//         }
+//     });
+// });
+
 (getBrowser("action") as typeof chrome.action).setBadgeBackgroundColor({
     color: "#a494c6",
 });
@@ -95,10 +132,11 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
     );
 });
 
+
 /**
  * update
  */
-chrome.runtime.onMessage.addListener((a, b, send) => {
+chrome.runtime.onMessage.addListener(async (a, b, send) => {
     if (typeof currentTabId !== "number") return;
 
     const { rollConfig, type, text, tabId } = a;
@@ -138,8 +176,14 @@ chrome.runtime.onMessage.addListener((a, b, send) => {
                 });
 
             break;
-
-            break;
+        // case ActionType.AUDIO_CAPTURE: {
+        //     const streamId = await getStreamId();
+        //     sendTabMessage(
+        //         currentTabId,
+        //         { type: ActionType.AUDIO_CAPTURE, tabId: currentTabId, streamId },
+        //         () => {}
+        //     );
+        // }
         default:
             break;
     }
