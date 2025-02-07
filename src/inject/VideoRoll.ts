@@ -4,7 +4,6 @@
  * @Date: 2022-05-31 23:27:36
  */
 import WEBSITE from "../website";
-import Audiohacker from "audio-hacker";
 import * as THREE from "three";
 import {
     Flip,
@@ -406,39 +405,51 @@ export default class VideoRoll {
         return this;
     }
 
+    static createAudioCapture(streamId: string) {
+        sendRuntimeMessage(this.rollConfig.tabId, {
+            type: ActionType.AUDIO_CAPTURE,
+            streamId,
+            rollConfig: this.rollConfig,
+        });
+    }
+
     /**
      * update audio
      */
-    static async updateAudio(streamId: string) {
-        if (!this.audioController) {
-            try {
-                this.audioController = new AudioController(
-                    this.videoElements,
-                    this.audioElements,
-                    streamId
-                );
+    static async updateAudio() {
+        sendRuntimeMessage(this.rollConfig.tabId, {
+            type: ActionType.UPDATE_AUDIO,
+            rollConfig: this.rollConfig,
+        });
+        // if (!this.audioController) {
+        //     try {
+        //         this.audioController = new AudioController(
+        //             this.videoElements,
+        //             this.audioElements,
+        //             streamId
+        //         );
 
-                this.audioController.done(async () => {
-                    // await this.updatePitch();
-                    // await this.updateVolume();
-                    // await this.updateDelay();
-                    // await this.updatePanner();
-                    // await this.updateStereoPanner();
-                });
-            } catch (err) {
-                console.error("Failed to create AudioController:", err);
-                this.audioController = null;
-            }
-        } else {
-            if (!this.audioController.hasInstance()) {
-                await this.audioController.createAudioContext();
-            }
-            // await this.updatePitch();
-            // await this.updateVolume();
-            // await this.updateDelay();
-            // await this.updatePanner();
-            // await this.updateStereoPanner();
-        }
+        //         this.audioController.done(async () => {
+        //             // await this.updatePitch();
+        //             // await this.updateVolume();
+        //             // await this.updateDelay();
+        //             // await this.updatePanner();
+        //             // await this.updateStereoPanner();
+        //         });
+        //     } catch (err) {
+        //         console.error("Failed to create AudioController:", err);
+        //         this.audioController = null;
+        //     }
+        // } else {
+        //     if (!this.audioController.hasInstance()) {
+        //         await this.audioController.createAudioContext();
+        //     }
+        //     // await this.updatePitch();
+        //     // await this.updateVolume();
+        //     // await this.updateDelay();
+        //     // await this.updatePanner();
+        //     // await this.updateStereoPanner();
+        // }
 
         this.updatePlaybackRate();
         this.toggleMuted();

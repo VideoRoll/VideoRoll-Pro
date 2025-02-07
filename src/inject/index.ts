@@ -17,7 +17,7 @@ import {
     advancedPictureInPicture,
     startRecord,
     stopRecord,
-    updateAudio
+    createAudioCapture
 } from "./update";
 import { sendRuntimeMessage } from "../util";
 import browser from "webextension-polyfill";
@@ -126,7 +126,7 @@ function injectScript() {
                     stopRecord(tabId, { ...rollConfig });
                     break;
                 case ActionType.AUDIO_CAPTURE:
-                    updateAudio(tabId, { ...rollConfig }, streamId)
+                    createAudioCapture(tabId, { ...rollConfig }, streamId)
                 default:
                     return;
             }

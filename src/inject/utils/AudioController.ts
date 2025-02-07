@@ -1,34 +1,29 @@
-import { sendRuntimeMessage } from "src/util";
 import Audiohacker from "./audiohacker";
 import { ActionType, IRollConfig } from "src/types/type.d";
 
 export default class AudioController {
-    audioHackers: Audiohacker[] = [];
+    audioHacker: Audiohacker | null = null;
 
     audioCtx: AudioContext | null = null;
 
     doneEvents: Function[] = [];
 
+    rollConfig: IRollConfig;
+
     streamId: string = "";
 
-    videoElements: Set<HTMLVideoElement>;
-
-    audioElements: Set<HTMLAudioElement>;
-
     constructor(
-        videoElements: Set<HTMLVideoElement>,
-        audioElements: Set<HTMLAudioElement>,
-        streamId: string
+        streamId: string,
+        rollConfig: IRollConfig
     ) {
-        this.videoElements = videoElements;
-        this.audioElements = audioElements;
-        this.streamId = streamId;
+        this.streamId = streamId ?? "";
+        this.rollConfig = rollConfig;
         this.setup();
     }
 
     async setup() {
         try {
-            await this.checkInstance()
+            await this.checkInstance();
 
             if (this.audioCtx) {
                 for (const event of this.doneEvents) {
@@ -41,7 +36,7 @@ export default class AudioController {
             window.addEventListener(
                 "mousedown",
                 async () => {
-                    await this.checkInstance()
+                    await this.checkInstance();
 
                     if (this.audioCtx) {
                         for (const event of this.doneEvents) {
@@ -65,20 +60,31 @@ export default class AudioController {
     }
 
     async checkInstance() {
+        if (!this.streamId || this.isBaseValue()) return this;
+
         if (!this.audioCtx) {
             await this.createAudioContext();
         }
         return this;
     }
 
+    isBaseValue() {
+        if (
+            this.rollConfig.volume === 1 &&
+            this.rollConfig.delay === 0 &&
+            this.rollConfig.panner === false &&
+            this.rollConfig.stereo === 0 &&
+            this.rollConfig.pitch.on === false
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
     async createAudioContext() {
-        if (this.videoElements?.size === 0 && this.audioElements?.size === 0)
-            return this;
-
-        console.log(this.videoElements, "this.videoElements");
-
         if (!this.streamId) return;
-        console.log(this.streamId, "sssstreamId");
+
         try {
             navigator.mediaDevices
                 .getUserMedia({
@@ -88,36 +94,20 @@ export default class AudioController {
                             chromeMediaSourceId: this.streamId,
                         },
                     },
-                    video: false
+                    video: false,
                 })
                 .then(async (tabStream) => {
-                    console.log(this.streamId, "this.streamId");
                     this.audioCtx = new AudioContext();
 
-                    // if (this.audioCtx.state !== "running") {
-                    //     await this.audioCtx.resume();
-                    // }
-                    console.log('tabStream', tabStream)
-                    const node = this.audioCtx.createMediaStreamSource(tabStream);
-                    const gainNode = this.audioCtx.createGain();
-                    // gainNode.gain.value = 3.5; // 设置音量
-                    node.connect(gainNode).connect(this.audioCtx.destination);
-                    // console.log('成功')
-                    // // const stream = video?.captureStream?.(60)
-                    // this.createAudiohacker(tabStream);
+                    if (this.audioCtx.state !== "running") {
+                        await this.audioCtx.resume();
+                    }
+
+                    this.createAudiohacker(tabStream);
                 })
                 .catch((err) => {
                     console.error(err);
                 });
-
-            // this.audioCtx = new AudioContext();
-            // const { audioCtx } = this;
-
-            // if (audioCtx.state !== "running") {
-            //     await audioCtx.resume();
-            // }
-
-            // this.createAudiohacker();
         } catch (err) {
             this.audioCtx = null;
             console.error("err", err);
@@ -130,79 +120,72 @@ export default class AudioController {
 
         if (!audioCtx) return;
 
+        if (this.isBaseValue()) {
+            this.reset();
+            return;
+        }
+
         const node = audioCtx.createMediaStreamSource(stream);
-        const gainNode = audioCtx.createGain();
-        gainNode.gain.value = 1.5; // 设置音量
-        node.connect(gainNode).connect(audioCtx.destination);
-        // this.audioHackers.push(new Audiohacker(audioCtx, node));
-        // this.videoElements.forEach((video) => {
-        //     const stream = video?.captureStream?.(60);
-        //     const node = audioCtx.createMediaStreamSource(
-        //         stream
-        //     );
-
-        //     this.audioHackers.push(new Audiohacker(audioCtx, node));
-        // });
-
-        // this.audioElements.forEach((video) => {
-        //     const node = audioCtx.createMediaElementSource(
-        //         video as HTMLMediaElement
-        //     );
-
-        //     this.audioHackers.push(new Audiohacker(audioCtx, node));
-        // });
+        this.audioHacker = new Audiohacker(audioCtx, node);
     }
 
     reset() {
-        this.audioHackers.forEach((v) => {
-            v.setPitchOffset(0);
-            v.setVolume(1);
-            v.setDelay(0);
-            v.setPanner(false);
-            v.setStereoPanner(0);
-        });
+        if (!this.audioHacker) return this;
+
+        this.audioHacker.setPitchOffset(0);
+        this.audioHacker.setVolume(1);
+        this.audioHacker.setDelay(0);
+        this.audioHacker.setPanner(false);
+        this.audioHacker.setStereoPanner(0);
+
+        // this.audioHacker.disconnect();
+        this.audioCtx = null;
+
+        chrome.offscreen.closeDocument();
     }
 
     hasInstance() {
-        return Boolean(this.audioHackers.length);
+        return Boolean(this.audioHacker);
     }
 
-    setPitchOffset(value: number) {
-        this.checkInstance().then(() => {
-            this.audioHackers.forEach((v) => {
-                v.setPitchOffset(value);
-            });
-        });
-    }
+    async update(streamId: string, rollConfig: IRollConfig) {
+        console.log(this.streamId, '---straemId')
 
-    setVolume(value: number) {
-        this.checkInstance().then(() => {
-            this.audioHackers.forEach((v) => {
-                v.setVolume(value);
-            });
-        });
-    }
+        if (streamId) {
+            this.streamId = streamId;
+        }
 
-    setDelay(value: number) {
-        this.checkInstance().then(() => {
-            this.audioHackers.forEach((v) => {
-                v.setDelay(value);
-            });
-        });
-    }
+        this.rollConfig = rollConfig;
 
-    setPanner(value: boolean) {
-        this.checkInstance();
-        this.audioHackers.forEach((v) => {
-            v.setPanner(value);
-        });
-    }
+        await this.checkInstance();
 
-    setStereoPanner(value: number) {
-        this.checkInstance().then(() => {
-            this.audioHackers.forEach((v) => {
-                v.setStereoPanner(value);
-            });
-        });
+        if (!this.audioHacker) return this;
+
+        if (this.isBaseValue()) {
+            console.log('isBase')
+            this.reset();
+            return;
+        }
+
+        console.log('update ---------', this.rollConfig);
+
+        this.audioHacker.setVolume(rollConfig.volume);
+        this.audioHacker.setDelay(rollConfig.delay);
+        this.audioHacker.setPanner(rollConfig.panner);
+        this.audioHacker.setStereoPanner(rollConfig.stereo);
+
+        const { on, value } = rollConfig.pitch;
+
+        try {
+            if (!on) {
+                // set to 0
+                this.audioHacker.setPitchOffset(0);
+                return;
+            } else {
+                this.audioHacker.setPitchOffset(value);
+            }
+        } catch (err) {
+            console.debug(err);
+        }
     }
 }

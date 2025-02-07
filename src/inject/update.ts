@@ -37,7 +37,7 @@ export async function updateConfig(tabId: number, rollConfig: IRollConfig) {
     rollConfig.isInit = false;
     rollConfig = await getGeneralConfig(rollConfig);
 
-    VideoRoll.updateVideo(rollConfig);
+    VideoRoll.updateVideo(rollConfig).updateAudio();
 
     const config = VideoRoll.getRollConfig();
 
@@ -264,6 +264,6 @@ export function stopRecord(tabId: number, rollConfig: IRollConfig) {
     sendRuntimeMessage(tabId, { type: ActionType.STOP_RECORD});
 }
 
-export async function updateAudio(tabId: number, rollConfig: IRollConfig, streamId: string){
-    VideoRoll.updateAudio(streamId);
+export async function createAudioCapture(tabId: number, rollConfig: IRollConfig, streamId: string){
+    VideoRoll.createAudioCapture(streamId);
 }

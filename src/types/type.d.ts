@@ -33,6 +33,7 @@ export enum ActionType {
     BACK_TO_TAB,
     USER_INFO,
     AUDIO_CAPTURE,
+    UPDATE_AUDIO
 }
 
 export enum FlipType {

@@ -181,7 +181,7 @@ export default class Audiohacker {
         this.delay1 = delay1;
         this.delay2 = delay2;
 
-        this.setPitchDelay(delayTime);
+        // this.setPitchDelay(delayTime);
 
         this.output.connect(this.context.destination);
         mediaSource.connect(this.input);
@@ -256,6 +256,16 @@ export default class Audiohacker {
     }
 
     setPitchOffset(mult: number): void {
+        if (mult === 0) {
+            this.mod1Gain.gain.value = 0;
+            this.mod2Gain.gain.value = 0;
+            this.mod3Gain.gain.value = 0;
+            this.mod4Gain.gain.value = 0;
+            this.setPitchDelay(0);
+            // this.modGain1.gain.setTargetAtTime(1, 0, 0);
+            // this.modGain2.gain.setTargetAtTime(1, 0, 0);
+            return;
+        }
         if (mult > 0) {
             // pitch up
             this.mod1Gain.gain.value = 0;
