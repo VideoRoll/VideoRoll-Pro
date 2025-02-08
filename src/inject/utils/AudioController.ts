@@ -139,9 +139,9 @@ export default class AudioController {
         this.audioHacker.setStereoPanner(0);
 
         // this.audioHacker.disconnect();
-        this.audioCtx = null;
+        // this.audioCtx = null;
 
-        chrome.offscreen.closeDocument();
+        // chrome.offscreen.closeDocument();
     }
 
     hasInstance() {
