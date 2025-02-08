@@ -3,7 +3,7 @@
  * @Author: Gouxinyu
  * @Date: 2022-04-23 23:37:22
  */
-import { createURL } from "src/util";
+import { createURL, sendRuntimeMessage } from "src/util";
 import { ActionType } from "../types/type.d";
 import { sendTabMessage, setBadge, getBrowser } from "../util";
 import { useShortcuts } from "src/use/useShortcuts";
@@ -12,6 +12,22 @@ import browser from "webextension-polyfill";
 import { getUser, injectAuth } from "./auth";
 
 let currentTabId: number | undefined;
+
+async function hasOffscreenDocument() {
+    if ("getContexts" in chrome.runtime) {
+        const offscreenUrl = chrome.runtime.getURL("offscreen/offscreen.html");
+        const contexts = await chrome.runtime.getContexts({
+            contextTypes: ["OFFSCREEN_DOCUMENT"],
+            documentUrls: [offscreenUrl],
+        });
+        return Boolean(contexts.length);
+    } else {
+        const matchedClients = await clients.matchAll();
+        return await matchedClients.some((client) => {
+            client.url.includes(chrome.runtime.id);
+        });
+    }
+}
 
 function setupStorage() {
     // 检查并设置默认值
@@ -53,49 +69,12 @@ chrome.runtime.onInstalled.addListener((params: any) => {
 
 async function getStreamId() {
     const streamId = await chrome.tabCapture.getMediaStreamId({
-        consumerTabId: currentTabId,
+        // consumerTabId: currentTabId,
         targetTabId: currentTabId,
     });
 
     return streamId;
 }
-
-// chrome.runtime.onConnect.addListener(async (port) => {
-//     console.log("currentTabId", currentTabId);
-
-//     const existingContexts = await chrome.runtime.getContexts({});
-
-//     const offscreenDocument = existingContexts.find(
-//         (c) => c.contextType === "OFFSCREEN_DOCUMENT"
-//     );
-
-//     // If an offscreen document is not already open, create one.
-//     if (!offscreenDocument) {
-//         // Create an offscreen document.
-//         await chrome.offscreen.createDocument({
-//             url: "offscreen.html",
-//             reasons: ["USER_MEDIA"],
-//             justification: "Streaming from chrome.tabCapture API",
-//         });
-//     }
-
-//     port.onMessage.addListener(async (msg) => {
-//         console.log("popup received: ", msg);
-//         if (msg.type === "audio-capture") {
-//             const streamId = await getStreamId();
-//             console.log("streamId: ", streamId);
-//             sendTabMessage(
-//                 currentTabId,
-//                 {
-//                     type: ActionType.AUDIO_CAPTURE,
-//                     tabId: currentTabId,
-//                     streamId,
-//                 },
-//                 () => {}
-//             );
-//         }
-//     });
-// });
 
 (getBrowser("action") as typeof chrome.action).setBadgeBackgroundColor({
     color: "#a494c6",
@@ -131,7 +110,6 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
         }
     );
 });
-
 
 /**
  * update
@@ -176,14 +154,51 @@ chrome.runtime.onMessage.addListener(async (a, b, send) => {
                 });
 
             break;
-        // case ActionType.AUDIO_CAPTURE: {
-        //     const streamId = await getStreamId();
-        //     sendTabMessage(
-        //         currentTabId,
-        //         { type: ActionType.AUDIO_CAPTURE, tabId: currentTabId, streamId },
-        //         () => {}
-        //     );
-        // }
+        case ActionType.AUDIO_CAPTURE: {
+            const hasOffscreen = await hasOffscreenDocument();
+
+            if (!hasOffscreen) {
+                await chrome.offscreen.createDocument({
+                    url: "offscreen/offscreen.html",
+                    reasons: ["USER_MEDIA"],
+                    justification: "reason for needing the document",
+                });
+            }
+
+            let streamId
+            try {
+                streamId = await getStreamId();
+            } catch(err) {
+                console.warn(err);
+            }
+
+            console.log(streamId, '---streamId')
+            sendRuntimeMessage(rollConfig.tabId, {
+                type: ActionType.AUDIO_CAPTURE,
+                target: 'offscreen',
+                streamId,
+                rollConfig: rollConfig,
+            });
+            break;
+        }
+        case ActionType.UPDATE_AUDIO: {
+            const hasOffscreen = await hasOffscreenDocument();
+
+            if (!hasOffscreen) break;
+            let streamId;
+            try {
+                streamId = await getStreamId();
+            } catch(err) {
+                console.warn(err);
+            }
+
+            sendRuntimeMessage(rollConfig.tabId, {
+                type: ActionType.UPDATE_AUDIO,
+                target: 'offscreen',
+                streamId,
+                rollConfig: rollConfig,
+            });
+        }
         default:
             break;
     }
