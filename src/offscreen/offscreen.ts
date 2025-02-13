@@ -1,21 +1,23 @@
 import AudioController from "src/inject/utils/AudioController";
 import { ActionType } from "src/types/type.d";
  'src/'
-let audioController: any;
+
+const tabs = new Map();
 
 chrome.runtime.onMessage.addListener(async (e) => {
     if ("offscreen" !== e.target) return;
 
-    if (e.type === ActionType.AUDIO_CAPTURE && !audioController) {
+    if (e.type === ActionType.AUDIO_CAPTURE && !tabs.has(e.rollConfig.tabId)) {
         try {
-            audioController = new AudioController(e.streamId, e.rollConfig);
+            tabs.set(e.rollConfig.tabId, new AudioController(e.streamId, e.rollConfig));
         } catch (err) {
-            audioController = null;
+            tabs.delete(e.rollConfig.tabId)
             console.error("err", err);
         }
     }
 
-    if (e.type === ActionType.UPDATE_AUDIO && audioController) {
+    if (e.type === ActionType.UPDATE_AUDIO && tabs.has(e.rollConfig.tabId)) {
+        const audioController = tabs.get(e.rollConfig.tabId)
         console.log(e.rollConfig, 'e.rollConfig');
         audioController.update(e.streamId, e.rollConfig)
     }

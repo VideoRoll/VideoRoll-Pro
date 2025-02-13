@@ -7,7 +7,7 @@ import browser from "webextension-polyfill";
  * @param callback 
  */
 export function sendRuntimeMessage(tabId: number, options: any, callback?: Function) {
-    browser.runtime.sendMessage({ tabId, ...options }).then((response) => {
+    return browser.runtime.sendMessage({ tabId, ...options }).then((response) => {
         if (browser.runtime.lastError) {
             console.debug(browser.runtime.lastError.message);
         }

@@ -33,22 +33,7 @@ export default class AudioController {
                 this.doneEvents = [];
             }
         } catch (err) {
-            window.addEventListener(
-                "mousedown",
-                async () => {
-                    await this.checkInstance();
-
-                    if (this.audioCtx) {
-                        for (const event of this.doneEvents) {
-                            console.log(event, "downevent");
-                            event();
-                        }
-
-                        this.doneEvents = [];
-                    }
-                },
-                { once: true }
-            );
+            console.error(err);
         }
     }
 
@@ -86,7 +71,7 @@ export default class AudioController {
         if (!this.streamId) return;
 
         try {
-            navigator.mediaDevices
+            await navigator.mediaDevices
                 .getUserMedia({
                     audio: {
                         mandatory: {
@@ -107,6 +92,7 @@ export default class AudioController {
                 })
                 .catch((err) => {
                     console.error(err);
+                    this.audioCtx = null;
                 });
         } catch (err) {
             this.audioCtx = null;
@@ -120,13 +106,15 @@ export default class AudioController {
 
         if (!audioCtx) return;
 
-        if (this.isBaseValue()) {
+        if (this.audioHacker && this.isBaseValue()) {
             this.reset();
             return;
         }
 
         const node = audioCtx.createMediaStreamSource(stream);
         this.audioHacker = new Audiohacker(audioCtx, node);
+
+        this.update(this.streamId, this.rollConfig);
     }
 
     reset() {
