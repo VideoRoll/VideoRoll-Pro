@@ -181,10 +181,11 @@ export default class Audiohacker {
         this.delay1 = delay1;
         this.delay2 = delay2;
 
-        this.setPitchDelay(delayTime);
+        // this.setPitchDelay(delayTime);
 
         this.output.connect(this.context.destination);
         mediaSource.connect(this.input);
+        this.setVolume(1);
     }
 
     createFadeBuffer(
