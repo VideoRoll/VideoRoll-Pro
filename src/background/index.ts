@@ -213,4 +213,13 @@ chrome.runtime.onMessage.addListener(async (a, b, send) => {
     send("update");
 });
 
+// 清理关闭的标签页数据
+chrome.tabs.onRemoved.addListener((tabId) => {
+    sendRuntimeMessage(tabId, {
+        type: ActionType.DELETE_AUDIO,
+        target: 'offscreen',
+        tabId
+    });
+});
+
 injectAuth();

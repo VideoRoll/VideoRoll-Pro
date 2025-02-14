@@ -63,6 +63,12 @@ export default class Audiohacker {
     panner: PannerNode;
     pannerGain: GainNode;
     pannerFilter: BiquadFilterNode;
+    pannerLowPassFilter: BiquadFilterNode;
+    pannerHighPassFilter: BiquadFilterNode;
+    pannerMidPassFilter: BiquadFilterNode;
+    pannerLowGainNode: GainNode;
+    pannerHighGainNode: GainNode;
+    pannerMidGainNode: GainNode;
     pannerConvolver: ConvolverNode;
     pannerCompressor: DynamicsCompressorNode;
     stereo: StereoPannerNode;
@@ -181,7 +187,7 @@ export default class Audiohacker {
         this.delay1 = delay1;
         this.delay2 = delay2;
 
-        // this.setPitchDelay(delayTime);
+        this.setPitchDelay(delayTime);
 
         this.output.connect(this.context.destination);
         mediaSource.connect(this.input);
@@ -257,16 +263,16 @@ export default class Audiohacker {
     }
 
     setPitchOffset(mult: number): void {
-        if (mult === 0) {
-            this.mod1Gain.gain.value = 1;
-            this.mod2Gain.gain.value = 1;
-            this.mod3Gain.gain.value = 1;
-            this.mod4Gain.gain.value = 1;
-            // this.setPitchDelay(0.1);
-            // this.modGain1.gain.setTargetAtTime(1, 0, 0);
-            // this.modGain2.gain.setTargetAtTime(1, 0, 0);
-            return;
-        }
+        // if (mult === 0) {
+        //     this.mod1Gain.gain.value = 1;
+        //     this.mod2Gain.gain.value = 1;
+        //     this.mod3Gain.gain.value = 1;
+        //     this.mod4Gain.gain.value = 1;
+        //     // this.setPitchDelay(0.1);
+        //     // this.modGain1.gain.setTargetAtTime(1, 0, 0);
+        //     // this.modGain2.gain.setTargetAtTime(1, 0, 0);
+        //     return;
+        // }
         if (mult > 0) {
             // pitch up
             this.mod1Gain.gain.value = 0;
@@ -335,15 +341,19 @@ export default class Audiohacker {
                 this.stereo.connect(this.context.destination);
             } catch (e) {}
         } else {
-            if ((this.delay && this.delay.delayTime.value === 0) && !this.panner) {
+            if (
+                this.delay &&
+                this.delay.delayTime.value === 0 &&
+                !this.panner
+            ) {
                 this.mediaSource?.connect(this.input);
             }
 
             try {
                 this.mediaSource?.disconnect(this.stereo);
                 this.stereo?.disconnect(this.context.destination);
-            } catch(err) {}
-            
+            } catch (err) {}
+
             // this.stereo = null;
         }
         this.stereo.pan.value = value;
@@ -354,8 +364,16 @@ export default class Audiohacker {
             this.panner = this.context.createPanner();
             this.pannerGain = this.context.createGain();
             this.pannerFilter = this.context.createBiquadFilter();
+            this.pannerLowPassFilter = this.context.createBiquadFilter();
+            this.pannerHighPassFilter = this.context.createBiquadFilter();
+            this.pannerMidPassFilter = this.context.createBiquadFilter();
+            // 创建增益节点
+            this.pannerLowGainNode = this.context.createGain();
+            this.pannerMidGainNode = this.context.createGain();
+            this.pannerHighGainNode = this.context.createGain();
             this.pannerConvolver = this.context.createConvolver();
             this.pannerCompressor = this.context.createDynamicsCompressor();
+
         }
         if (isOn === true) {
             try {
@@ -365,65 +383,138 @@ export default class Audiohacker {
                 // this.delay.disconnect(this.context.destination);
             } catch (e) {}
 
+            this.pannerLowPassFilter.type = 'lowpass';
+            this.pannerLowPassFilter.frequency.value = 5000; // 低音频段
+
+            this.pannerMidPassFilter.type = 'bandpass';
+            this.pannerMidPassFilter.frequency.value = 1000; // 中心频率1kHz
+            this.pannerMidPassFilter.Q.value = 1;
+
+            this.pannerHighPassFilter.type = 'highpass';
+            this.pannerHighPassFilter.frequency.value = 600; // 高音频段
+
             this.panner.panningModel = "HRTF"; // 使用 HRTF（头相关传递函数）
             this.panner.distanceModel = "linear"; //
             this.panner.refDistance = 1; // 参考距离
-            this.panner.maxDistance = 1000; // 最大距离
+            this.panner.maxDistance = 40; // 最大距离
             this.panner.rolloffFactor = 1; // 衰减因子
             this.panner.coneInnerAngle = 360;
             // this.panner.coneOuterAngle = 90; // 外径
             // this.panner.coneOuterGain = 0.3;
-            this.pannerGain.gain.value = 1;
-        
+
             // 定义音源移动的参数
             const speed = 1; // 移动速度
-            // const radius = 20; // 移动半径
-            const a = 10; // 椭圆长轴
-            const b = 8; // 椭圆短轴
-
+            let radius = 20; // 环绕半径
+            let height = 2;
+            // const a = 10; // 椭圆长轴
+            // const b = 8; // 椭圆短轴
+            const depthRange = 15; // Z轴上的运动范围
             let angle = 0; // 角度
 
+            let lastTime = performance.now();
+            const updateInterval = 16; // 目标更新间隔（约60Hz）
+        
             const animate = () => {
-                if (!this.panner) return;
+                if (!this.panner) {
+                    return;
+                }
+
+                lastTime = performance.now();
 
                 // 计算 x, y, z 坐标，模拟围绕原点的圆周运动
-                const x = a * Math.sin(angle);
-                const y = b * Math.cos(angle);
-        
-                // 使用线性插值平滑过渡位置
-                this.panner.setPosition(
-                    this.lerp(this.panner.positionX.value, x, 0.1),
-                    this.lerp(this.panner.positionY.value, y, 0.1),
-                    1
-                );
+                // const x = radius * Math.sin(angle);
+                // const y = radius * Math.cos(angle);
 
+                const x = radius * Math.cos(angle); // X轴坐标
+                const z = depthRange * Math.sin(angle); // Z轴坐标
+                const y = height; // Y轴坐标（固定高度）
+                radius = 5 + 5 * Math.sin(angle * 0.5);
+                height = 2 + 2 * Math.sin(angle * 0.3);
+                // 使用线性插值平滑过渡位置
+                this.panner.positionX.value = this.lerp(
+                    this.panner.positionX.value,
+                    x,
+                    0.1
+                );
+                this.panner.positionY.value = this.lerp(
+                    this.panner.positionY.value,
+                    y,
+                    0.1
+                );
+                this.panner.positionZ.value = this.lerp(
+                    this.panner.positionZ.value,
+                    z,
+                    0.1
+                );;
+
+                // 更新PannerNode的方向（增强方向感）
+                const forwardX = -Math.sin(angle); // 音频源的前向方向
+                const forwardZ = -Math.cos(angle);
+                this.panner.orientationX.setValueAtTime(forwardX, this.context.currentTime);
+                this.panner.orientationZ.setValueAtTime(forwardZ, this.context.currentTime);
+
+                 // 计算距离
+                const distance = Math.sqrt(x * x + y * y + z * z);
+                // 动态调整增益（补偿距离衰减）
+                const gainValue = 1 + distance * 0.5; // 根据距离调整增益
+                this.pannerGain.gain.setValueAtTime(gainValue, this.context.currentTime);
                 // 更新角度，循环移动
                 angle += speed * 0.01; // 适当增大角度，以控制移动速度
 
+                setTimeout(animate, updateInterval);
                 // 循环调用 animate，创建平滑动画
-                requestAnimationFrame(animate);
+                // requestAnimationFrame(animate);
             };
 
             // 开始动画
             animate();
 
             // // this.panner.connect(this.input);
-            // this.panner.connect(this.pannerGain);
-            this.mediaSource.connect(this.panner);
+            
+            this.mediaSource.connect(this.pannerLowPassFilter);
+            this.mediaSource.connect(this.pannerMidPassFilter);
+            this.mediaSource.connect(this.pannerHighPassFilter);
+            this.pannerLowPassFilter.connect(this.pannerLowGainNode);
+            this.pannerMidPassFilter.connect(this.pannerMidGainNode);
+            this.pannerHighPassFilter.connect(this.pannerHighGainNode);
+            this.pannerLowGainNode.connect(this.panner);
+            this.pannerMidGainNode.connect(this.panner);
+            this.pannerHighGainNode.connect(this.panner);
+            this.pannerGain.connect(this.panner);
             this.panner.connect(this.context.destination);
+
+            this.pannerLowGainNode.gain.value = 2;
+            this.pannerMidGainNode.gain.value = 1.5;
+            this.pannerHighGainNode.gain.value = 2;
+            this.pannerGain.gain.value = 3;
         } else {
             try {
-                this.mediaSource?.disconnect(this.panner);
+                this.mediaSource?.disconnect(this.pannerLowPassFilter);
+                this.mediaSource?.disconnect(this.pannerMidPassFilter);
+                this.mediaSource?.disconnect(this.pannerHighPassFilter);
+                this.pannerLowPassFilter?.disconnect(this.pannerLowGainNode);
+                this.pannerMidPassFilter?.disconnect(this.pannerMidGainNode);
+                this.pannerHighPassFilter?.disconnect(this.pannerHighGainNode);
+                this.pannerLowGainNode?.disconnect(this.panner);
+                this.pannerMidGainNode?.disconnect(this.panner);
+                this.pannerHighGainNode?.disconnect(this.panner);
+                this.pannerGain?.disconnect(this.panner)
                 this.panner?.disconnect(this.context.destination);
-                if ((this.delay && this.delay.delayTime.value === 0) && !this.stereo) {
+                if (
+                    this.delay &&
+                    this.delay.delayTime.value === 0 &&
+                    !this.stereo
+                ) {
                     this.mediaSource?.connect(this.input);
                 }
             } catch (e) {}
             this.panner = null;
             this.pannerFilter = null;
+            this.pannerLowPassFilter = null;
+            this.pannerHighPassFilter = null;
             this.pannerGain = null;
             this.pannerConvolver = null;
-            this.pannerCompressor = null
+            this.pannerCompressor = null;
         }
     }
 
