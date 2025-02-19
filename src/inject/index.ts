@@ -17,7 +17,8 @@ import {
     advancedPictureInPicture,
     startRecord,
     stopRecord,
-    createAudioCapture
+    createAudioCapture,
+    updateDownloadList,
 } from "./update";
 import { sendRuntimeMessage } from "../util";
 import browser from "webextension-polyfill";
@@ -58,7 +59,16 @@ function injectScript() {
      * get message from popup or backgound
      */
     chrome.runtime.onMessage.addListener(async (data, b, send) => {
-        const { rollConfig, tabId, type, id, isIn, ids, streamId } = data;
+        const {
+            rollConfig,
+            tabId,
+            type,
+            id,
+            isIn,
+            ids,
+            streamId,
+            downloadList,
+        } = data;
 
         try {
             switch (type) {
@@ -126,7 +136,11 @@ function injectScript() {
                     stopRecord(tabId, { ...rollConfig });
                     break;
                 case ActionType.AUDIO_CAPTURE:
-                    createAudioCapture(tabId, { ...rollConfig }, streamId)
+                    createAudioCapture(tabId, { ...rollConfig }, streamId);
+                    break;
+                case ActionType.GET_DOWNLOAD_LIST:
+                    updateDownloadList(downloadList);
+                    break;
                 default:
                     return;
             }

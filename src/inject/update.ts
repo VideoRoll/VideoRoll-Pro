@@ -75,7 +75,7 @@ export async function updateOnMounted(tabId: number, rollConfig: IRollConfig) {
     if (config.enable === false) return;
 
     VideoRoll.setRollConfig(config).updateDocuments().addStyleClass();
-    sendRuntimeMessage(tabId, { videoList: VideoRoll.videoList, type: ActionType.UPDATE_VIDEO_LIST, tabId })
+    sendRuntimeMessage(tabId, { videoList: VideoRoll.downloadList, type: ActionType.GET_DOWNLOAD_LIST, tabId })
     sendRuntimeMessage(tabId, { iframes: VideoRoll.getRollConfig().iframes, type: ActionType.UPDATE_IFRAMES, tabId })
 }
 
@@ -266,4 +266,8 @@ export function stopRecord(tabId: number, rollConfig: IRollConfig) {
 
 export async function createAudioCapture(tabId: number, rollConfig: IRollConfig, streamId: string){
     VideoRoll.createAudioCapture(streamId);
+}
+
+export async function updateDownloadList(downloadList: any[]) {
+    VideoRoll.updateDownloadList(downloadList);
 }

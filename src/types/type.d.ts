@@ -34,7 +34,8 @@ export enum ActionType {
     USER_INFO,
     AUDIO_CAPTURE,
     UPDATE_AUDIO,
-    DELETE_AUDIO
+    DELETE_AUDIO,
+    GET_DOWNLOAD_LIST
 }
 
 export enum FlipType {
@@ -62,6 +63,13 @@ export type VideoListItem = {
     isReal?: boolean;
     percentage?: number;
     currentTime?: number;
+}
+
+export type VideoDownloadListItem = {
+    type: string;
+    url: string;
+    timestamp: string;
+    size?: number;
 }
 
 export type Pitch = {

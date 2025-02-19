@@ -56,21 +56,22 @@ export default class Record {
         if (!video.paused && video.readyState === 4) {
             // if user chooses only video
             // drawVideoOnCanvas();
+            try {
+                //截取到媒体流
+                const stream = video?.captureStream?.(60); // 25 FPS
 
-            //截取到媒体流
-            const stream = video?.captureStream?.(60); // 25 FPS
+                this.mediaRecorder = new MediaRecorder(stream);
+                // 当有数据可用时，处理数据
+                this.mediaRecorder.ondataavailable = (event: any) => {
+                    this._recordedChunks.push(event.data);
+                };
 
-            this.mediaRecorder = new MediaRecorder(stream);
-            // 当有数据可用时，处理数据
-            this.mediaRecorder.ondataavailable = (event: any) => {
-                this._recordedChunks.push(event.data);
-            };
+                this.download();
 
-            this.download();
+                this.mediaRecorder.start();
 
-            this.mediaRecorder.start();
-
-            console.log("start recording", this.mediaRecorder);
+                console.log("start recording", this.mediaRecorder);
+            } catch (error) {}
         }
     }
 

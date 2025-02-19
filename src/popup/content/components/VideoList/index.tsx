@@ -22,7 +22,7 @@ export default defineComponent({
             return list.filter((v: any) => v.checked).map((v: any) => v.id);
         }
 
-        const checked = ref(getCheckedVideo(videoList.value));
+        // const checked = ref(getCheckedVideo(videoList.value));
 
         const onChange = (ids: string[]) => {
             updateVideoCheck(ids);
@@ -41,11 +41,11 @@ export default defineComponent({
 
         const onError = function () { }
 
-        watch(() => videoList.value, (value) => {
-            const list = getCheckedVideo(value);
-            if (JSON.stringify(list) === JSON.stringify(checked.value)) return;
-            checked.value = [...list];
-        }, { deep: true });
+        // watch(() => videoList.value, (value) => {
+        //     const list = getCheckedVideo(value);
+        //     if (JSON.stringify(list) === JSON.stringify(checked.value)) return;
+        //     checked.value = [...list];
+        // }, { deep: true });
 
 
         function formatTime(value: string) {
@@ -70,11 +70,9 @@ export default defineComponent({
                     background="transparent"
                     text={rollConfig.document?.title}
                 />
-                <van-checkbox-group v-model={checked.value} onChange={onChange}>
-                    {videoList.value.length ? videoList.value.sort((a: any, b: any) => Number(b.isReal) - Number(a.isReal)).map((v: any) =>
+                {videoList.value?.length ? videoList.value.map((v: any) =>
                         <div class="video-item" onMouseleave={() => onHoverVideo(v.id, false)} onMouseenter={() => onHoverVideo(v.id, true)}>
-                            <van-checkbox shape="square" name={v.id} key={v.id} iconSize={15}>
-                                <div class="video-item-box">
+                            <div class="video-item-box">
                                     <div class="video-poster-box">
                                         {
                                             v.posterUrl ? <img class="video-poster" src={v.posterUrl} onError={onError}></img> :
@@ -83,29 +81,25 @@ export default defineComponent({
                                     </div>
                                     <div class="video-info">
                                         <div class="video-info-name">
-                                            {v.name}
+                                            {v.url}
                                         </div>
-                                        <div class="video-percentage">
+                                        {/* <div class="video-percentage">
                                             <van-progress percentage={v.percentage}
                                                 track-color="#2d2e31"
                                                 show-pivot={false}
                                                 color="linear-gradient(to right, #be99ff, #7232dd)"></van-progress>
                                             <div>{formatTime(v.currentTime)}</div>
-                                        </div>
+                                        </div> */}
 
                                         <div class="video-tags">
-                                            <van-tag plain type="primary">{v.duration} mins</van-tag>
-                                            {
-                                                v.isReal ? <van-tag type="success">{browser.i18n.getMessage('list_main')}</van-tag> : null
-                                            }
+                                            <van-tag plain type="primary">{v.type} mins</van-tag>
+                                            <van-tag type="success">{v.quality}</van-tag>
                                             {/* <van-button type="primary" size="small" disabled={v.percentage !== 100} onClick={() => onTriggerDownload(v.id)} >下载</van-button> */}
                                         </div>
                                     </div>
                                 </div>
-                            </van-checkbox>
                         </div>
                     ) : <div><van-empty image="error" description={browser.i18n.getMessage('tips_empty')} /></div>}
-                </van-checkbox-group>
             </div>
         );
     },

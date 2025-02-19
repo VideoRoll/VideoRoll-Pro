@@ -10,6 +10,7 @@ import { useShortcuts } from "src/use/useShortcuts";
 import { useGeneralConfig } from "src/options/use/useGeneralConfig";
 import browser from "webextension-polyfill";
 import { getUser, injectAuth } from "./auth";
+import{ initDownload } from "./download";
 
 let currentTabId: number | undefined;
 
@@ -223,3 +224,4 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 });
 
 injectAuth();
+initDownload();
