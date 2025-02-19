@@ -26,9 +26,6 @@ importers:
       audio-hacker:
         specifier: file:.yalc\audio-hacker
         version: file:.yalc/audio-hacker
-      buffer:
-        specifier: ^6.0.3
-        version: 6.0.3
       easyqrcodejs:
         specifier: ^4.6.1
         version: 4.6.1
@@ -123,6 +120,9 @@ importers:
       '@vue/compiler-sfc':
         specifier: ^3.2.47
         version: 3.2.47
+      buffer:
+        specifier: ^5.5.0
+        version: 5.7.1
       chalk:
         specifier: ^5.2.0
         version: 5.2.0

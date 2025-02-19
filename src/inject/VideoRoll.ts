@@ -21,6 +21,7 @@ import {
     ActionType,
     AdvancedPictureInPicture,
     Abloop,
+    VideoDownloadListItem,
 } from "../types/type.d";
 import { nanoid } from "nanoid";
 import { isVisible, sendRuntimeMessage } from "src/util";
@@ -44,6 +45,8 @@ export default class VideoRoll {
     static videoNumbers: number = 0;
 
     static videoList: VideoListItem[] = [];
+
+    static downloadList: VideoDownloadListItem[] = [];
 
     static realVideoPlayer: IRealVideoPlayer = {
         width: 0,
@@ -1065,89 +1068,6 @@ export default class VideoRoll {
         }
     }
 
-    /**
-     * update pitch
-     * @returns
-     */
-    static async updatePitch() {
-        const { on, value } = this.rollConfig.pitch;
-
-        try {
-            if (!on && this.audioController.hasInstance()) {
-                // set to 0
-                this.audioController.setPitchOffset(value);
-                return this;
-            }
-
-            if (!on && !this.audioController.hasInstance()) {
-                return this;
-            }
-
-            if (this.audioController.hasInstance()) {
-                this.audioController.setPitchOffset(value);
-                return this;
-            }
-        } catch (err) {
-            console.debug(err);
-        }
-
-        return this;
-    }
-
-    /**
-     * update volume
-     * @returns
-     */
-    static async updateVolume() {
-        const volume = this.rollConfig.volume;
-
-        try {
-            if (this.audioController.hasInstance()) {
-                this.audioController.setVolume(volume);
-                return this;
-            }
-        } catch (err) {
-            console.debug(err);
-        }
-    }
-
-    static async updateDelay() {
-        const delay = this.rollConfig.delay;
-
-        try {
-            if (this.audioController.hasInstance()) {
-                this.audioController.setDelay(delay);
-                return this;
-            }
-        } catch (err) {
-            console.debug(err);
-        }
-    }
-
-    static async updatePanner() {
-        const panner = this.rollConfig.panner;
-
-        try {
-            if (this.audioController.hasInstance()) {
-                this.audioController.setPanner(panner);
-                return this;
-            }
-        } catch (err) {
-            console.debug(err);
-        }
-    }
-
-    static async updateStereoPanner() {
-        const stereo = this.rollConfig.stereo;
-
-        try {
-            if (this.audioController.hasInstance()) {
-                this.audioController.setStereoPanner(stereo);
-                return this;
-            }
-        } catch (err) {}
-    }
-
     static updatePlaybackRate() {
         const playbackRate = this.rollConfig.playbackRate;
 
@@ -1338,30 +1258,8 @@ export default class VideoRoll {
                 };
             }
 
-            const videoRollPoster = video.getAttribute("data-roll-poster");
-            const videoRollPosterIndex =
-                video.getAttribute("data-roll-poster-index") ?? 0;
-            const index = Number(videoRollPosterIndex);
-            if (index < 5) {
-                return this.capture(video).then((url: string) => {
-                    video.setAttribute("data-roll-poster", url);
-                    const currentIndex = index + 1;
-                    video.setAttribute(
-                        "data-roll-poster-index",
-                        String(currentIndex)
-                    );
-                    return {
-                        posterUrl: url,
-                        duration,
-                        name,
-                        src,
-                        isReal,
-                    };
-                });
-            }
-
             return {
-                posterUrl: videoRollPoster,
+                posterUrl: '',
                 duration,
                 name,
                 src,
@@ -1593,5 +1491,9 @@ export default class VideoRoll {
                 this.realVideoPlayer.player as HTMLVideoElement
             );
         }
+    }
+
+    static updateDownloadList(downloadList: any[]) {
+        this.downloadList = downloadList;
     }
 }

@@ -120,18 +120,6 @@ export default defineComponent({
         onMounted(async () => {
             const queryOptions = { active: true, currentWindow: true };
             const [tab] = await browser.tabs.query(queryOptions);
-            
-            // const streamId = await chrome.tabCapture.getMediaStreamId({
-            //     // consumerTabId: tab.id,
-            //     targetTabId: tab.id,
-            // });
-
-            // sendTabMessage(rollConfig.tabId, {
-            //     rollConfig: clone(rollConfig),
-            //     type: ActionType.AUDIO_CAPTURE,
-            // });
-            // const port = browser.runtime.connect();
-            // port.postMessage({type: 'audio-capture'});
 
             tabId.value = tab.id as number;
             initRollConfig(rollConfig, tab);
@@ -146,7 +134,8 @@ export default defineComponent({
                     muted,
                     iframes,
                     windowConfig,
-                    user: userInfo
+                    user: userInfo,
+                    downloadList,
                 } = info;
 
                 if (info.tabId !== tabId.value) {
@@ -164,11 +153,11 @@ export default defineComponent({
                         break;
                     case ActionType.UPDATE_BADGE:
                         rollConfig.videoNumber = Number(text);
-                        videoList.value = list;
+                        // videoList.value = list;
                         break;
-                    case ActionType.UPDATE_VIDEO_LIST:
-                        videoList.value = list;
-                        break;
+                    // case ActionType.UPDATE_VIDEO_LIST:
+                    //     videoList.value = list;
+                    //     break;
                     case ActionType.CAPTURE:
                         const newUrl = browser.runtime.getURL(
                             "inject/capture.html?imgData=" +
@@ -201,6 +190,9 @@ export default defineComponent({
                     case ActionType.USER_INFO:
                         console.log(userInfo, '2222user----');
                         user.value = userInfo?.user;
+                        break;
+                    case ActionType.GET_DOWNLOAD_LIST:
+                        videoList.value = downloadList;
                         break;
                     default:
                         break;
