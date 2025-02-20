@@ -75,7 +75,7 @@ export async function updateOnMounted(tabId: number, rollConfig: IRollConfig) {
     if (config.enable === false) return;
 
     VideoRoll.setRollConfig(config).updateDocuments().addStyleClass();
-    sendRuntimeMessage(tabId, { videoList: VideoRoll.downloadList, type: ActionType.GET_DOWNLOAD_LIST, tabId })
+    sendRuntimeMessage(tabId, { downloadList: VideoRoll.downloadList, type: ActionType.GET_DOWNLOAD_LIST, tabId })
     sendRuntimeMessage(tabId, { iframes: VideoRoll.getRollConfig().iframes, type: ActionType.UPDATE_IFRAMES, tabId })
 }
 

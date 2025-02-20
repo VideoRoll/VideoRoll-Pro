@@ -53,7 +53,7 @@ function injectScript() {
 
 (function () {
     let videoNumber: number = 0;
-
+    console.log('注入了')
     // injectScript();
     /**
      * get message from popup or backgound

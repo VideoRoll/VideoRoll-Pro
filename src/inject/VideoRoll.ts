@@ -1494,6 +1494,7 @@ export default class VideoRoll {
     }
 
     static updateDownloadList(downloadList: any[]) {
+        console.log(downloadList, 'inject list')
         this.downloadList = downloadList;
     }
 }

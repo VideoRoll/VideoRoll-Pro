@@ -36,7 +36,7 @@ const siteKeys = {
         type: "mime_type=video_mp4",
     },
     "bilibili.com": {
-        apis: ["bilivideo.com", "akamaized.net"],
+        apis: ["bilivideo.com", "akamaized.net", "bilivideo.cn"],
         type: "mp4",
     },
 };
@@ -129,17 +129,20 @@ function addVideoToStore(tabId, videoInfo) {
     }
     const tabVideos = videoStore.get(tabId);
     tabVideos.set(videoInfo.url, videoInfo);
-
+    console.log(tabVideos, 'tabVideos')
     // 通知popup更新
     notifyPopup(tabId);
 }
 
 // 通知popup更新
 function notifyPopup(tabId) {
-    sendRuntimeMessage(tabId, {
-        type: ActionType.GET_DOWNLOAD_LIST,
-        downloadList: Array.from(videoStore.get(tabId).values()),
-    });
+    setTimeout(() => {
+        sendRuntimeMessage(tabId, {
+            type: ActionType.GET_DOWNLOAD_LIST,
+            downloadList: Array.from(videoStore.get(tabId).values()),
+        });
+    })
+    
     // chrome.runtime.sendMessage({
     //     type: "VIDEO_UPDATED",
     //     tabId: tabId,
@@ -169,7 +172,7 @@ export function initDownload() {
     // 监听网络请求
     chrome.webRequest.onBeforeRequest.addListener(
         (details) => {
-            const { url, tabId } = details;
+            const { url, tabId, initiator } = details;
 
             if (isUnsupportedDomain(url)) return;
 
@@ -186,21 +189,18 @@ export function initDownload() {
                 console.debug("Invalid URL format:", url);
                 return false;
             }
-
+            // console.log(url.slice(0, 100), 'url');
             const videoType = detectVideoType(url);
             if (!videoType) return;
+            
+            const siteKey = Object.keys(siteKeys).find((key) =>
+                initiator?.includes(key)
+            );
+            if (siteKey) {
+                const info = siteKeys[siteKey];
+                if (!info.apis.some((api: string) => url.includes(api))) return;
 
-            if (siteKeys) {
-                const siteKey = Object.keys(siteKeys).find((key) =>
-                    url.includes(key)
-                );
-                if (siteKey) {
-                    const info = siteKeys[siteKey];
-                    if (!info.apis.some((api: string) => url.includes(api)))
-                        return;
-
-                    if (!url.includes(info.type)) return;
-                }
+                if (!url.includes(info.type)) return;
             }
 
             console.log(videoType, "-videoType");
