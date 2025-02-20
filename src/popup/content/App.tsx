@@ -129,7 +129,6 @@ export default defineComponent({
                     type,
                     rollConfig: config,
                     text,
-                    videoList: list,
                     imgData,
                     muted,
                     iframes,
@@ -138,6 +137,7 @@ export default defineComponent({
                     downloadList,
                 } = info;
 
+                console.log(downloadList, 'downloadList----');
                 if (info.tabId !== tabId.value) {
                     c("not current tab");
                     return;
