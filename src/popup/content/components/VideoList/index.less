@@ -18,7 +18,7 @@
 }
 
 .video-item {
-    padding: 5px;
+    padding: 8px;
     border-radius: 6px;
     border: 1px solid #2d2d31;
     margin-bottom: 4px;
@@ -58,29 +58,35 @@
     }
 
     .video-info {
-        flex: 1;
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
         /* justify-content: flex-start; */
         padding-left: 10px;
         .video-info-name {
-            width: 170px;
+            width: 250px;
+            margin-bottom: 5px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
         .video-tags {
-            width: 170px;
+            width: 100%;
             display: flex;
-
+            justify-content: space-between;
             .van-tag:not(:last-child) {
                 margin-right: 5px;
+            }
+
+            .list-icon {
+                width: 16px;
+                height: 16px;
+                cursor: pointer;
             }
         }
 
         .video-percentage {
-            width: 170px;
+            width: 250px;
             display: flex;
             align-items: center;
 
