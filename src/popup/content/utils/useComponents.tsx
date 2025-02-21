@@ -7,7 +7,7 @@ import { shallowReactive } from 'vue';
 import {
     defineAsyncComponent,
 } from "vue";
-import { DeviceTv, Headphones, List, Adjustments } from '@vicons/tabler'
+import { DeviceTv, Headphones, Download, List, Adjustments } from '@vicons/tabler'
 import browser from 'webextension-polyfill';
 import { Tooltip } from 'floating-vue';
 
@@ -425,7 +425,7 @@ export default function useComponents() {
         },
         {
             type: 'tab',
-            title: <Tooltip><div class="tab-title" v-tooltip={browser.i18n.getMessage('tabs_list')}><List class="tab-icon" /></div></Tooltip>,
+            title: <Tooltip><div class="tab-title" v-tooltip={browser.i18n.getMessage('tabs_list')}><Download class="tab-icon" /></div></Tooltip>,
             children: [
                 {
                     type: 'component',

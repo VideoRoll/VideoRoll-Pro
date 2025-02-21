@@ -2,7 +2,7 @@
 import { ActionType } from "src/types/type.d";
 // import m3u8Parser from "../lib/m3u8-parser.min.js";
 // import "../lib/mpd-parser.min.js";
-import { sendRuntimeMessage } from "src/util";
+import { sendRuntimeMessage, sendTabMessage } from "src/util";
 // 导入所需的解析器
 importScripts("../lib/m3u8-parser.min.js");
 importScripts("../lib/mpd-parser.min.js");
@@ -127,22 +127,21 @@ function addVideoToStore(tabId, videoInfo) {
     if (!videoStore.has(tabId)) {
         videoStore.set(tabId, new Map());
     }
+
     const tabVideos = videoStore.get(tabId);
     tabVideos.set(videoInfo.url, videoInfo);
-    console.log(tabVideos, 'tabVideos')
+    console.log(tabVideos, "tabVideos");
     // 通知popup更新
     notifyPopup(tabId);
 }
 
 // 通知popup更新
 function notifyPopup(tabId) {
-    setTimeout(() => {
-        sendRuntimeMessage(tabId, {
-            type: ActionType.GET_DOWNLOAD_LIST,
-            downloadList: Array.from(videoStore.get(tabId).values()),
-        });
-    })
-    
+    sendTabMessage(tabId, {
+        type: ActionType.GET_DOWNLOAD_LIST,
+        downloadList: Array.from(videoStore.get(tabId).values()),
+    });
+
     // chrome.runtime.sendMessage({
     //     type: "VIDEO_UPDATED",
     //     tabId: tabId,
@@ -192,7 +191,7 @@ export function initDownload() {
             // console.log(url.slice(0, 100), 'url');
             const videoType = detectVideoType(url);
             if (!videoType) return;
-            
+
             const siteKey = Object.keys(siteKeys).find((key) =>
                 initiator?.includes(key)
             );
@@ -210,17 +209,21 @@ export function initDownload() {
 
             switch (videoType) {
                 case "mp4":
-                    addVideoToStore(tabId, {
-                        type: "mp4",
-                        url: url,
-                        timestamp: Date.now(),
-                    });
+                    fetch(url, { method: "HEAD" }).then((response) => {
+                        const size = parseInt(response.headers.get("content-length") || "0");
+                        addVideoToStore(tabId, {
+                            type: "mp4",
+                            url: url,
+                            timestamp: Date.now(),
+                            size
+                        });
+                    }).catch((error) => console.error(error));
                     break;
                 case "m3u8":
                     handleM3U8(url, tabId);
                     break;
                 case "mpd":
-                    handleMPD(url, tabId);
+                    // handleMPD(url, tabId);
                     break;
                 default:
                     break;
@@ -365,6 +368,8 @@ async function handleVideoDownload(videoInfo) {
         case "mpd":
             downloadMPDWithProgress(videoInfo, downloadId);
             break;
+        default:
+            break;
     }
 }
 
@@ -443,4 +448,89 @@ async function downloadM3U8WithProgress(videoInfo, downloadId) {
 // 处理MPD下载进度
 async function downloadMPDWithProgress(videoInfo, downloadId) {
     // 类似 M3U8 的实现...
+}
+
+// 解析 MP4 文件的元数据
+async function parseMP4Metadata(
+    url: string
+): Promise<{ width?: number; height?: number }> {
+    try {
+        const response = await fetch(url, {
+            headers: {
+                Range: "bytes=0-1000", // 只请求文件头部
+            },
+        });
+        const buffer = await response.arrayBuffer();
+        const data = new Uint8Array(buffer);
+
+        // 查找 moov atom
+        let offset = 0;
+        while (offset < data.length) {
+            const size =
+                (data[offset] << 24) |
+                (data[offset + 1] << 16) |
+                (data[offset + 2] << 8) |
+                data[offset + 3];
+            const type = String.fromCharCode(
+                data[offset + 4],
+                data[offset + 5],
+                data[offset + 6],
+                data[offset + 7]
+            );
+
+            if (type === "tkhd") {
+                // tkhd atom 包含视频尺寸信息
+                const width = (data[offset + 74] << 8) | data[offset + 75];
+                const height = (data[offset + 78] << 8) | data[offset + 79];
+                return { width, height };
+            }
+
+            offset += size;
+        }
+
+        return {};
+    } catch (error) {
+        console.error("解析MP4元数据失败:", error);
+        return {};
+    }
+}
+
+// 获取视频元数据
+async function getVideoMetadata(
+    url: string,
+    type: string,
+    manifest?: any
+): Promise<{ size: number; width?: number; height?: number }> {
+    try {
+        const response = await fetch(url, { method: "HEAD" });
+        const size = parseInt(response.headers.get("content-length") || "0");
+
+        let resolution = { width: undefined, height: undefined };
+
+        switch (type) {
+            case "mp4":
+                resolution = await parseMP4Metadata(url);
+                break;
+            // case 'm3u8':
+            //     if (manifest) {
+            //         resolution = getM3U8Resolution(manifest);
+            //     }
+            //     break;
+            // case 'mpd':
+            //     if (manifest) {
+            //         resolution = getMPDResolution(manifest);
+            //     }
+            //     break;
+            default:
+                break;
+        }
+
+        return {
+            size,
+            ...resolution,
+        };
+    } catch (error) {
+        console.error("获取视频元数据失败:", error);
+        return { size: 0 };
+    }
 }
