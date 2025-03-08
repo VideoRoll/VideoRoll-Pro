@@ -3,14 +3,26 @@ import { ActionType } from "src/types/type.d";
 // import m3u8Parser from "../lib/m3u8-parser.min.js";
 // import "../lib/mpd-parser.min.js";
 import { sendRuntimeMessage, sendTabMessage } from "src/util";
+
+// 替换为正常的 import 语句
+// import m3u8Parser from "../lib/m3u8-parser.min.js";
+// import { mpdParser } from "../lib/mpd-parser.min.js";
 // 导入所需的解析器
 importScripts("../lib/m3u8-parser.min.js");
 importScripts("../lib/mpd-parser.min.js");
 
 // 存储视频信息的Map
 const videoStore = new Map();
+// 请求信息
+const requestMap = new Map();
+// 添加 URL 重试计数器
+const urlRetryCounter = new Map<string, number>();
+const MAX_RETRY_ATTEMPTS = 5;
 
-// 视频格式检测
+// 存储请求头的 Map
+const requestHeadersStore = new Map<string, chrome.webRequest.HttpHeader[]>();
+
+// 优化视频格式检测规则
 const videoPatterns = {
     mp4: [
         /\.(mp4|m4v)(\?|$)/i,
@@ -19,25 +31,56 @@ const videoPatterns = {
         /content-type=video[/_]mp4/i,
     ],
     m3u8: [/\.(m3u8)(\?|$)/i, /playlist\.m3u8/i, /manifest\.m3u8/i],
-    mpd: [/\.(mpd|m4s)(\?|$)/i, /manifest\.mpd/i, /dash\.mpd/i],
+    mpd: [
+        // 更精确的 MPD/m4s 匹配规则
+        /\/manifest\.mpd/i,
+        /\/dash\.mpd/i,
+        /\/(init|chunk).*\.m4s/i,
+        /segment_\d+\.m4s/i,
+        /video_\d+\.m4s/i,
+        /audio_\d+\.m4s/i,
+        /\.(mpd|m4s)(\?|$)/i,
+        /manifest\.mpd/i,
+        /dash\.mpd/i,
+    ],
+};
 
-    // mp4: /\.(mp4|m4v)(\?|$)/i,
-    // m3u8: /\.(m3u8)(\?|$)|\/playlist/i,
-    // mpd: /\.(m4s)(\?|$)|\/manifest/i,
+// 添加需要排除的关键词
+const excludePatterns = [
+    /\.log/i,
+    /analytics/i,
+    /tracking/i,
+    /statistics/i,
+    /heartbeat/i,
+    /report/i,
+    /error/i,
+];
+
+// 检测是否为需要排除的请求
+const shouldExcludeRequest = (url: string): boolean => {
+    return excludePatterns.some((pattern) => pattern.test(url));
 };
 
 const siteKeys = {
     "douyin.com": {
         apis: ["douyinvod.com"],
-        type: "mime_type=video_mp4",
+        type: ["mime_type=video_mp4"],
     },
     "tiktok.com": {
         apis: ["tiktok.com"],
-        type: "mime_type=video_mp4",
+        type: ["mime_type=video_mp4"],
     },
     "bilibili.com": {
         apis: ["bilivideo.com", "akamaized.net", "bilivideo.cn"],
-        type: "mp4",
+        type: ["mp4", "m4s"],
+        header: {
+            Accept: "*/*",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+            Origin: "https://www.bilibili.com",
+            Referer: "https://www.bilibili.com",
+            Range: "bytes=0-",
+            "User-Agent": navigator.userAgent,
+        },
     },
 };
 
@@ -83,28 +126,170 @@ async function handleM3U8(url, tabId) {
     }
 }
 
-// 处理MPD视频
-async function handleMPD(url, tabId) {
-    console.log(url, "-url");
+// 监听请求发送前，保存请求头信息
+chrome.webRequest.onSendHeaders.addListener(
+    (details) => {
+        if (details.requestHeaders) {
+            requestHeadersStore.set(details.requestId, details.requestHeaders);
+        }
+    },
+    { urls: ["<all_urls>"] },
+    ['requestHeaders', chrome.webRequest.OnBeforeSendHeadersOptions.EXTRA_HEADERS].filter(Boolean)
+);
+
+// 监听响应开始，用于更准确地判断资源类型
+chrome.webRequest.onResponseStarted.addListener(
+    (details) => {
+        try {
+            const requestHeaders = requestHeadersStore.get(details.requestId);
+            const responseHeaders = details.responseHeaders;
+            
+            // 结合请求头和响应头判断是否为视频资源
+            if (isVideoResource(details.url, requestHeaders, responseHeaders)) {
+                const videoType = detectVideoTypeWithHeaders(details.url, responseHeaders);
+                if (videoType) {
+                    handleVideoRequest(details, videoType);
+                }
+            }
+            
+            // 清理已使用的请求头
+            requestHeadersStore.delete(details.requestId);
+        } catch (error) {
+            console.error('Error processing response:', error);
+        }
+    },
+    { urls: ["<all_urls>"] },
+    ["responseHeaders"]
+);
+
+// 清理失败请求的数据
+chrome.webRequest.onErrorOccurred.addListener(
+    (details) => {
+        requestHeadersStore.delete(details.requestId);
+        urlRetryCounter.delete(details.url);
+    },
+    { urls: ["<all_urls>"] }
+);
+
+// 根据请求头和响应头判断是否为视频资源
+function isVideoResource(
+    url: string,
+    requestHeaders?: chrome.webRequest.HttpHeader[],
+    responseHeaders?: chrome.webRequest.HttpHeader[]
+): boolean {
+    // 检查 URL 是否匹配视频模式
+    if (shouldExcludeRequest(url)) {
+        return false;
+    }
+
+    // 检查响应头中的 Content-Type
+    const contentType = responseHeaders?.find(h => 
+        h.name.toLowerCase() === 'content-type'
+    )?.value.toLowerCase();
+
+    if (contentType) {
+        if (contentType.includes('video/') || 
+            contentType.includes('application/dash+xml') ||
+            contentType.includes('application/vnd.apple.mpegurl')) {
+            return true;
+        }
+    }
+
+    // 检查请求头中的 Range 和 Accept
+    const hasRange = requestHeaders?.some(h => 
+        h.name.toLowerCase() === 'range'
+    );
+    const acceptHeader = requestHeaders?.find(h => 
+        h.name.toLowerCase() === 'accept'
+    )?.value.toLowerCase();
+
+    if (hasRange && acceptHeader && 
+        (acceptHeader.includes('video/') || acceptHeader.includes('*/*'))) {
+        return true;
+    }
+
+    return false;
+}
+
+// 使用响应头增强视频类型检测
+function detectVideoTypeWithHeaders(
+    url: string,
+    responseHeaders?: chrome.webRequest.HttpHeader[]
+): string | null {
+    const contentType = responseHeaders?.find(h => 
+        h.name.toLowerCase() === 'content-type'
+    )?.value.toLowerCase();
+
+    if (contentType) {
+        if (contentType.includes('video/mp4')) return 'mp4';
+        if (contentType.includes('application/vnd.apple.mpegurl')) return 'm3u8';
+        if (contentType.includes('application/dash+xml')) return 'mpd';
+    }
+
+    // 如果无法从响应头判断，则使用 URL 判断
+    return detectVideoType(url);
+}
+
+// 处理视频请求
+function handleVideoRequest(
+    details: chrome.webRequest.WebResponseStartedDetails,
+    videoType: string
+) {
+    const { url, tabId } = details;
+    
+    // 获取完整的请求头信息
+    const requestHeaders = requestHeadersStore.get(details.requestId);
+    
+    switch (videoType) {
+        case 'mp4':
+            addVideoToStore(tabId, {
+                type: 'mp4',
+                url: url,
+                timestamp: Date.now(),
+                headers: requestHeaders // 保存请求头信息，用于后续下载
+            });
+            break;
+        case 'm3u8':
+            handleM3U8(url, tabId, requestHeaders);
+            break;
+        case 'mpd':
+            handleMPD(url, tabId, requestHeaders);
+            break;
+    }
+}
+
+// 修改 handleMPD 函数，添加请求头支持
+async function handleMPD(
+    url: string,
+    tabId: number,
+    originalHeaders?: chrome.webRequest.HttpHeader[]
+) {
+    if (shouldExcludeRequest(url)) return;
+
     try {
-        const response = await fetch(url, {
-            mode: "no-cors", // 或者 'no-cors'
+        // 转换请求头格式
+        const headers = originalHeaders?.reduce((acc, header) => {
+            acc[header.name] = header.value;
+            return acc;
+        }, {} as Record<string, string>) || {};
+
+        const response = await fetchWithRetry(url, {
             headers: {
-                Accept: "*/*",
-                "Accept-Language": "zh-CN,zh;q=0.9",
-                Origin: "https://www.bilibili.com",
-                Referer: "https://www.bilibili.com",
-                Range: "bytes=0-", // 视频流请求通常需要 Range header
-                "User-Agent": navigator.userAgent,
-            },
+                ...headers,
+                // 确保必要的头信息存在
+                'Range': headers['Range'] || 'bytes=0-',
+                'Origin': headers['Origin'] || new URL(url).origin,
+                'Referer': headers['Referer'] || 'https://www.bilibili.com/'
+            }
         });
+
         const content = await response.text();
         const manifest = mpdParser.parse(content, { url });
 
         const videoInfo = {
             type: "mpd",
             url: url,
-            quality: manifest.representations.length,
+            quality: manifest.representations?.length || 1,
             segments: manifest.segments,
             timestamp: Date.now(),
         };
@@ -112,13 +297,19 @@ async function handleMPD(url, tabId) {
         addVideoToStore(tabId, videoInfo);
     } catch (error: any) {
         console.error("MPD parsing error:", error.message);
-        addVideoToStore(tabId, {
-            type: "mpd",
-            url: url,
-            quality: null,
-            segments: null,
-            timestamp: Date.now(),
-        });
+
+        // 只有在未超过重试次数时才添加到存储
+        const retryCount = urlRetryCounter.get(url) || 0;
+        if (retryCount < MAX_RETRY_ATTEMPTS) {
+            addVideoToStore(tabId, {
+                type: "mpd",
+                url: url,
+                quality: null,
+                segments: null,
+                timestamp: Date.now(),
+                error: error.message,
+            });
+        }
     }
 }
 
@@ -127,7 +318,6 @@ function addVideoToStore(tabId, videoInfo) {
     if (!videoStore.has(tabId)) {
         videoStore.set(tabId, new Map());
     }
-
     const tabVideos = videoStore.get(tabId);
     tabVideos.set(videoInfo.url, videoInfo);
     console.log(tabVideos, "tabVideos");
@@ -167,17 +357,46 @@ function hasValidProtocol(url) {
     return true;
 }
 
-export function initDownload() {
+// 处理重试逻辑的 fetch 包装函数
+async function fetchWithRetry(
+    url: string,
+    options: RequestInit = {}
+): Promise<Response> {
+    const retryCount = urlRetryCounter.get(url) || 0;
+
+    if (retryCount >= MAX_RETRY_ATTEMPTS) {
+        throw new Error(
+            `Maximum retry attempts (${MAX_RETRY_ATTEMPTS}) reached for URL: ${url}`
+        );
+    }
+
+    try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        // 成功后重置计数器
+        urlRetryCounter.delete(url);
+        return response;
+    } catch (error) {
+        urlRetryCounter.set(url, retryCount + 1);
+        console.warn(`Fetch attempt ${retryCount + 1} failed for URL: ${url}`);
+        throw error;
+    }
+}extractVideoTitle
+
+
+function onBeforeRequestListener() {
     // 监听网络请求
     chrome.webRequest.onBeforeRequest.addListener(
         (details) => {
-            const { url, tabId, initiator } = details;
+            const { url, tabId, initiator, id } = details;
 
-            if (isUnsupportedDomain(url)) return;
+            if (isUnsupportedDomain(url) || shouldExcludeRequest(url)) return;
 
             // 1. 首先验证 URL 协议
             if (!hasValidProtocol(url)) {
-                console.debug("Invalid URL protocol:", url);
+                // console.debug("Invalid URL protocol:", url);
                 return false;
             }
 
@@ -185,21 +404,35 @@ export function initDownload() {
             try {
                 new URL(url);
             } catch {
-                console.debug("Invalid URL format:", url);
+                // console.debug("Invalid URL format:", url);
                 return false;
             }
-            // console.log(url.slice(0, 100), 'url');
+
+
+            
             const videoType = detectVideoType(url);
             if (!videoType) return;
+
+            
+
+            // // 检查是否已达到最大重试次数
+            // const retryCount = urlRetryCounter.get(url) || 0;
+            // if (retryCount >= MAX_RETRY_ATTEMPTS) {
+            //     console.debug(`Skipping URL due to max retries: ${url}`);
+            //     return;
+            // }
 
             const siteKey = Object.keys(siteKeys).find((key) =>
                 initiator?.includes(key)
             );
+
+            let info;
             if (siteKey) {
-                const info = siteKeys[siteKey];
+                info = siteKeys[siteKey];
                 if (!info.apis.some((api: string) => url.includes(api))) return;
 
-                if (!url.includes(info.type)) return;
+                if (!info.type.some((type: string) => url.includes(type)))
+                    return;
             }
 
             console.log(videoType, "-videoType");
@@ -207,29 +440,101 @@ export function initDownload() {
             const tabVideos = videoStore.get(tabId);
             if (tabVideos && tabVideos.has(url)) return;
 
+            console.debug("valid URL:", url);
             switch (videoType) {
                 case "mp4":
-                    fetch(url, { method: "HEAD" }).then((response) => {
-                        const size = parseInt(response.headers.get("content-length") || "0");
-                        addVideoToStore(tabId, {
-                            type: "mp4",
-                            url: url,
-                            timestamp: Date.now(),
-                            size
-                        });
-                    }).catch((error) => console.error(error));
+                    addVideoToStore(tabId, {
+                        type: "mp4",
+                        url: url,
+                        timestamp: Date.now(),
+                    });
                     break;
                 case "m3u8":
                     handleM3U8(url, tabId);
                     break;
                 case "mpd":
-                    // handleMPD(url, tabId);
+                    handleMPD(url, tabId, info);
                     break;
                 default:
                     break;
             }
         },
-        { urls: ["<all_urls>"] }
+        { urls: ["<all_urls>"] },
+        ["requestBody"]
+    );
+}
+
+export function initDownload() {
+    // 监听网络请求
+    chrome.webRequest.onBeforeRequest.addListener(
+        (details) => {
+            const { url, tabId, initiator } = details;
+
+            if (isUnsupportedDomain(url) || shouldExcludeRequest(url)) return;
+
+            // 1. 首先验证 URL 协议
+            if (!hasValidProtocol(url)) {
+                // console.debug("Invalid URL protocol:", url);
+                return false;
+            }
+
+            // 2. 尝试解析 URL
+            try {
+                new URL(url);
+            } catch {
+                // console.debug("Invalid URL format:", url);
+                return false;
+            }
+            // console.log(url.slice(0, 100), 'url');
+            const videoType = detectVideoType(url);
+            if (!videoType) return;
+
+            // 检查是否已达到最大重试次数
+            const retryCount = urlRetryCounter.get(url) || 0;
+            if (retryCount >= MAX_RETRY_ATTEMPTS) {
+                console.debug(`Skipping URL due to max retries: ${url}`);
+                return;
+            }
+
+            const siteKey = Object.keys(siteKeys).find((key) =>
+                initiator?.includes(key)
+            );
+
+            let info;
+            if (siteKey) {
+                info = siteKeys[siteKey];
+                if (!info.apis.some((api: string) => url.includes(api))) return;
+
+                if (!info.type.some((type: string) => url.includes(type)))
+                    return;
+            }
+
+            console.log(videoType, "-videoType");
+
+            const tabVideos = videoStore.get(tabId);
+            if (tabVideos && tabVideos.has(url)) return;
+
+            console.debug("valid URL:", url);
+            switch (videoType) {
+                case "mp4":
+                    addVideoToStore(tabId, {
+                        type: "mp4",
+                        url: url,
+                        timestamp: Date.now(),
+                    });
+                    break;
+                case "m3u8":
+                    handleM3U8(url, tabId);
+                    break;
+                case "mpd":
+                    handleMPD(url, tabId, info);
+                    break;
+                default:
+                    break;
+            }
+        },
+        { urls: ["<all_urls>"] },
+        ["requestBody"]
     );
 
     // 处理标签页关闭
@@ -298,7 +603,7 @@ function updateDownloadProgress(downloadId, progress) {
 }
 
 // 处理视频下载
-async function handleVideoDownload(videoInfo) {
+async function handleVideoDownload(videoInfo: any) {
     const downloadId = Date.now().toString();
 
     // 通知开始下载
@@ -367,8 +672,6 @@ async function handleVideoDownload(videoInfo) {
 
         case "mpd":
             downloadMPDWithProgress(videoInfo, downloadId);
-            break;
-        default:
             break;
     }
 }
@@ -448,89 +751,4 @@ async function downloadM3U8WithProgress(videoInfo, downloadId) {
 // 处理MPD下载进度
 async function downloadMPDWithProgress(videoInfo, downloadId) {
     // 类似 M3U8 的实现...
-}
-
-// 解析 MP4 文件的元数据
-async function parseMP4Metadata(
-    url: string
-): Promise<{ width?: number; height?: number }> {
-    try {
-        const response = await fetch(url, {
-            headers: {
-                Range: "bytes=0-1000", // 只请求文件头部
-            },
-        });
-        const buffer = await response.arrayBuffer();
-        const data = new Uint8Array(buffer);
-
-        // 查找 moov atom
-        let offset = 0;
-        while (offset < data.length) {
-            const size =
-                (data[offset] << 24) |
-                (data[offset + 1] << 16) |
-                (data[offset + 2] << 8) |
-                data[offset + 3];
-            const type = String.fromCharCode(
-                data[offset + 4],
-                data[offset + 5],
-                data[offset + 6],
-                data[offset + 7]
-            );
-
-            if (type === "tkhd") {
-                // tkhd atom 包含视频尺寸信息
-                const width = (data[offset + 74] << 8) | data[offset + 75];
-                const height = (data[offset + 78] << 8) | data[offset + 79];
-                return { width, height };
-            }
-
-            offset += size;
-        }
-
-        return {};
-    } catch (error) {
-        console.error("解析MP4元数据失败:", error);
-        return {};
-    }
-}
-
-// 获取视频元数据
-async function getVideoMetadata(
-    url: string,
-    type: string,
-    manifest?: any
-): Promise<{ size: number; width?: number; height?: number }> {
-    try {
-        const response = await fetch(url, { method: "HEAD" });
-        const size = parseInt(response.headers.get("content-length") || "0");
-
-        let resolution = { width: undefined, height: undefined };
-
-        switch (type) {
-            case "mp4":
-                resolution = await parseMP4Metadata(url);
-                break;
-            // case 'm3u8':
-            //     if (manifest) {
-            //         resolution = getM3U8Resolution(manifest);
-            //     }
-            //     break;
-            // case 'mpd':
-            //     if (manifest) {
-            //         resolution = getMPDResolution(manifest);
-            //     }
-            //     break;
-            default:
-                break;
-        }
-
-        return {
-            size,
-            ...resolution,
-        };
-    } catch (error) {
-        console.error("获取视频元数据失败:", error);
-        return { size: 0 };
-    }
 }

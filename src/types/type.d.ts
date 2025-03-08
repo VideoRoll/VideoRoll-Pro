@@ -35,7 +35,8 @@ export enum ActionType {
     AUDIO_CAPTURE,
     UPDATE_AUDIO,
     DELETE_AUDIO,
-    GET_DOWNLOAD_LIST
+    GET_DOWNLOAD_LIST,
+    DOWNLOAD_SINGLE_VIDEO
 }
 
 export enum FlipType {

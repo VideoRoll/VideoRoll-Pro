@@ -139,7 +139,7 @@ function injectScript() {
                     createAudioCapture(tabId, { ...rollConfig }, streamId);
                     break;
                 case ActionType.GET_DOWNLOAD_LIST:
-                    updateDownloadList(downloadList);
+                    updateDownloadList(tabId, downloadList);
                     break;
                 default:
                     return;

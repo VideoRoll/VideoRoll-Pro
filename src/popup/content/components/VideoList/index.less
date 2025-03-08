@@ -60,24 +60,41 @@
     .video-info {
         display: flex;
         flex-direction: column;
+        width: 100%;
         /* justify-content: flex-start; */
-        padding-left: 10px;
+        .video-info-box {
+            display: flex;
+            // justify-content: space-between;
+            align-items: center;
+        }
         .video-info-name {
             width: 250px;
-            margin-bottom: 5px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            font-size: 14px;
+        }
+
+        .video-type {
+            color: #ded47e;
+            margin-right: 4px;
+            font-weight: bold;
         }
 
         .video-tags {
             width: 100%;
+            margin-top: 4px;
             display: flex;
             justify-content: space-between;
             .van-tag:not(:last-child) {
                 margin-right: 5px;
             }
+        }
 
+        .video-action {
+            margin-top: 4px;
+            display: flex;
+            flex-direction: row-reverse;
             .list-icon {
                 width: 16px;
                 height: 16px;

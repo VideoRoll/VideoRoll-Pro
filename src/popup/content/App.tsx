@@ -214,7 +214,7 @@ export default defineComponent({
 
         const renderComponent = () => {
             if (rollConfig.enable) {
-                if (rollConfig.videoNumber === 0) return <Iframe></Iframe>;
+                // if (rollConfig.videoNumber === 0) return <Iframe></Iframe>;
 
                 return <GridPanel></GridPanel>;
             }
