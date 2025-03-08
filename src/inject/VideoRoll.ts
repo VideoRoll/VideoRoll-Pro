@@ -424,35 +424,6 @@ export default class VideoRoll {
             type: ActionType.UPDATE_AUDIO,
             rollConfig: this.rollConfig,
         });
-        // if (!this.audioController) {
-        //     try {
-        //         this.audioController = new AudioController(
-        //             this.videoElements,
-        //             this.audioElements,
-        //             streamId
-        //         );
-
-        //         this.audioController.done(async () => {
-        //             // await this.updatePitch();
-        //             // await this.updateVolume();
-        //             // await this.updateDelay();
-        //             // await this.updatePanner();
-        //             // await this.updateStereoPanner();
-        //         });
-        //     } catch (err) {
-        //         console.error("Failed to create AudioController:", err);
-        //         this.audioController = null;
-        //     }
-        // } else {
-        //     if (!this.audioController.hasInstance()) {
-        //         await this.audioController.createAudioContext();
-        //     }
-        //     // await this.updatePitch();
-        //     // await this.updateVolume();
-        //     // await this.updateDelay();
-        //     // await this.updatePanner();
-        //     // await this.updateStereoPanner();
-        // }
 
         this.updatePlaybackRate();
         this.toggleMuted();
@@ -1494,7 +1465,14 @@ export default class VideoRoll {
     }
 
     static updateDownloadList(downloadList: any[]) {
-        console.log(downloadList, 'inject list')
         this.downloadList = downloadList;
+    }
+
+    static downloadSingleVideo() {
+        sendRuntimeMessage(this.rollConfig.tabId, {
+            type: ActionType.AUDIO_CAPTURE,
+            streamId,
+            rollConfig: this.rollConfig,
+        });
     }
 }

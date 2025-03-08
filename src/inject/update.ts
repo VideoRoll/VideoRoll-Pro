@@ -268,6 +268,7 @@ export async function createAudioCapture(tabId: number, rollConfig: IRollConfig,
     VideoRoll.createAudioCapture(streamId);
 }
 
-export async function updateDownloadList(downloadList: any[]) {
+export async function updateDownloadList(tabId: number, downloadList: any[]) {
     VideoRoll.updateDownloadList(downloadList);
+    sendRuntimeMessage(tabId, { downloadList: VideoRoll.downloadList, type: ActionType.GET_DOWNLOAD_LIST, tabId })
 }

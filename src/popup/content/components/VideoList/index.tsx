@@ -9,7 +9,7 @@ import browser from "webextension-polyfill";
 import "./index.less";
 import { IRollConfig } from "src/types/type";
 import { showConfirmDialog } from "vant";
-import { Download } from "@vicons/tabler";
+import { Download, PlayerPlay } from "@vicons/tabler";
 
 export default defineComponent({
     name: "VideoList",
@@ -18,6 +18,8 @@ export default defineComponent({
         const onHoverVideo = inject("onHoverVideo") as Function;
         const updateVideoCheck = inject("updateVideoCheck") as Function;
         const videoList = inject("videoList") as any;
+
+        const playingUrl = ref('');
 
         const getCheckedVideo = (list: any) => {
             return list.filter((v: any) => v.checked).map((v: any) => v.id);
@@ -43,7 +45,7 @@ export default defineComponent({
             });
         };
 
-        const onError = function () {};
+        const onError = function () { };
 
         // watch(() => videoList.value, (value) => {
         //     const list = getCheckedVideo(value);
@@ -77,6 +79,10 @@ export default defineComponent({
             );
         }
 
+        const onPlay = (url: string) => {
+            playingUrl.value = url;
+        }
+
         return () => (
             <div>
                 <van-notice-bar
@@ -92,10 +98,14 @@ export default defineComponent({
                             onMouseleave={() => onHoverVideo(v.id, false)}
                             onMouseenter={() => onHoverVideo(v.id, true)}
                         >
-                            <div class="video-item-box">
-                                <div class="video-info">
-                                    <div class="video-info-name">{v.url}</div>
-                                    {/* <div class="video-percentage">
+                            <div class="video-info">
+                                <div class="video-info-box">
+                                    <div class="video-info-name">
+                                        {v.title ?? v.url}</div>
+
+                                </div>
+
+                                {/* <div class="video-percentage">
                                             <van-progress percentage={v.percentage}
                                                 track-color="#2d2e31"
                                                 show-pivot={false}
@@ -103,23 +113,45 @@ export default defineComponent({
                                             <div>{formatTime(v.currentTime)}</div>
                                         </div> */}
 
-                                    <div class="video-tags">
-                                        <div>
-                                            <van-tag type="primary">
-                                                {v.type}
+                                <div class="video-tags">
+                                    <div>
+                                        <van-tag type="primary">
+                                            {v.type}
+                                        </van-tag>
+                                        {/* <span class="video-type">{v.type}</span> */}
+
+                                        {typeof v.size === "string" ? (
+                                            <van-tag plain type="success">
+                                                {v.size}
                                             </van-tag>
-                                            {typeof v.size === "number" ? (
-                                                <van-tag plain type="success">
-                                                    {formatFileSize(v.size)}
-                                                </van-tag>
-                                            ) : null}
-                                        </div>
-                                        <div>
-                                            <Download class="list-icon"></Download>
-                                        </div>
-                                        {/* <van-button type="primary" size="small" disabled={v.percentage !== 100} onClick={() => onTriggerDownload(v.id)} >下载</van-button> */}
+                                        ) : null}
+                                        {typeof v.duration === "string" ? (
+                                            <van-tag plain type="success">
+                                                {v.duration}
+                                            </van-tag>
+                                        ) : null}
+                                        {v.width && v.height ? (
+                                            <van-tag plain type="success">
+                                                {`${v.width}x${v.height}`}
+                                            </van-tag>
+                                        ) : null}
+                                        {/* {v.kbps ? (
+                                            <van-tag plain type="success">
+                                                {`${v.kbps}kbps`}
+                                            </van-tag>
+                                        ) : null} */}
                                     </div>
+                                    {/* <van-button type="primary" size="small" disabled={v.percentage !== 100} onClick={() => onTriggerDownload(v.id)} >下载</van-button> */}
                                 </div>
+                                <div class="video-action">
+                                    <PlayerPlay class="list-icon" onClick={() => onPlay(v.url)}></PlayerPlay>
+                                    <Download class="list-icon"></Download>
+                                </div>
+                            </div>
+                            <div class="video-player">
+                                {
+                                    playingUrl.value === v.url ? <video height="300" controls autoplay src={v.url}></video> : null
+                                }
                             </div>
                         </div>
                     ))
