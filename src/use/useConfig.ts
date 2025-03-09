@@ -72,6 +72,7 @@ const defaultConfig = {
     document: {
         title: ''
     },
+    favIcon: '',
     vr: {
         on: false
     },

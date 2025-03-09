@@ -260,15 +260,26 @@ export function startRecord(tabId: number, rollConfig: IRollConfig) {
 
 export function stopRecord(tabId: number, rollConfig: IRollConfig) {
     VideoRoll.stopRecord();
-
     sendRuntimeMessage(tabId, { type: ActionType.STOP_RECORD});
 }
 
-export async function createAudioCapture(tabId: number, rollConfig: IRollConfig, streamId: string){
+export function createAudioCapture(tabId: number, rollConfig: IRollConfig, streamId: string){
     VideoRoll.createAudioCapture(streamId);
 }
 
-export async function updateDownloadList(tabId: number, downloadList: any[]) {
+export function updateDownloadList(tabId: number, downloadList: any[]) {
     VideoRoll.updateDownloadList(downloadList);
     sendRuntimeMessage(tabId, { downloadList: VideoRoll.downloadList, type: ActionType.GET_DOWNLOAD_LIST, tabId })
+}
+
+export function downloadSingleVideo(tabId: number, videoInfo: any){
+    VideoRoll.downloadSingleVideo(videoInfo)
+}
+
+export function play(tabId: number, videoId: any){
+    VideoRoll.play(videoId)
+}
+
+export function pause(tabId: number, videoId: any){
+    VideoRoll.pause(videoId)
 }

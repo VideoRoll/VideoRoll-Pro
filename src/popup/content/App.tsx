@@ -26,6 +26,7 @@ export default defineComponent({
         const isShow = ref(false);
         const tabId = ref(0);
         const videoList = ref([]);
+        const realVideo = ref();
         const user = ref();
         /**
          * open settings panel
@@ -87,6 +88,30 @@ export default defineComponent({
             });
         };
 
+        const downloadSingleVideo = (videoInfo: any) => {
+            sendTabMessage(rollConfig.tabId, {
+                rollConfig: clone(rollConfig),
+                type: ActionType.DOWNLOAD_SINGLE_VIDEO,
+                videoInfo
+            });
+        }
+
+        const pause = () => {
+            sendTabMessage(rollConfig.tabId, {
+                rollConfig: clone(rollConfig),
+                type: ActionType.PAUSE,
+                videoId: realVideo.value.id
+            });
+        }
+
+        const play = () => {
+            sendTabMessage(rollConfig.tabId, {
+                rollConfig: clone(rollConfig),
+                type: ActionType.PLAY,
+                videoId: realVideo.value.id
+            });
+        }
+
         provide("rollConfig", rollConfig);
         provide("update", updateRollConfig.bind(null, rollConfig));
         provide("onOpenSetting", onOpenSetting);
@@ -99,6 +124,10 @@ export default defineComponent({
         provide("stopRecord", stopRecord);
         provide("advancedPictureInPicture", advancedPictureInPicture);
         provide("user", user);
+        provide("downloadSingleVideo", downloadSingleVideo);
+        provide("realVideo", realVideo);
+        provide("play", play);
+        provide("pause", pause);
 
         watch(
             () => tabId.value,
@@ -120,7 +149,7 @@ export default defineComponent({
         onMounted(async () => {
             const queryOptions = { active: true, currentWindow: true };
             const [tab] = await browser.tabs.query(queryOptions);
-
+    
             tabId.value = tab.id as number;
             initRollConfig(rollConfig, tab);
 
@@ -135,6 +164,7 @@ export default defineComponent({
                     windowConfig,
                     user: userInfo,
                     downloadList,
+                    videoList: realVideoList
                 } = info;
 
                 console.log(downloadList, 'downloadList----');
@@ -153,11 +183,8 @@ export default defineComponent({
                         break;
                     case ActionType.UPDATE_BADGE:
                         rollConfig.videoNumber = Number(text);
-                        // videoList.value = list;
+                        realVideo.value = realVideoList.find((v) => v.isReal);
                         break;
-                    // case ActionType.UPDATE_VIDEO_LIST:
-                    //     videoList.value = list;
-                    //     break;
                     case ActionType.CAPTURE:
                         const newUrl = browser.runtime.getURL(
                             "inject/capture.html?imgData=" +
@@ -193,6 +220,12 @@ export default defineComponent({
                         break;
                     case ActionType.GET_DOWNLOAD_LIST:
                         videoList.value = downloadList;
+                        break;
+                    case ActionType.PLAY:
+                        realVideo.value = realVideoList.find((v) => v.isReal);
+                        break;
+                    case ActionType.PAUSE:
+                        realVideo.value = realVideoList.find((v) => v.isReal);
                         break;
                     default:
                         break;

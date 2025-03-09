@@ -4,15 +4,13 @@ import { sendTabMessage } from "src/util";
 // 替换为正常的 import 语句
 import { Parser } from "m3u8-parser";
 import { parse } from "mpd-parser";
-import { nanoid } from "nanoid";
-// importScripts("../lib/m3u8-parser.min.js");
-// importScripts("../lib/mpd-parser.min.js");
+import VideoDownloader from "./VideoDownloader";
 
 export default class VideoDetector {
     videoList: Map<number, any> = new Map<number, any>();
     requestMap: Map<string, any> = new Map<string, any>();
-    m3u8ContentMap: Map<string, any> = new Map<string, any>();
-    tabIdMap: Map<number, any> = new Map<number, any>();
+    hlsContentMap: Map<string, any> = new Map<string, any>();
+    downloader: any = null;
     unSupportedDomains: any = {
         "youtube.com": {
             browser: "chrome",
@@ -48,7 +46,7 @@ export default class VideoDetector {
     };
 
     constructor() {
-        this.onMessageListener();
+        this.onDownloadListener();
         this.onRemovedListener();
         this.onUpdateListener();
         this.onBeforeRequestListener();
@@ -56,37 +54,36 @@ export default class VideoDetector {
         this.onResponseStartListener();
     }
 
-    onMessageListener() {
-        // 处理消息
-        chrome.runtime.onMessage.addListener(
-            (message, sender, sendResponse) => {
-                switch (message.type) {
-                    case "GET_VIDEOS":
-                        const videos = this.videoList.get(message.tabId);
-                        sendResponse(videos ? Array.from(videos.values()) : []);
-                        break;
-
-                    case "DOWNLOAD_VIDEO":
-                        this.handleVideoDownload(message.videoInfo);
-                        break;
-                    default:
-                        break;
-                }
-                return true;
-            }
-        );
+    onDownloadListener() {
+        this.downloader = new VideoDownloader();
     }
 
     onRemovedListener() {
         // 处理标签页关闭
         chrome.tabs.onRemoved.addListener((tabId) => {
+            console.log("removed");
             this.videoList.delete(tabId);
+
+            for (const [key, value] of this.requestMap.entries()) {
+                if (value.tabId === tabId) {
+                    this.requestMap.delete(key);
+                }
+            }
         });
     }
 
     onUpdateListener() {
         chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-            this.videoList.delete(tabId);
+            if (changeInfo.status === "loading" || changeInfo.url) {
+                console.log('update page');
+                this.videoList.delete(tabId);
+                console.log('update page')
+                for (const [key, value] of this.requestMap.entries()) {
+                    if(value.tabId === tabId) {
+                        this.requestMap.delete(key);
+                    }
+                }
+            }
         });
     }
 
@@ -331,6 +328,7 @@ export default class VideoDetector {
             // 流媒体格式
             "application/m4s",
             "application/octet-stream-m3u8",
+            "application/vnd.yt-ump",            
             "application/dash+xml", // DASH
             "application/vnd.apple.mpegurl", // HLS
             "application/x-mpegurl", // HLS 替代
@@ -478,7 +476,7 @@ export default class VideoDetector {
                 contentType.includes("video/x-msvideo") ||
                 contentType.includes("video/x-matroska")
             ) {
-                return "mp4";
+                return "MP4";
             }
 
             // 音频格式检测 (有些视频可能被标记为音频)
@@ -487,7 +485,7 @@ export default class VideoDetector {
                     contentType.includes("audio/mpeg")) &&
                 (url.includes(".mp4") || url.includes(".m4a"))
             ) {
-                return "mp4";
+                return "MP4";
             }
 
             // HLS 格式检测
@@ -499,12 +497,12 @@ export default class VideoDetector {
                 contentType.includes("audio/x-mpegurl") ||
                 contentType.includes("application/vnd.apple.mpegurl.audio")
             ) {
-                return "m3u8";
+                return "HLS";
             }
 
             // DASH 格式检测
             if (contentType.includes("application/dash+xml")) {
-                return "mpd";
+                return "DASH";
             }
 
             // M4S 片段检测
@@ -514,12 +512,12 @@ export default class VideoDetector {
                 (contentType.includes("application/octet-stream") &&
                     url.includes(".m4s"))
             ) {
-                return "mpd"; // M4S 通常是 DASH 的一部分
+                return "DASH"; // M4S 通常是 DASH 的一部分
             }
 
             // WebM 格式检测
             if (contentType.includes("video/webm")) {
-                return "mp4"; // 处理为通用视频
+                return "MP4"; // 处理为通用视频
             }
 
             // 通用二进制流检测 - 可能是视频
@@ -539,7 +537,7 @@ export default class VideoDetector {
                         url.toLowerCase().includes(ext)
                     )
                 ) {
-                    return "mp4";
+                    return "MP4";
                 }
             }
         }
@@ -559,20 +557,20 @@ export default class VideoDetector {
                 contentDisposition.includes(".mkv") ||
                 contentDisposition.includes(".flv")
             ) {
-                return "mp4";
+                return "MP4";
             }
-            if (contentDisposition.includes(".m3u8")) return "m3u8";
-            if (contentDisposition.includes(".mpd")) return "mpd";
-            if (contentDisposition.includes(".m4s")) return "mpd";
-            if (contentDisposition.includes(".ts")) return "m3u8"; // TS 片段通常是 HLS 的一部分
+            if (contentDisposition.includes(".m3u8")) return "HLS";
+            if (contentDisposition.includes(".mpd")) return "DASH";
+            if (contentDisposition.includes(".m4s")) return "DASH";
+            if (contentDisposition.includes(".ts")) return "HLS"; // TS 片段通常是 HLS 的一部分
         }
 
         // 检查URL路径特征
         if (url.includes("/hls/") || url.includes("/m3u8/")) {
-            return "m3u8";
+            return "HLS";
         }
         if (url.includes("/dash/") || url.includes("/mpd/")) {
-            return "mpd";
+            return "DASH";
         }
 
         // 如果无法从响应头判断，则使用 URL 判断
@@ -616,7 +614,7 @@ export default class VideoDetector {
         fileName = fileName.split("?")[0];
 
         // 格式化文件大小
-        let fileSize = "unknown";
+        let fileSize = "";
         if (size > 0) {
             if (size < 1024) {
                 fileSize = size + " B";
@@ -633,7 +631,7 @@ export default class VideoDetector {
         const baseVideoInfo = {
             id,
             url: url,
-            title: fileName || "unknown",
+            title: fileName,
             type: videoType,
             size: fileSize,
             sizeNumebr: size,
@@ -646,17 +644,17 @@ export default class VideoDetector {
         };
 
         switch (videoType) {
-            case "mp4":
+            case "MP4":
                 this.addVideoToList(tabId, {
                     ...baseVideoInfo,
                     duration: null, // 视频时长需要在content.js中获取
                 });
                 break;
-            case "m3u8":
-                this.handleM3U8(baseVideoInfo);
+            case "HLS":
+                this.handleHLS(baseVideoInfo);
                 break;
-            case "mpd":
-                // this.handleMPD(baseVideoInfo);
+            case "DASH":
+                // this.handleDASH(baseVideoInfo);
                 break;
             default:
                 break;
@@ -664,7 +662,7 @@ export default class VideoDetector {
     }
 
     // 处理M3U8视频
-    async handleM3U8(baseVideoInfo: any = null) {
+    async handleHLS(baseVideoInfo: any = null) {
         try {
             const { id, tabId, url, requestHeaders, contentType } =
                 baseVideoInfo;
@@ -682,22 +680,22 @@ export default class VideoDetector {
             const isPlaylist = headers["X-Extension-Playlist-Request"];
 
             if (isPlaylist) {
-                const content = this.m3u8ContentMap.get(id);
-                this.handleM3U8Content(content, baseVideoInfo);
-                this.m3u8ContentMap.delete(id);
+                const content = this.hlsContentMap.get(id);
+                this.handleHLSContent(content, baseVideoInfo);
+                this.hlsContentMap.delete(id);
                 return;
             }
 
             await this.updateHeaderRules(headers, tabId);
             const response = await fetch(url);
             const content = await response.text();
-            this.handleM3U8Content(content, baseVideoInfo);
+            this.handleHLSContent(content, baseVideoInfo);
         } catch (error) {
             console.error("M3U8 fetch error:", error);
         }
     }
 
-    async handleM3U8Content(content: any, baseVideoInfo: any) {
+    async handleHLSContent(content: any, baseVideoInfo: any) {
         const { id, tabId, url, contentType } = baseVideoInfo;
 
         const parser = new Parser();
@@ -752,10 +750,10 @@ export default class VideoDetector {
                     }
                 }
 
-                this.m3u8ContentMap.set(request.id, content);
+                this.hlsContentMap.set(request.id, content);
                 this.handleVideoRequest(request, "m3u8");
 
-                // this.handleM3U8Content(content, );
+                // this.handleHLSContent(content, );
             }
 
             return;
@@ -810,7 +808,7 @@ export default class VideoDetector {
         this.addVideoToList(Number(tabId), videoInfo);
     }
 
-    async handleMPD(baseVideoInfo: any = null) {
+    async handleDASH(baseVideoInfo: any = null) {
         try {
             const { id, tabId, url, requestHeaders } = baseVideoInfo;
 
@@ -852,7 +850,7 @@ export default class VideoDetector {
             // 使用baseVideoInfo中的信息（如果有）
             const videoInfo = {
                 ...(baseVideoInfo || {}),
-                type: "mpd",
+                type: "DASH",
                 url: url,
                 quality: qualities.length || 1,
                 qualities: qualities,
@@ -876,7 +874,7 @@ export default class VideoDetector {
         const tabVideos = this.videoList.get(tabId);
         tabVideos.set(videoInfo.id, videoInfo);
         // this.requestMap.delete(videoInfo.id);
-
+        console.log(tabVideos, "tabVideos");
         // 通知popup更新
         this.notifyPopup(tabId);
     }
@@ -945,26 +943,6 @@ export default class VideoDetector {
         //     tabId: tabId,
         //     videos: Array.from(videoStore.get(tabId).values()),
         // });
-    }
-
-    async download(type: string, data: any) {
-        if (type === 'MP4') {
-            chrome.downloads.download(
-                {
-                    url: data.url, // MP4视频的URL
-                    filename: `${data.title}.mp4`, // 保存的文件名
-                    saveAs: false, // 显示保存对话框
-                },
-                (downloadId) => {
-                    if (chrome.runtime.lastError) {
-                        console.error("下载失败:", chrome.runtime.lastError);
-                    } else {
-                        console.log("下载已开始，ID:", downloadId);
-                    }
-                }
-            );
-        }
-       
     }
 
     async updateHeaderRules(data: any, tabId: any) {

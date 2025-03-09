@@ -19,6 +19,9 @@ import {
     stopRecord,
     createAudioCapture,
     updateDownloadList,
+    downloadSingleVideo,
+    play,
+    pause,
 } from "./update";
 import { sendRuntimeMessage } from "../util";
 import browser from "webextension-polyfill";
@@ -53,7 +56,6 @@ function injectScript() {
 
 (function () {
     let videoNumber: number = 0;
-    console.log('注入了')
     // injectScript();
     /**
      * get message from popup or backgound
@@ -68,6 +70,8 @@ function injectScript() {
             ids,
             streamId,
             downloadList,
+            videoInfo,
+            videoId
         } = data;
 
         try {
@@ -140,6 +144,15 @@ function injectScript() {
                     break;
                 case ActionType.GET_DOWNLOAD_LIST:
                     updateDownloadList(tabId, downloadList);
+                    break;
+                case ActionType.DOWNLOAD_SINGLE_VIDEO:
+                    downloadSingleVideo(tabId, videoInfo);
+                    break;
+                case ActionType.PLAY:
+                    play(tabId, videoId);
+                    break;
+                case ActionType.PAUSE:
+                    pause(tabId, videoId);
                     break;
                 default:
                     return;
