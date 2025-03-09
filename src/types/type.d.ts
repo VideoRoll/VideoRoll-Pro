@@ -36,7 +36,9 @@ export enum ActionType {
     UPDATE_AUDIO,
     DELETE_AUDIO,
     GET_DOWNLOAD_LIST,
-    DOWNLOAD_SINGLE_VIDEO
+    DOWNLOAD_SINGLE_VIDEO,
+    PLAY,
+    PAUSE
 }
 
 export enum FlipType {
@@ -64,6 +66,7 @@ export type VideoListItem = {
     isReal?: boolean;
     percentage?: number;
     currentTime?: number;
+    paused?: boolean;
 }
 
 export type VideoDownloadListItem = {
@@ -164,6 +167,7 @@ export interface IRollConfig {
     isAutoChangeSize: boolean;
     enable: boolean;
     document: Document,
+    favIcon: string,
     iframes: Iframes,
     vr: Vr,
     abLoop: Abloop

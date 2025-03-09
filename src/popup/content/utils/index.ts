@@ -56,7 +56,7 @@ function initRollConfig(rollConfig: IRollConfig, tab: any): void {
     rollConfig.tabIndex = tab.index;
     rollConfig.url = url;
     rollConfig.isInit = false;
-
+    rollConfig.favIcon = tab.favIconUrl; 
     const hostName = urlReg.exec(url)?.[2] ?? "";
 
     if (!hostName) {

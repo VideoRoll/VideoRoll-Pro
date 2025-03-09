@@ -271,10 +271,11 @@ export default class VideoRoll {
 
         for (let i = 0; i < videos.length; i++) {
             const video = videos[i];
-
+            console.log(video.currentTime, 'currentTime - ', i);
             if (i === 0) {
                 this.setRealVideoPlayer(video);
             } else if (this.isRealVideoPlayer(video)) {
+                console.log('sett', i)
                 this.setRealVideoPlayer(video);
             }
 
@@ -322,10 +323,32 @@ export default class VideoRoll {
             player.offsetWidth < this.realVideoPlayer.width ||
             player.offsetHeight < this.realVideoPlayer.height;
 
-        // this may be ads video player
-        if (player.muted && player.loop && isSmaller) return false;
+        if (
+            this.realVideoPlayer.player.currentTime === 0 &&
+            this.realVideoPlayer.player.paused &&
+            player.currentTime > 0 && !player.paused
+        ) {
+            console.log('t1')
+            return true;
+        }
+            
+        if (
+            !player.paused &&
+            !player.ended &&
+            player.readyState > 0 &&
+            player.currentTime > 0
+        ) {
+            console.log('t2')
+            return true;
+        }
+            
 
         if ("readyState" in player && player.readyState === 0) return false;
+
+        if (player.paused && player.currentTime === 0) return false;
+
+        // this may be ads video player
+        if (player.muted && player.loop && isSmaller) return false;
 
         if (isSmaller && player.readyState === 0) return false;
 
@@ -333,6 +356,7 @@ export default class VideoRoll {
 
         if (isSmaller) return false;
 
+        console.log('hhhh')
         return true;
     }
 
@@ -1089,6 +1113,7 @@ export default class VideoRoll {
             src: v.src,
             percentage: v.percentage ?? 0,
             currentTime: v.currentTime ?? 0,
+            paused: v.paused
         }));
     }
 
@@ -1177,6 +1202,26 @@ export default class VideoRoll {
         });
     }
 
+    static updateRealVideo(video: HTMLVideoElement, callback: Function) {
+        this.setRealVideoPlayer(video);
+
+        const item = this.videoList.find((v) => v.id === video.dataset.rollId);
+        if (item) {
+            item.isReal = true;
+        }
+
+        this.videoList.forEach((v) => {
+            if (v.id !== video.dataset.rollId) {
+                v.isReal = false;
+            }
+        })
+        
+        callback({
+            text: String(this.videoNumbers),
+            videoList: this.buildVideoList(),
+        })
+    }
+
     static watchVideoProgress(video: HTMLVideoElement, callback: Function) {
         video.removeEventListener("timeupdate", this.eventCallback as any);
         this.eventCallback = this.updateProgress.bind(this, video, callback);
@@ -1184,8 +1229,8 @@ export default class VideoRoll {
     }
 
     static watchVideoPlay(video: HTMLVideoElement, callback: Function) {
-        video.removeEventListener("play", this.updateAudio as any);
-        this.playCallback = this.updateAudio.bind(this);
+        video.removeEventListener("play", this.updateRealVideo as any);
+        this.playCallback = this.updateRealVideo.bind(this, video, callback);
         video.addEventListener("play", this.playCallback as any);
     }
 
@@ -1230,7 +1275,7 @@ export default class VideoRoll {
             }
 
             return {
-                posterUrl: '',
+                posterUrl: "",
                 duration,
                 name,
                 src,
@@ -1276,12 +1321,13 @@ export default class VideoRoll {
                 checked: v.dataset.rollCheck === "true" ? true : false,
                 currentTime: v.currentTime,
                 percentage: this.getProgress(v),
+                paused: v.paused,
                 ...infos[index],
             };
 
             setTimeout(() => {
                 this.watchVideoProgress(v, callback);
-                // this.watchVideoPlay(v, callback);
+                this.watchVideoPlay(v, callback);
             });
 
             // item.visibleObserver = this.getVideoVisibleObserver(v, item, callback)
@@ -1308,6 +1354,9 @@ export default class VideoRoll {
         )
             return true;
 
+        if (mutationItem.target.querySelectorAll('video')) return true;
+
+        console.log('false', mutationItem)
         return false;
     }
 
@@ -1342,9 +1391,15 @@ export default class VideoRoll {
                         "src",
                         "autoplay",
                         "mediatype",
+                        "x5-playsinline",
                         "data-xgplayerid",
                         "playsinline",
                         "crossorigin",
+                        "poster",
+                        "data-index",
+                        "preload",
+                        "controls",
+                        "muted"
                     ],
                     attributes: true,
                 });
@@ -1468,10 +1523,37 @@ export default class VideoRoll {
         this.downloadList = downloadList;
     }
 
-    static downloadSingleVideo() {
+    static downloadSingleVideo(videoInfo: any) {
+        console.log("download", videoInfo);
         sendRuntimeMessage(this.rollConfig.tabId, {
-            type: ActionType.AUDIO_CAPTURE,
-            streamId,
+            type: ActionType.DOWNLOAD_SINGLE_VIDEO,
+            videoInfo,
+            rollConfig: this.rollConfig,
+        });
+    }
+
+    static play(videoId: string) {
+        this.realVideoPlayer.player?.play();
+        const item = this.videoList.find((v) => v.id === videoId);
+        if (item) {
+            item.paused = false;
+        }
+        sendRuntimeMessage(this.rollConfig.tabId, {
+            type: ActionType.PLAY,
+            videoList: this.videoList,
+            rollConfig: this.rollConfig,
+        });
+    }
+
+    static pause(videoId: string) {
+        this.realVideoPlayer.player?.pause();
+        const item = this.videoList.find((v) => v.id === videoId);
+        if (item) {
+            item.paused = true;
+        }
+        sendRuntimeMessage(this.rollConfig.tabId, {
+            type: ActionType.PAUSE,
+            videoList: this.videoList,
             rollConfig: this.rollConfig,
         });
     }

@@ -10,7 +10,6 @@ import { useShortcuts } from "src/use/useShortcuts";
 import { useGeneralConfig } from "src/options/use/useGeneralConfig";
 import browser from "webextension-polyfill";
 import { getUser, injectAuth } from "./auth";
-import{ initDownload } from "./download";
 import VideoDetector from "./class/VideoDetector";
 
 let currentTabId: number | undefined;
