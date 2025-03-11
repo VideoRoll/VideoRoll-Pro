@@ -28,16 +28,17 @@
         "64": "/icons/icon_64.png"
     },
     "omnibox": { "keyword": "videoroll" },
-    "host_permissions": [
-        "http://localhost:3000",
-        "\u003Call_urls>"
-    ],
+    "host_permissions": ["http://localhost:3000", "\u003Call_urls>"],
     "web_accessible_resources": [
         {
             "resources": [
                 "inject/index.js",
                 "inject/capture.html",
-                "inject/screenshot.js"
+                "inject/screenshot.js",
+                "download/download.js",
+                "download/lib/ffmpeg-core.js",
+                "download/lib/ffmpeg-core.wasm",
+                "download/lib/worker.js"
             ],
             "matches": ["\u003Call_urls>"]
         }

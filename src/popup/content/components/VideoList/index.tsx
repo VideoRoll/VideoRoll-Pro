@@ -10,6 +10,7 @@ import "./index.less";
 import { IRollConfig } from "src/types/type";
 import { showConfirmDialog } from "vant";
 import { Download, PlayerPlay, Qrcode, Link, Maximize } from "@vicons/tabler";
+import { IconPinInvoke } from '@tabler/icons-vue';
 import Hls from "hls.js";
 import Plyr from "plyr";
 import 'plyr/dist/plyr.css';
@@ -162,7 +163,7 @@ export default defineComponent({
                                 </div>
                                 <div class="video-action">
                                     <Download class="list-icon" onClick={() => downloadSingleVideo(v)}></Download>
-                                    <Maximize class="list-icon"></Maximize>
+                                    <IconPinInvoke class="list-icon"></IconPinInvoke>
                                     <PlayerPlay class="list-icon" onClick={() => onPlay(v)}></PlayerPlay>
                                     <Qrcode class="list-icon" onClick={() => showQR(v)}></Qrcode>
                                     <Link class="list-icon" ></Link>

@@ -24,6 +24,12 @@ export default class VideoDetector {
             /type=video[/_]mp4/i,
             /content-type=video[/_]mp4/i,
         ],
+        webm: [
+            /\.(webm)(\?|$)/i,
+            /mime_type=video[/_]webm/i,
+            /type=video[/_]webm/i,
+            /content-type=video[/_]webm/i,
+        ],
         HLS: [
             /\.(m3u8)(\?|$)/i,
             /playlist\.m3u8/i,
@@ -516,8 +522,8 @@ export default class VideoDetector {
             }
 
             // WebM 格式检测
-            if (contentType.includes("video/webm")) {
-                return "MP4"; // 处理为通用视频
+            if (contentType.includes("video/webm") || contentType.includes('audio/webm')) {
+                return "WebM"; // 处理为通用视频
             }
 
             // 通用二进制流检测 - 可能是视频
@@ -558,6 +564,9 @@ export default class VideoDetector {
                 contentDisposition.includes(".flv")
             ) {
                 return "MP4";
+            }
+            if (contentDisposition.includes('.webm')) {
+                return 'WebM';
             }
             if (contentDisposition.includes(".m3u8")) return "HLS";
             if (contentDisposition.includes(".mpd")) return "DASH";
