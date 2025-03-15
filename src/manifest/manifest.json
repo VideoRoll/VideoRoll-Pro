@@ -36,9 +36,7 @@
                 "inject/capture.html",
                 "inject/screenshot.js",
                 "download/download.js",
-                "download/lib/ffmpeg-core.js",
-                "download/lib/ffmpeg-core.wasm",
-                "download/lib/worker.js"
+                "download/lib/mux-mp4.min.js"
             ],
             "matches": ["\u003Call_urls>"]
         }

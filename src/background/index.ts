@@ -224,5 +224,4 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 });
 
 injectAuth();
-// initDownload();
 new VideoDetector();

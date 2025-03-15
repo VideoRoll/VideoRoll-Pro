@@ -5,6 +5,24 @@ import { sendTabMessage } from "src/util";
 import { Parser } from "m3u8-parser";
 import { parse } from "mpd-parser";
 import VideoDownloader from "./VideoDownloader";
+// 音频编解码器标识符列表
+const AUDIO_CODEC_PREFIXES = [
+    "mp4a", // AAC
+    "ac-3", // AC3
+    "ec-3", // Enhanced AC3
+    "opus", // Opus
+    "vorbis", // Vorbis
+];
+
+// 视频编解码器标识符列表
+const VIDEO_CODEC_PREFIXES = [
+    "avc", // H.264
+    "hvc", // H.265/HEVC
+    "hev", // 另一种H.265表示
+    "av1", // AV1
+    "vp8", // VP8
+    "vp9", // VP9
+];
 
 export default class VideoDetector {
     videoList: Map<number, any> = new Map<number, any>();
@@ -81,11 +99,11 @@ export default class VideoDetector {
     onUpdateListener() {
         chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             if (changeInfo.status === "loading" || changeInfo.url) {
-                console.log('update page');
+                console.log("update page");
                 this.videoList.delete(tabId);
-                console.log('update page')
+                console.log("update page");
                 for (const [key, value] of this.requestMap.entries()) {
-                    if(value.tabId === tabId) {
+                    if (value.tabId === tabId) {
                         this.requestMap.delete(key);
                     }
                 }
@@ -334,7 +352,7 @@ export default class VideoDetector {
             // 流媒体格式
             "application/m4s",
             "application/octet-stream-m3u8",
-            "application/vnd.yt-ump",            
+            "application/vnd.yt-ump",
             "application/dash+xml", // DASH
             "application/vnd.apple.mpegurl", // HLS
             "application/x-mpegurl", // HLS 替代
@@ -522,7 +540,10 @@ export default class VideoDetector {
             }
 
             // WebM 格式检测
-            if (contentType.includes("video/webm") || contentType.includes('audio/webm')) {
+            if (
+                contentType.includes("video/webm") ||
+                contentType.includes("audio/webm")
+            ) {
                 return "WebM"; // 处理为通用视频
             }
 
@@ -565,8 +586,8 @@ export default class VideoDetector {
             ) {
                 return "MP4";
             }
-            if (contentDisposition.includes('.webm')) {
-                return 'WebM';
+            if (contentDisposition.includes(".webm")) {
+                return "WebM";
             }
             if (contentDisposition.includes(".m3u8")) return "HLS";
             if (contentDisposition.includes(".mpd")) return "DASH";
@@ -717,6 +738,16 @@ export default class VideoDetector {
             this.requestMap.delete(id);
             return;
         }
+
+        // 初始化结果对象
+        const result = {
+            hasAudio: false,
+            hasVideo: false,
+            mediaType: "", // 'audio-only', 'video-only', 'audio-video', 'unknown'
+            codecs: [],
+            details: {},
+        };
+
         // 提取视频时长信息
         let duration = 0;
         if (manifest.segments && manifest.segments.length > 0) {
@@ -728,44 +759,123 @@ export default class VideoDetector {
 
         // 提取视频质量信息
         let qualities: any[] = [];
+
         if (manifest.playlists && manifest.playlists.length > 0) {
             qualities = manifest.playlists.map((playlist) => ({
                 bandwidth: playlist.attributes?.BANDWIDTH,
                 resolution: playlist.attributes?.RESOLUTION,
                 uri: new URL(playlist.uri, url).href,
+                codecs: playlist.attributes?.CODECS,
             }));
+
+            manifest.playlists.forEach((playlist) => {
+                // 分析CODECS属性
+                if (playlist.attributes?.CODECS) {
+                    const codecs = playlist.attributes.CODECS.split(",").map(
+                        (codec) => codec.trim()
+                    );
+                    // 使用Set去重，合并编解码器列表
+                    result.codecs = [...new Set([...result.codecs, ...codecs])];
+
+                    // 使用常量数组检查是否包含音频编解码器
+                    const hasAudioCodec = codecs.some((codec) =>
+                        AUDIO_CODEC_PREFIXES.some((prefix) =>
+                            codec.startsWith(prefix)
+                        )
+                    );
+
+                    // 使用常量数组检查是否包含视频编解码器
+                    const hasVideoCodec = codecs.some((codec) =>
+                        VIDEO_CODEC_PREFIXES.some((prefix) =>
+                            codec.startsWith(prefix)
+                        )
+                    );
+
+                    if (hasAudioCodec) result.hasAudio = true;
+                    if (hasVideoCodec) result.hasVideo = true;
+                }
+            });
+        } else if (manifest.mediaGroups && manifest.mediaGroups.AUDIO) {
+            // 检查是否有专门的音频组
+            result.hasAudio = true;
+            result.details.audioGroups = [];
+
+            // 遍历所有音频组
+            Object.keys(manifest.mediaGroups.AUDIO).forEach((groupId) => {
+                const group = manifest.mediaGroups.AUDIO[groupId];
+                Object.keys(group).forEach((audioName) => {
+                    const audio = group[audioName];
+                    result.details.audioGroups.push({
+                        groupId,
+                        name: audioName,
+                        language: audio.language,
+                        uri: audio.uri,
+                        default: audio.default,
+                        autoselect: audio.autoselect,
+                        codecs: audio.attributes?.CODECS,
+                    });
+
+                    if (audio.attributes?.CODECS) {
+                        result.codecs.push(audio.attributes.CODECS);
+                    }
+                });
+            });
         }
 
-        if (qualities.length) {
-            for (const item of qualities) {
-                const response = await fetch(item.uri, {
-                    headers: {
-                        "X-Extension-Playlist-Request": "video-roll",
-                        "X-Extension-Video-Width": item.resolution.width,
-                        "X-Extension-Video-Height": item.resolution.height,
-                        "X-Extension-Video-Kbps": Math.floor(
-                            item.bandwidth / 1000
-                        ),
-                        "X-Extension-Tab-Id": tabId,
-                    },
-                });
-                const content = await response.text();
+        // 如果没有找到播放列表，检查segments
+        if (
+            content && (!manifest.playlists || manifest.playlists.length === 0) &&
+            manifest.segments
+        ) {
+            result.details.segmentCount = manifest.segments.length;
 
-                let request;
-                for (const [key, value] of this.requestMap.entries()) {
-                    if (value.url === item.uri) {
-                        request = value;
-                        break;
-                    }
+            // 检查segments中是否有EXT-X-MEDIA标签
+            const mediaTag = content.match(/#EXT-X-MEDIA:TYPE=([^,]+),/i);
+            if (mediaTag) {
+                const mediaType = mediaTag[1].toLowerCase();
+                if (mediaType === "audio") {
+                    result.hasAudio = true;
+                } else if (mediaType === "video") {
+                    result.hasVideo = true;
                 }
-
-                this.hlsContentMap.set(request.id, content);
-                this.handleVideoRequest(request, "m3u8");
-
-                // this.handleHLSContent(content, );
             }
 
-            return;
+            // 检查是否有CODECS信息
+            const codecsMatch = content.match(
+                /#EXT-X-STREAM-INF:.*CODECS="([^"]+)"/i
+            );
+            if (codecsMatch) {
+                const codecs = codecsMatch[1]
+                    .split(",")
+                    .map((codec) => codec.trim());
+                result.codecs = codecs;
+
+                // 使用常量数组检查是否包含音频编解码器
+                const hasAudioCodec = codecs.some((codec) =>
+                    AUDIO_CODEC_PREFIXES.some((prefix) =>
+                        codec.startsWith(prefix)
+                    )
+                );
+
+                // 使用常量数组检查是否包含视频编解码器
+                const hasVideoCodec = codecs.some((codec) =>
+                    VIDEO_CODEC_PREFIXES.some((prefix) =>
+                        codec.startsWith(prefix)
+                    )
+                );
+
+                if (hasAudioCodec) result.hasAudio = true;
+                if (hasVideoCodec) result.hasVideo = true;
+            }
+        }
+
+        // 确定最终的媒体类型
+        if (result.hasAudio && result.hasVideo) {
+            result.mediaType = "audio-video";
+        } else if (result.hasAudio) {
+            result.mediaType = "audio-only";
+        } else if (result.hasVideo) {
+            result.mediaType = "video-only";
         }
 
         const width = baseVideoInfo.requestHeaders.find(
@@ -798,23 +908,43 @@ export default class VideoDetector {
             duration: this.formatDuration(duration),
             timestamp: Date.now(),
             headers,
+            mediaType: result.mediaType,
             title: baseVideoInfo?.title || this.extractVideoTitle(url),
         };
 
-        // 如果解析成功，发送消息更新视频时长
-        // if (duration > 0) {
-        //     chrome.runtime
-        //         .sendMessage({
-        //             action: "updateHLSDuration",
-        //             url: url,
-        //             duration: formatDuration(duration),
-        //         })
-        //         .catch((err) =>
-        //             console.log("无法发送M3U8时长更新消息:", err)
-        //         );
-        // }
-
         this.addVideoToList(Number(tabId), videoInfo);
+
+        if (qualities.length) {
+            for (const item of qualities) {
+                const response = await fetch(item.uri, {
+                    headers: {
+                        "X-Extension-Playlist-Request": "video-roll",
+                        "X-Extension-Video-Width": item.resolution.width,
+                        "X-Extension-Video-Height": item.resolution.height,
+                        "X-Extension-Video-Kbps": Math.floor(
+                            item.bandwidth / 1000
+                        ),
+                        "X-Extension-Tab-Id": tabId,
+                    },
+                });
+                const content = await response.text();
+
+                let request;
+                for (const [key, value] of this.requestMap.entries()) {
+                    if (value.url === item.uri) {
+                        request = value;
+                        break;
+                    }
+                }
+
+                if (request) {
+                    this.hlsContentMap.set(request.id, content);
+                    this.handleVideoRequest(request, "HLS");
+                }
+
+                // this.handleHLSContent(content, );
+            }
+        }
     }
 
     async handleDASH(baseVideoInfo: any = null) {
