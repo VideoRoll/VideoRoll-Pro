@@ -14,8 +14,8 @@ export default class VideoDownloader {
         chrome.runtime.onMessage.addListener(
             (message, sender, sendResponse) => {
                 const { rollConfig, type, tabId, videoInfo } = message;
+                if (!videoInfo) return;
 
-                console.log("downloadStart");
                 switch (type) {
                     case ActionType.DOWNLOAD_SINGLE_VIDEO:
                         if (videoInfo.type === "MP4") {
@@ -50,18 +50,18 @@ export default class VideoDownloader {
     }
 
     downloadHLS(videoInfo: any) {
-        // const id = nanoid();
-        // chrome.storage.local
-        //     .set({
-        //         [id]: JSON.parse(JSON.stringify(videoInfo)),
-        //     })
-        //     .then(() => {
-
-        //     });
-        const newUrl = browser.runtime.getURL(
-            `download/download.html?downloadUrl=${videoInfo.url}`
-        );
-        browser.tabs.create({ url: newUrl });
+        const id = nanoid();
+        chrome.storage.local
+            .set({
+                [id]: JSON.parse(JSON.stringify(videoInfo)),
+            })
+            .then(() => {
+                const newUrl = browser.runtime.getURL(
+                    `download/download.html?downloadId=${id}`
+                );
+                browser.tabs.create({ url: newUrl });
+            });
+        
     }
 
     downloadDASH() {}

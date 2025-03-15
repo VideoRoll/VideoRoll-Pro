@@ -138,7 +138,7 @@ export default defineComponent({
                                         </van-tag>
                                         {/* <span class="video-type">{v.type}</span> */}
 
-                                        {typeof v.size === "string" ? (
+                                        {v.size ? (
                                             <van-tag plain color="#1989fa">
                                                 {v.size}
                                             </van-tag>
@@ -151,6 +151,11 @@ export default defineComponent({
                                         {v.width && v.height ? (
                                             <van-tag plain type="success">
                                                 {`${v.width}x${v.height}`}
+                                            </van-tag>
+                                        ) : null}
+                                        {v.mediaType ? (
+                                            <van-tag plain type="warning">
+                                                {v.mediaType}
                                             </van-tag>
                                         ) : null}
                                         {/* {v.kbps ? (

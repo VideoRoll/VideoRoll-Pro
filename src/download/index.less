@@ -5,7 +5,11 @@
     --van-sidebar-padding: 12.5px var(--van-padding-sm) !important;
     --van-sidebar-background: #1f1f1f97 !important;
     --van-sidebar-selected-background: #5d5d6045 !important;
-    --video-roll-background-active: linear-gradient(135deg, #CE9FFC 10%, #7367F0 100%);
+    --video-roll-background-active: linear-gradient(
+        135deg,
+        #ce9ffc 10%,
+        #7367f0 100%
+    );
 }
 
 html,
@@ -47,15 +51,29 @@ body {
         }
     }
 
-    
+    .download-page {
+        position: absolute;
+        margin: auto;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
     .download-percentage {
         flex: 1;
-        width: 250px;
+        width: 800px;
         display: flex;
         align-items: center;
-
+        justify-content: center;
         .van-progress {
-            width: 300px;
+            width: 500px;
             margin-right: 5px;
         }
     }
