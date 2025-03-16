@@ -35,7 +35,7 @@ export function injectAuth() {
     chrome.tabs.onUpdated.addListener(function listener(tabId, info, tab) {
         if (
             info.status === "complete" &&
-            tab.url?.startsWith("http://localhost:3000")
+            tab.url?.startsWith("http://localhost:4101")
         ) {
             // chrome.tabs.onUpdated.removeListener(listener);
             console.log(tab, "---");

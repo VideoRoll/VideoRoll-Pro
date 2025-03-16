@@ -28,7 +28,7 @@
         "64": "/icons/icon_64.png"
     },
     "omnibox": { "keyword": "videoroll" },
-    "host_permissions": ["http://localhost:3000", "\u003Call_urls>"],
+    "host_permissions": ["http://localhost:4101", "\u003Call_urls>"],
     "web_accessible_resources": [
         {
             "resources": [

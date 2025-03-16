@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import { ActionType } from "src/types/type.d";
+import { ActionType, IRollConfig } from "src/types/type.d";
 import browser from "webextension-polyfill";
 
 export default class VideoDownloader {
@@ -13,7 +13,7 @@ export default class VideoDownloader {
         // 处理消息
         chrome.runtime.onMessage.addListener(
             (message, sender, sendResponse) => {
-                const { rollConfig, type, tabId, videoInfo } = message;
+                const { rollConfig, type, tabId, videoInfo, favIcon } = message;
                 if (!videoInfo) return;
 
                 switch (type) {
@@ -21,7 +21,7 @@ export default class VideoDownloader {
                         if (videoInfo.type === "MP4") {
                             this.downloadMP4(videoInfo);
                         } else if (videoInfo.type === "HLS") {
-                            this.downloadHLS(videoInfo);
+                            this.downloadHLS(videoInfo, rollConfig, favIcon);
                         }
                         break;
                     default:
@@ -49,11 +49,11 @@ export default class VideoDownloader {
         );
     }
 
-    downloadHLS(videoInfo: any) {
+    downloadHLS(videoInfo: any, rollConfig: IRollConfig, favIcon: string) {
         const id = nanoid();
         chrome.storage.local
             .set({
-                [id]: JSON.parse(JSON.stringify(videoInfo)),
+                [id]: JSON.parse(JSON.stringify({ ...videoInfo, webUrl: rollConfig.url, favIcon }))
             })
             .then(() => {
                 const newUrl = browser.runtime.getURL(
