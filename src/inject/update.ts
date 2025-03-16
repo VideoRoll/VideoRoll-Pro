@@ -272,8 +272,8 @@ export function updateDownloadList(tabId: number, downloadList: any[]) {
     sendRuntimeMessage(tabId, { downloadList: VideoRoll.downloadList, type: ActionType.GET_DOWNLOAD_LIST, tabId })
 }
 
-export function downloadSingleVideo(tabId: number, videoInfo: any){
-    VideoRoll.downloadSingleVideo(videoInfo)
+export function downloadSingleVideo(tabId: number, rollConfig: IRollConfig, videoInfo: any, favIcon: string){
+    VideoRoll.downloadSingleVideo(videoInfo, rollConfig, favIcon);
 }
 
 export function play(tabId: number, videoId: any){

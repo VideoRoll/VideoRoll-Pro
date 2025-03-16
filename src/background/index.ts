@@ -173,7 +173,6 @@ chrome.runtime.onMessage.addListener(async (a, b, send) => {
                 console.warn(err);
             }
 
-            console.log(streamId, '---streamId')
             await sendRuntimeMessage(rollConfig.tabId, {
                 type: ActionType.AUDIO_CAPTURE,
                 target: 'offscreen',

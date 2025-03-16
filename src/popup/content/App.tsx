@@ -28,6 +28,8 @@ export default defineComponent({
         const videoList = ref([]);
         const realVideo = ref();
         const user = ref();
+        const favIcon = ref("");
+
         /**
          * open settings panel
          */
@@ -92,7 +94,8 @@ export default defineComponent({
             sendTabMessage(rollConfig.tabId, {
                 rollConfig: clone(rollConfig),
                 type: ActionType.DOWNLOAD_SINGLE_VIDEO,
-                videoInfo
+                videoInfo,
+                favIcon: favIcon.value
             });
         }
 
@@ -116,6 +119,7 @@ export default defineComponent({
         provide("update", updateRollConfig.bind(null, rollConfig));
         provide("onOpenSetting", onOpenSetting);
         provide("videoList", videoList);
+        provide("favIcon", favIcon);
         provide("onHoverVideo", onHoverVideo);
         provide("updateVideoCheck", updateVideoCheck);
         provide("updateEnable", updateEnable);
@@ -152,6 +156,9 @@ export default defineComponent({
     
             tabId.value = tab.id as number;
             initRollConfig(rollConfig, tab);
+            if (tab.favIconUrl) {
+                favIcon.value = tab.favIconUrl;
+            }
 
             chrome.runtime.onMessage.addListener((info, b, c) => {
                 const {
@@ -167,7 +174,6 @@ export default defineComponent({
                     videoList: realVideoList
                 } = info;
 
-                console.log(downloadList, 'downloadList----');
                 if (info.tabId !== tabId.value) {
                     c("not current tab");
                     return;

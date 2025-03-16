@@ -23,6 +23,7 @@ export default defineComponent({
         const onHoverVideo = inject("onHoverVideo") as Function;
         const videoList = inject("videoList") as any;
         const downloadSingleVideo = inject("downloadSingleVideo") as Function
+        const favIcon = inject("favIcon");
 
         const playingUrl = ref('');
         const qrUrl = ref('');
@@ -113,7 +114,7 @@ export default defineComponent({
         return () => (
             <div>
                 <van-notice-bar
-                    left-icon={rollConfig.favIcon || "tv-o"}
+                    left-icon={favIcon.value || "tv-o"}
                     color="#1989fa"
                     background="transparent"
                     text={rollConfig.document?.title}

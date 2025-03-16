@@ -2,8 +2,8 @@ const SPECIAL_WEBSITE: { [key: string]: Function } = {
     // 'pornhub.com': (baseUrl: string, playlistUri: string, manifest: any): string => {
     //     return baseUrl.replace(/(\/[^/]+\.mp4\/).*$/, `$1${playlistUri}`);
     // }
-    'instagram.com': (baseUrl: string, playlistUri: string, manifest: any): string => {
-        return baseUrl.;
+    'instagram.com': (baseUrl: string, playlistUri?: string, manifest?: any): string => {
+        return replaceUrlParams(baseUrl, { bytestart: null, byteend: null});
     }
 };
 
@@ -38,8 +38,8 @@ const replaceUrlParams = (url: string, params = {}) => {
 export type Options = {
     url: string;
     baseUrl: string;
-    playlistUri: string;
-    manifest: any;
+    playlistUri?: string;
+    manifest?: any;
     next?: Function;
 }
 
@@ -51,5 +51,12 @@ export function handleSpecialWebsite(options: Options) {
 
     if (typeof handler === 'function' && typeof next === 'function') {
         next(handler(baseUrl, playlistUri, manifest));
+        return;
     }
+
+    if (typeof handler === 'function') {
+        return handler(baseUrl, playlistUri, manifest);
+    }
+
+    return baseUrl;
 }

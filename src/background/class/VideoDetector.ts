@@ -5,6 +5,7 @@ import { sendTabMessage } from "src/util";
 import { Parser } from "m3u8-parser";
 import { parse } from "mpd-parser";
 import VideoDownloader from "./VideoDownloader";
+import { handleSpecialWebsite } from "src/util/handleSpecialWebsite";
 // 音频编解码器标识符列表
 const AUDIO_CODEC_PREFIXES = [
     "mp4a", // AAC
@@ -137,7 +138,9 @@ export default class VideoDetector {
                     return false;
                 }
 
-                const videoType = this.detectVideoType(url);
+                const newUrl = handleSpecialWebsite({ url: initiator, baseUrl: url });
+
+                const videoType = this.detectVideoType(newUrl);
                 if (!videoType) return;
 
                 const request = this.requestMap.get(requestId);
@@ -145,13 +148,13 @@ export default class VideoDetector {
                 if (request) return;
 
                 for (const [key, value] of this.requestMap.entries()) {
-                    if (value.url === url) return;
+                    if (value.url === newUrl) return;
                 }
 
                 this.requestMap.set(requestId, {
                     ...(request ?? {}),
                     id: requestId,
-                    url,
+                    url: newUrl,
                     tabId,
                     timeStamp,
                     type,
@@ -197,6 +200,8 @@ export default class VideoDetector {
 
                 if (!["media", "xmlhttprequest"].includes(type)) return;
 
+                const newUrl = handleSpecialWebsite({ url: initiator, baseUrl: url });
+            
                 if (requestHeaders) {
                     const request = this.requestMap.get(requestId);
                     let currentTabId = tabId;
@@ -208,7 +213,7 @@ export default class VideoDetector {
                     }
 
                     if (request) {
-                        if (request.url === url && request.requestHeaders)
+                        if (request.url === newUrl && request.requestHeaders)
                             return;
 
                         this.requestMap.set(requestId, {
@@ -217,7 +222,7 @@ export default class VideoDetector {
                             requestHeaders,
                             timeStamp,
                             type,
-                            url,
+                            url: newUrl,
                             tabId: currentTabId,
                         });
                     } else if (isPlaylist) {
@@ -227,7 +232,7 @@ export default class VideoDetector {
                             requestHeaders,
                             timeStamp,
                             type,
-                            url,
+                            url: newUrl,
                             tabId: currentTabId,
                         });
                     }
@@ -271,6 +276,7 @@ export default class VideoDetector {
 
                     if (!["media", "xmlhttprequest"].includes(type)) return;
 
+                    const newUrl = handleSpecialWebsite({ url: initiator, baseUrl: url });
                     // if (request.url === url && !request.requestHeaders)
 
                     // 结合请求头和响应头判断是否为视频资源
@@ -283,7 +289,7 @@ export default class VideoDetector {
                     ) {
                         const videoType = this.detectVideoTypeWithHeaders(
                             request.videoType,
-                            details.url,
+                            newUrl,
                             responseHeaders
                         );
                         if (videoType) {
@@ -293,7 +299,7 @@ export default class VideoDetector {
                                 id: requestId,
                                 timeStamp,
                                 type,
-                                url,
+                                url: newUrl,
                             });
                             const target = this.requestMap.get(requestId);
                             this.handleVideoRequest(target, videoType);

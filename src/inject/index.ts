@@ -71,7 +71,8 @@ function injectScript() {
             streamId,
             downloadList,
             videoInfo,
-            videoId
+            videoId,
+            favIcon
         } = data;
 
         try {
@@ -146,7 +147,7 @@ function injectScript() {
                     updateDownloadList(tabId, downloadList);
                     break;
                 case ActionType.DOWNLOAD_SINGLE_VIDEO:
-                    downloadSingleVideo(tabId, videoInfo);
+                    downloadSingleVideo(tabId, { ...rollConfig }, videoInfo, favIcon);
                     break;
                 case ActionType.PLAY:
                     play(tabId, videoId);
