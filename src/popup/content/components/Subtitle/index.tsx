@@ -10,14 +10,14 @@ import browser from 'webextension-polyfill'
 import { IRollConfig } from "src/types/type";
 
 export default defineComponent({
-    name: "History",
+    name: "Subtitle",
     setup() {
         const update = inject("update") as Function;
         const rollConfig = inject("rollConfig") as IRollConfig;
 
         const setLoop = () => {
-            rollConfig.loop = !rollConfig.loop;
-            update("loop", rollConfig.loop);
+            rollConfig.subtitle.on = !rollConfig.subtitle.on;
+            update("subtitle", rollConfig.subtitle);
         };
 
         return () => (
