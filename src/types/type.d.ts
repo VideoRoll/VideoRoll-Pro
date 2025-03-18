@@ -137,6 +137,10 @@ export type Abloop = {
     b: string;
 }
 
+export type Subtitle = {
+    on: boolean;
+}
+
 export interface IRollConfig {
     tabId: number;
     tabIndex: number;
@@ -170,8 +174,9 @@ export interface IRollConfig {
     favIcon: string,
     iframes: Iframes,
     vr: Vr,
-    abLoop: Abloop
-    [key: string]: number | string | Abloop | Vr | AdvancedPictureInPicture | Iframes | Document | Flip | IFilter | IScale | Zoom | Deg | IMove | Pitch | Focus | boolean | VideoSelector
+    abLoop: Abloop,
+    subtitle: Subtitle
+    [key: string]: number | string | Abloop | Subtitle | Vr | AdvancedPictureInPicture | Iframes | Document | Flip | IFilter | IScale | Zoom | Deg | IMove | Pitch | Focus | boolean | VideoSelector
 }
 
 export type VideoSelector = {

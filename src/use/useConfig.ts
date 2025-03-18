@@ -84,7 +84,10 @@ const defaultConfig = {
         b: "00:00:00"
     },
     crossorigin: false,
-    videoSelector: { defaultDom: 'video' }
+    videoSelector: { defaultDom: 'video' },
+    subtitle: {
+        on: false
+    }
 } as IRollConfig;
 
 function getDefaultConfig() {

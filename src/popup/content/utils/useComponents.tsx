@@ -242,14 +242,14 @@ export default function useComponents() {
                     },
                     {
                         type: 'container',
-                        title: 'History',
+                        title: 'Subtitle',
                         showTitle: true,
                         class: 'container-badge-pro',
                         col: 6,
                         children: [
                             {
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/History"))
+                                component: defineAsyncComponent(() => import("../components/Subtitle"))
                             }
                         ]
                     },
