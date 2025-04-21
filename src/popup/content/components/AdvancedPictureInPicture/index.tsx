@@ -30,7 +30,7 @@ export default defineComponent({
         };
 
         return () => (
-            <div v-tooltip={browser.i18n.getMessage('video_loop')} class={`video-roll-focus video-roll-item ${rollConfig.loop ? 'video-roll-on' : 'video-roll-off'}`} onClick={setAdvancedPictureInPicture}>
+            <div v-tooltip={browser.i18n.getMessage('video_loop')} class={`video-roll-focus video-roll-item ${rollConfig.advancedPictureInPicture.on ? 'video-roll-on' : 'video-roll-off'}`} onClick={setAdvancedPictureInPicture}>
                 <div class="video-roll-icon-box">
                     <span class="video-roll-label">
                         <TabletLandscapeOutline class="video-roll-icon"></TabletLandscapeOutline>

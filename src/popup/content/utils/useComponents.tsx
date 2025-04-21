@@ -173,7 +173,6 @@ export default function useComponents() {
                     {
                         type: 'container',
                         title: browser.i18n.getMessage('video_filter'),
-                        class: 'container-badge-pro',
                         showTitle: true,
                         col: 6,
                         children: [{
@@ -184,7 +183,6 @@ export default function useComponents() {
                     {
                         type: 'container',
                         title: browser.i18n.getMessage('video_focus'),
-                        class: 'container-badge-pro',
                         showTitle: true,
                         col: 6,
                         children: [
@@ -196,16 +194,13 @@ export default function useComponents() {
                     },
                     {
                         type: 'container',
-                        title: 'VR',
+                        title: 'Separate',
                         showTitle: true,
-                        class: 'container-badge-pro',
                         col: 6,
-                        children: [
-                            {
-                                type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Vr"))
-                            }
-                        ]
+                        children: [{
+                            type: 'component',
+                            component: defineAsyncComponent(() => import("../components/AdvancedPictureInPicture"))
+                        }]
                     }
                 ],
             },
@@ -231,25 +226,14 @@ export default function useComponents() {
                     },
                     {
                         type: 'container',
-                        title: 'Separate',
-                        showTitle: true,
-                        class: 'container-badge-pro',
-                        col: 6,
-                        children: [{
-                            type: 'component',
-                            component: defineAsyncComponent(() => import("../components/AdvancedPictureInPicture"))
-                        }]
-                    },
-                    {
-                        type: 'container',
-                        title: 'Subtitle',
+                        title: 'VR',
                         showTitle: true,
                         class: 'container-badge-pro',
                         col: 6,
                         children: [
                             {
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Subtitle"))
+                                component: defineAsyncComponent(() => import("../components/Vr"))
                             }
                         ]
                     },
@@ -263,6 +247,19 @@ export default function useComponents() {
                             {
                                 type: 'component',
                                 component: defineAsyncComponent(() => import("../components/Record"))
+                            }
+                        ]
+                    },
+                    {
+                        type: 'container',
+                        title: 'Subtitle',
+                        showTitle: true,
+                        class: 'container-badge-coming-soon',
+                        col: 6,
+                        children: [
+                            {
+                                type: 'component',
+                                component: defineAsyncComponent(() => import("../components/Subtitle"))
                             }
                         ]
                     }

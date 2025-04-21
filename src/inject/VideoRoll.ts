@@ -939,7 +939,7 @@ export default class VideoRoll {
             
             .video-roll-vr-controls button {
                 padding: 8px 15px;
-                background: #4CAF50;
+                background: #7367f0;
                 color: white;
                 border: none;
                 border-radius: 3px;
@@ -947,7 +947,7 @@ export default class VideoRoll {
             }
             
             .video-roll-vr-controls button:hover {
-                background: #45a049;
+                background: #7367f0;
             }
             
             .video-roll-vr-progress {
@@ -977,7 +977,7 @@ export default class VideoRoll {
             
             .video-roll-vr-progress-bar {
                 height: 100%;
-                background: #4CAF50;
+                background: #7367f0;
                 width: 0%;
             }
             
