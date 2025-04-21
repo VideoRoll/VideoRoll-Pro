@@ -11,6 +11,11 @@
     );
     --video-roll-primary-background-color: rgb(24, 24, 28);
     --plyr-color-main: #7367f0;
+    --video-roll-background-coming: linear-gradient(
+        135deg,
+        #e8b23d 10%,
+        #cb9310 100%
+    );
 }
 
 
@@ -100,6 +105,22 @@ body {
             width: 16px;
             height: 10px;
             background-image: var(--video-roll-background-active);
+            top: 0;
+            right: 0px;
+            position: absolute;
+            font-size: 10px;
+            padding: 2px;
+            color: #fff;
+            border-bottom-left-radius: 5px;
+        }
+    }
+
+    .container-badge-coming-soon {
+        &::after {
+            content: "Soon";
+            width: 24px;
+            height: 10px;
+            background-image: var(--video-roll-background-coming);
             top: 0;
             right: 0px;
             position: absolute;

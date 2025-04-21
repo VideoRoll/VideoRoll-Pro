@@ -1,11 +1,10 @@
 import { ActionType } from "src/types/type.d";
-import { sendTabMessage } from "src/util";
+import { sendTabMessage, handleSpecialWebsite } from "src/util";
 
 // 替换为正常的 import 语句
 import { Parser } from "m3u8-parser";
 import { parse } from "mpd-parser";
 import VideoDownloader from "./VideoDownloader";
-import { handleSpecialWebsite } from "src/util/handleSpecialWebsite";
 // 音频编解码器标识符列表
 const AUDIO_CODEC_PREFIXES = [
     "mp4a", // AAC
