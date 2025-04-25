@@ -67,6 +67,7 @@
         "@supabase/supabase-js": "^2.45.6",
         "@tabler/icons-vue": "^3.31.0",
         "@vant/touch-emulator": "^1.4.0",
+        "@vant/use": "^1.6.0",
         "@vicons/ionicons5": "^0.11.0",
         "@vicons/tabler": "^0.13.0",
         "@xenova/transformers": "^2.17.2",
@@ -85,7 +86,7 @@
         "plyr": "^3.7.8",
         "three": "^0.168.0",
         "vant": "4.8.5",
-        "vue": "^3.2.47",
+        "vue": "^3.5.13",
         "vue3-colorpicker": "^2.3.0",
         "webextension-polyfill": "^0.10.0"
     },

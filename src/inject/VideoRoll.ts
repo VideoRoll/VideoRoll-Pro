@@ -66,6 +66,8 @@ export default class VideoRoll {
 
     static looper: Looper;
 
+    static VrFunctions: any = {}
+
     static setRollConfig(rollConfig: IRollConfig) {
         this.rollConfig = rollConfig;
         return this;
@@ -1014,7 +1016,7 @@ export default class VideoRoll {
     
         if (!video) return this;
     
-        if (!vr.on && mask) {
+        if (!vr.on && mask && this.VrFunctions.onPointerDown) {
             const dom = document.getElementById("video-roll-vr");
             const controls = document.getElementById("video-roll-vr-controls");
             const progress = document.getElementById("video-roll-vr-progress");
@@ -1022,20 +1024,20 @@ export default class VideoRoll {
             const hoverTimeDisplay = document.getElementById("video-roll-vr-hover-time");
             
             // 移除事件监听器
-            document.removeEventListener("mousedown", onPointerDown);
-            document.removeEventListener("mousemove", onPointerMove);
-            document.removeEventListener("mouseup", onPointerUp);
+            document.removeEventListener("mousedown", this.VrFunctions.onPointerDown);
+            document.removeEventListener("mousemove", this.VrFunctions.onPointerMove);
+            document.removeEventListener("mouseup", this.VrFunctions.onPointerUp);
             
-            document.removeEventListener("touchstart", onPointerDown);
-            document.removeEventListener("touchmove", onPointerMove);
-            document.removeEventListener("touchend", onPointerUp);
+            document.removeEventListener("touchstart", this.VrFunctions.onPointerDown);
+            document.removeEventListener("touchmove", this.VrFunctions.onPointerMove);
+            document.removeEventListener("touchend", this.VrFunctions.onPointerUp);
             
-            window.removeEventListener("resize", onWindowResize);
+            window.removeEventListener("resize", this.VrFunctions.onWindowResize);
             
             // 移除mask上的事件监听
             if (mask) {
-                mask.removeEventListener("mousemove", showControls);
-                mask.removeEventListener("touchmove", showControls);
+                mask.removeEventListener("mousemove", this.VrFunctions.showControls);
+                mask.removeEventListener("touchmove", this.VrFunctions.showControls);
             }
             
             // 移除DOM元素
@@ -1044,7 +1046,8 @@ export default class VideoRoll {
             progress?.remove();
             timeDisplay?.remove();
             hoverTimeDisplay?.remove();
-    
+            
+            this.VrFunctions = {};
             return this;
         }
     
@@ -1086,8 +1089,8 @@ export default class VideoRoll {
             const exitBtn = document.createElement("button");
             exitBtn.textContent = "退出VR";
             exitBtn.onclick = () => {
-                vr.on = false;
-                // updateVr(video, vr);
+                this.rollConfig.vr.on = false;
+                this.updateVr(video, this.rollConfig.vr);
             };
             controls.appendChild(exitBtn);
             
@@ -1177,7 +1180,7 @@ export default class VideoRoll {
             
             // UI自动隐藏功能
             let timeout: number | null = null;
-            function showControls() {
+            this.VrFunctions.showControls = function() {
                 controls.classList.remove("hidden");
                 progress.classList.remove("hidden");
                 timeDisplay.classList.remove("hidden");
@@ -1194,11 +1197,11 @@ export default class VideoRoll {
             };
             
             // 初始显示控制UI
-            showControls();
+            this.VrFunctions.showControls();
             
             // 鼠标移动时显示控制UI
-            mask.addEventListener("mousemove", showControls);
-            mask.addEventListener("touchmove", showControls);
+            mask.addEventListener("mousemove", this.VrFunctions.showControls);
+            mask.addEventListener("touchmove", this.VrFunctions.showControls);
     
             // Initialize Three.js scene
             let scene, camera, renderer, sphere, videoTexture;
@@ -1212,7 +1215,7 @@ export default class VideoRoll {
             let onPointerDownLon = 0,
                 onPointerDownLat = 0;
     
-            function init() {
+            const init = () => {
                 // Create Three.js renderer with improved quality
                 renderer = new THREE.WebGLRenderer({
                     canvas,
@@ -1253,25 +1256,25 @@ export default class VideoRoll {
     
                 camera.position.set(0, 0, 0);
                 // Add event listeners for mouse and touch controls
-                document.addEventListener("mousedown", onPointerDown, false);
-                document.addEventListener("mousemove", onPointerMove, false);
-                document.addEventListener("mouseup", onPointerUp, false);
+                document.addEventListener("mousedown", this.VrFunctions.onPointerDown, false);
+                document.addEventListener("mousemove", this.VrFunctions.onPointerMove, false);
+                document.addEventListener("mouseup", this.VrFunctions.onPointerUp, false);
     
-                document.addEventListener("touchstart", onPointerDown, false);
-                document.addEventListener("touchmove", onPointerMove, false);
-                document.addEventListener("touchend", onPointerUp, false);
+                document.addEventListener("touchstart", this.VrFunctions.onPointerDown, false);
+                document.addEventListener("touchmove", this.VrFunctions.onPointerMove, false);
+                document.addEventListener("touchend", this.VrFunctions.onPointerUp, false);
     
                 // Resize canvas when window resizes
-                window.addEventListener("resize", onWindowResize, false);
+                window.addEventListener("resize", this.VrFunctions.onWindowResize, false);
             }
     
-            function onWindowResize() {
+            this.VrFunctions.onWindowResize = function() {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
             }
     
-            function onPointerDown(event) {
+            this.VrFunctions.onPointerDown = function(event) {
                 isUserInteracting = true;
     
                 const clientX = event.clientX || event.touches[0].clientX;
@@ -1284,7 +1287,7 @@ export default class VideoRoll {
                 onPointerDownLat = lat;
             }
     
-            function onPointerMove(event) {
+            this.VrFunctions.onPointerMove = function(event) {
                 if (isUserInteracting) {
                     const clientX = event.clientX || event.touches[0].clientX;
                     const clientY = event.clientY || event.touches[0].clientY;
@@ -1298,7 +1301,7 @@ export default class VideoRoll {
                 }
             }
     
-            function onPointerUp() {
+            this.VrFunctions.onPointerUp = function() {
                 isUserInteracting = false;
             }
     
@@ -1504,8 +1507,9 @@ export default class VideoRoll {
             src = src.replace("blob:", "");
         }
 
-        const time = Math.ceil((video.duration * 10) / 60) / 10;
-        const duration = isNaN(time) ? 0 : time;
+        // const time = Math.ceil((video.duration * 10) / 60) / 10;
+        // const duration = isNaN(time) ? 0 : time;
+        const duration = video.duration || 0;
         if (this.rollConfig.crossorigin) {
             video.setAttribute("crossorigin", "anonymous");
         }
@@ -1517,7 +1521,7 @@ export default class VideoRoll {
         if (src === "no-src") {
             return {
                 posterUrl: poster,
-                duration,
+                duration: video.duration,
                 name,
                 src,
                 isReal,

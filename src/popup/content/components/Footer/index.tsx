@@ -56,7 +56,7 @@ export default defineComponent({
                         track-color="#2d2e31"
                         show-pivot={false}
                         color="linear-gradient(to right, #be99ff, #7232dd)"></van-progress>
-                    <div>{formatTime(controlVideo.value?.currentTime)}</div>
+                    <div>{formatTime(controlVideo.value?.currentTime)} / {formatTime(controlVideo.value?.duration)}</div>
                 </div>
                 {/* <p><a href="https://videoroll.gomi.site/#donate" target="_blank" class="text-link">{browser.i18n.getMessage('tips_donate')}</a> - made by <a href="https://gomi.site" target="_blank" class="text-link">Gomi</a></p> */}
             </div>
