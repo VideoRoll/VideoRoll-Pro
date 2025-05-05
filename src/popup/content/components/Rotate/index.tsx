@@ -27,7 +27,6 @@ export default defineComponent({
                         class={`rotate-${item.type}-${item.iconDeg} rotate-btn`}
                         key={item.type}
                         onClick={() => {
-                            console.log(rollConfig, 'deg')
                             update("deg", item.deg)
                         }}
                     >

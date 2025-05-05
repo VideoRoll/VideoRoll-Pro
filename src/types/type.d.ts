@@ -38,7 +38,8 @@ export enum ActionType {
     GET_DOWNLOAD_LIST,
     DOWNLOAD_SINGLE_VIDEO,
     PLAY,
-    PAUSE
+    PAUSE,
+    RECORD_INFO
 }
 
 export enum FlipType {
@@ -176,7 +177,9 @@ export interface IRollConfig {
     vr: Vr,
     abLoop: Abloop,
     subtitle: Subtitle
-    [key: string]: number | string | Abloop | Subtitle | Vr | AdvancedPictureInPicture | Iframes | Document | Flip | IFilter | IScale | Zoom | Deg | IMove | Pitch | Focus | boolean | VideoSelector
+    recordStatus: 'inactive' | 'recording' | 'paused' | undefined
+    recordInfo: string
+    [key: string]: number | string | undefined | Abloop | Subtitle | Vr | AdvancedPictureInPicture | Iframes | Document | Flip | IFilter | IScale | Zoom | Deg | IMove | Pitch | Focus | boolean | VideoSelector
 }
 
 export type VideoSelector = {

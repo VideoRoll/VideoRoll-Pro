@@ -42,8 +42,8 @@ importers:
         specifier: ^4.0.2
         version: 4.0.2
       audio-hacker:
-        specifier: file:.yalc\audio-hacker
-        version: file:.yalc/audio-hacker
+        specifier: ^1.0.8
+        version: 1.0.8
       dashjs:
         specifier: ^5.0.0
         version: 5.0.0
@@ -1902,8 +1902,8 @@ packages:
   atomically@2.0.3:
     resolution: {integrity: sha512-kU6FmrwZ3Lx7/7y3hPS5QnbJfaohcIul5fGqf7ok+4KklIEk9tJ0C2IQPdacSbVUWv6zVHXEBWoWd6NrVMT7Cw==}
 
-  audio-hacker@file:.yalc/audio-hacker:
-    resolution: {directory: .yalc/audio-hacker, type: directory}
+  audio-hacker@1.0.8:
+    resolution: {integrity: sha512-Vkiyq8PMQrNFN4TtpLhDeV+g3XDSmwx52kx2f6n8CDihutv6Kc0OjPVmf5B6vyy7dwNLnnQyMQZ0rxL7rmtWlg==}
 
   axios@1.7.7:
     resolution: {integrity: sha512-S4kL7XrjgBmvdGut0sN3yJxqYzrDOnivkBiN0OFs6hLiUam3UPvswUo0kqGyhqUZGEOytHyumEdXsAkgCOUf3Q==}
@@ -4666,9 +4666,6 @@ packages:
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
-
-  tocktimer@1.1.1:
-    resolution: {integrity: sha512-QA3yFEqTvLjz9AtLdrXhMBLBWWMCrLv8Sb3RJsFegjaduRcE8foARLXo/9SCMUnAi1oH4XsfgurZ3ZVzGPyFLA==}
 
   tough-cookie@4.1.2:
     resolution: {integrity: sha512-G9fqXWoYFZgTc2z8Q5zaHy/vJMjm+WV0AkAeHxVCQiEB1b+dGvWzFW6QV07cY5jQ5gRkeid2qIkzkxUnmoQZUQ==}
@@ -7608,9 +7605,7 @@ snapshots:
       stubborn-fs: 1.2.5
       when-exit: 2.1.3
 
-  audio-hacker@file:.yalc/audio-hacker:
-    dependencies:
-      tocktimer: 1.1.1
+  audio-hacker@1.0.8: {}
 
   axios@1.7.7:
     dependencies:
@@ -10511,8 +10506,6 @@ snapshots:
   to-regex-range@5.0.1:
     dependencies:
       is-number: 7.0.0
-
-  tocktimer@1.1.1: {}
 
   tough-cookie@4.1.2:
     dependencies:

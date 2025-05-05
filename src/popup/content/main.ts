@@ -5,12 +5,10 @@
  */
 
 /// <reference path="../types/shims-vue.d.ts" />
-import { createApp } from "vue";
-import { Row } from 'vant';
-import '@vant/touch-emulator';
-import 'vant/lib/index.css'
+import { createApp } from "../../share.ts";
+
+// import { Row } from 'vant';
 import FloatingVue from 'floating-vue'
-import 'floating-vue/dist/style.css'
 
 import App from "./App";
 
@@ -48,42 +46,7 @@ import Loading  from "vant/es/loading/index.mjs";
 import Progress from 'vant/es/progress/index.mjs'
 import Circle from 'vant/es/circle/index.mjs'
 import Image from 'vant/es/image/index.mjs'
-
-import "vant/es/sidebar/style/index.mjs";
-import "vant/es/sidebar-item/style/index.mjs";
-import "vant/es/config-provider/style/index.mjs";
-import "vant/es/radio-group/style/index.mjs";
-import "vant/es/radio/style/index.mjs";
-import "vant/es/switch/style/index.mjs";
-import "vant/es/slider/style/index.mjs";
-import "vant/es/divider/style/index.mjs";
-import "vant/es/button/style/index.mjs";
-import "vant/es/stepper/style/index.mjs";
-import "vant/es/badge/style/index.mjs";
-import "vant/es/col/style/index.mjs";
-import "vant/es/row/style/index.mjs";
-import "vant/es/swipe/style/index.mjs";
-import "vant/es/swipe-item/style/index.mjs";
-import "vant/es/popup/style/index.mjs";
-import "vant/es/toast/style/index.mjs";
-import "vant/es/popover/style/index.mjs";
-import "vant/es/notify/style/index.mjs";
-import "vant/es/tab/style/index.mjs";
-import "vant/es/tabs/style/index.mjs";
-import "vant/es/space/style/index.mjs";
-import "vant/es/checkbox/style/index.mjs";
-import "vant/es/checkbox-group/style/index.mjs";
-import "vant/es/cell-group/style/index.mjs";
-import "vant/es/cell/style/index.mjs";
-import "vant/es/tag/style/index.mjs";
-import "vant/es/notice-bar/style/index.mjs";
-import "vant/es/form/style/index.mjs";
-import "vant/es/field/style/index.mjs";
-import "vant/es/empty/style/index.mjs";
-import "vant/es/loading/style/index.mjs";
-import "vant/es/progress/style/index.mjs";
-import "vant/es/circle/style/index.mjs";
-import "vant/es/image/style/index.mjs";
+import Row from 'vant/es/row/index.mjs'
 
 createApp(App)
     .use(ConfigProvider)

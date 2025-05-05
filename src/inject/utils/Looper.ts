@@ -21,7 +21,6 @@ export default class Looper {
 
         if (abLoop.a !== null && abLoop.b !== null) {
             const time = timeStringToSeconds(abLoop.b);
-            console.log("------currentTime", video.currentTime, time);
             if (video.currentTime >= time) {
                 video.currentTime = timeStringToSeconds(abLoop.a);
                 video.play();

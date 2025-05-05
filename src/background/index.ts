@@ -101,7 +101,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.tabs.onActivated.addListener((activeInfo) => {
     const { tabId } = activeInfo;
     currentTabId = tabId;
-    console.log("activeTabId", activeInfo);
     setupStorage();
     sendTabMessage(
         tabId,
@@ -177,7 +176,7 @@ chrome.runtime.onMessage.addListener(async (a, b, send) => {
                 type: ActionType.AUDIO_CAPTURE,
                 target: 'offscreen',
                 streamId,
-                rollConfig: rollConfig,
+                rollConfig,
             });
             break;
         }

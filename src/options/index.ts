@@ -1,7 +1,5 @@
-import { createApp } from "vue";
+import { createApp } from "../share.ts";
 
-import '@vant/touch-emulator';
-import 'vant/lib/index.css'
 import './index.less';
 
 import App from "./app";
@@ -20,21 +18,6 @@ import Cell from "vant/es/cell/index.mjs";
 import Icon from "vant/es/icon/index.mjs";
 import Dialog from "vant/es/dialog/index.mjs";
 import Overlay from "vant/es/overlay/index.mjs";
-
-import "vant/es/config-provider/style/index.mjs";
-import "vant/es/radio-group/style/index.mjs";
-import "vant/es/radio/style/index.mjs";
-import "vant/es/switch/style/index.mjs";
-import "vant/es/divider/style/index.mjs";
-import "vant/es/button/style/index.mjs";
-import "vant/es/form/style/index.mjs";
-import "vant/es/field/style/index.mjs";
-import "vant/es/cell-group/style/index.mjs";
-import "vant/es/loading/style/index.mjs";
-import "vant/es/cell/style/index.mjs";
-import "vant/es/icon/style/index.mjs";
-import "vant/es/dialog/style/index.mjs";
-import "vant/es/overlay/style/index.mjs";
 
 createApp(App)
     .use(ConfigProvider)

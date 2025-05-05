@@ -4,12 +4,36 @@
  * @Date: 2022-09-11 11:12:50
  */
 import { shallowReactive } from 'vue';
-import {
-    defineAsyncComponent,
-} from "vue";
 import { DeviceTv, Headphones, Download, List, Adjustments } from '@vicons/tabler'
 import browser from 'webextension-polyfill';
 import { Tooltip } from 'floating-vue';
+
+// 静态导入所有组件， 避免parcel拆包
+import Rotate from '../components/Rotate';
+import Loop from '../components/Loop';
+import PictureInPicture from '../components/PictureInPicture';
+import Reposition from '../components/Repostion';
+import Stretch from '../components/Stretch';
+import Flip from '../components/Flip';
+import Capture from '../components/Capture';
+import QR from '../components/QR';
+import Filter from '../components/Filter';
+import Focus from '../components/Focus';
+import AdvancedPictureInPicture from '../components/AdvancedPictureInPicture';
+import ABLoop from '../components/ABLoop';
+import VR from '../components/Vr';
+import Record from '../components/Record';
+import Subtitle from '../components/Subtitle';
+import PlaybackRate from '../components/PlaybackRate';
+import Zoom from '../components/Zoom';
+import Mute from '../components/Mute';
+import Panner from '../components/Panner';
+import Volume from '../components/Volume';
+import Pitch from '../components/Pitch';
+import Delay from '../components/Delay';
+import Stereo from '../components/Stereo';
+import VideoList from '../components/VideoList';
+import More from '../components/More';
 
 interface IConfig {
     type: string;
@@ -73,7 +97,7 @@ export default function useComponents() {
                         showTitle: true,
                         children: [{
                             type: 'component',
-                            component: defineAsyncComponent(() => import("../components/Rotate"))
+                            component: <Rotate></Rotate>
                         }]
                     },
                     {
@@ -84,7 +108,7 @@ export default function useComponents() {
                         children: [
                             {
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Loop"))
+                                component: <Loop></Loop>
                             }
                         ]
                     },
@@ -96,7 +120,7 @@ export default function useComponents() {
                         children: [
                             {
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/PictureInPicture"))
+                                component: <PictureInPicture></PictureInPicture>
                             }
                         ]
                     }
@@ -116,7 +140,7 @@ export default function useComponents() {
                         col: 6,
                         children: [{
                             type: 'component',
-                            component: defineAsyncComponent(() => import("../components/Repostion"))
+                            component: <Reposition></Reposition>
                         }]
                     },
                     {
@@ -126,7 +150,7 @@ export default function useComponents() {
                         showTitle: true,
                         children: [{
                             type: 'component',
-                            component: defineAsyncComponent(() => import("../components/Stretch"))
+                            component: <Stretch />
                         }]
                     },
                     {
@@ -136,7 +160,7 @@ export default function useComponents() {
                         showTitle: true,
                         children: [{
                             type: 'component',
-                            component: defineAsyncComponent(() => import("../components/Flip"))
+                            component: <Flip></Flip>
                         }]
                     },
                     {
@@ -147,7 +171,7 @@ export default function useComponents() {
                         children: [
                             {
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Capture"))
+                                component: <Capture></Capture>
                             }
                         ]
                     }
@@ -167,7 +191,7 @@ export default function useComponents() {
                         col: 6,
                         children: [{
                             type: 'component',
-                            component: defineAsyncComponent(() => import("../components/QR"))
+                            component: <QR></QR>
                         }]
                     },
                     {
@@ -177,7 +201,7 @@ export default function useComponents() {
                         col: 6,
                         children: [{
                             type: 'component',
-                            component: defineAsyncComponent(() => import("../components/Filter"))
+                            component: <Filter></Filter>
                         }]
                     },
                     {
@@ -188,7 +212,7 @@ export default function useComponents() {
                         children: [
                             {
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Focus"))
+                                component: <Focus></Focus>
                             }
                         ]
                     },
@@ -199,7 +223,7 @@ export default function useComponents() {
                         col: 6,
                         children: [{
                             type: 'component',
-                            component: defineAsyncComponent(() => import("../components/AdvancedPictureInPicture"))
+                            component: <AdvancedPictureInPicture></AdvancedPictureInPicture>
                         }]
                     }
                 ],
@@ -220,7 +244,7 @@ export default function useComponents() {
                         children: [
                             {
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/ABLoop"))
+                                component: <ABLoop></ABLoop>
                             }
                         ]
                     },
@@ -233,7 +257,7 @@ export default function useComponents() {
                         children: [
                             {
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Vr"))
+                                component: <VR></VR>
                             }
                         ]
                     },
@@ -246,7 +270,7 @@ export default function useComponents() {
                         children: [
                             {
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Record"))
+                                component: <Record></Record>
                             }
                         ]
                     },
@@ -259,7 +283,7 @@ export default function useComponents() {
                         children: [
                             {
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Subtitle"))
+                                component: <Subtitle></Subtitle>
                             }
                         ]
                     }
@@ -279,7 +303,7 @@ export default function useComponents() {
                         showTitle: true,
                         children: [{
                             type: 'component',
-                            component: defineAsyncComponent(() => import("../components/PlaybackRate"))
+                            component: <PlaybackRate></PlaybackRate>
                         }]
                     },
                 ]
@@ -298,7 +322,7 @@ export default function useComponents() {
                         showTitle: true,
                         children: [{
                             type: 'component',
-                            component: defineAsyncComponent(() => import("../components/Zoom"))
+                            component: <Zoom></Zoom>
                         }]
                     },
                 ]
@@ -323,7 +347,7 @@ export default function useComponents() {
                             col: 12,
                             children: [{
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Mute"))
+                                component: <Mute></Mute>
                             }]
                         },
                         {
@@ -334,7 +358,7 @@ export default function useComponents() {
                             col: 12,
                             children: [{
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Panner"))
+                                component: <Panner></Panner>
                             }]
                         },
                     ]
@@ -353,7 +377,7 @@ export default function useComponents() {
                             col: 24,
                             children: [{
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Volume"))
+                                component: <Volume></Volume>
                             }]
                         },
                     ]
@@ -373,7 +397,7 @@ export default function useComponents() {
                             col: 24,
                             children: [{
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Pitch"))
+                                component: <Pitch></Pitch>
                             }]
                         },
                     ]
@@ -393,7 +417,7 @@ export default function useComponents() {
                             col: 24,
                             children: [{
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Delay"))
+                                component: <Delay></Delay>
                             }]
                         },
                     ]
@@ -413,7 +437,7 @@ export default function useComponents() {
                             col: 24,
                             children: [{
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/Stereo"))
+                                component: <Stereo></Stereo>
                             }]
                         },
                     ]
@@ -426,7 +450,7 @@ export default function useComponents() {
             children: [
                 {
                     type: 'component',
-                    component: defineAsyncComponent(() => import("../components/VideoList"))
+                    component: <VideoList></VideoList>
                 }
             ]
         },
@@ -446,7 +470,7 @@ export default function useComponents() {
                             col: 24,
                             children: [{
                                 type: 'component',
-                                component: defineAsyncComponent(() => import("../components/More"))
+                                component: <More></More>
                             }]
                         },
                     ]

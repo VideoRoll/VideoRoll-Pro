@@ -85,7 +85,6 @@ export default class VideoDetector {
     onRemovedListener() {
         // 处理标签页关闭
         chrome.tabs.onRemoved.addListener((tabId) => {
-            console.log("removed");
             this.videoList.delete(tabId);
 
             for (const [key, value] of this.requestMap.entries()) {
@@ -99,9 +98,9 @@ export default class VideoDetector {
     onUpdateListener() {
         chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             if (changeInfo.status === "loading" || changeInfo.url) {
-                console.log("update page");
+
                 this.videoList.delete(tabId);
-                console.log("update page");
+
                 for (const [key, value] of this.requestMap.entries()) {
                     if (value.tabId === tabId) {
                         this.requestMap.delete(key);
@@ -1018,7 +1017,6 @@ export default class VideoDetector {
         const tabVideos = this.videoList.get(tabId);
         tabVideos.set(videoInfo.id, videoInfo);
         // this.requestMap.delete(videoInfo.id);
-        console.log(tabVideos, "tabVideos");
         // 通知popup更新
         this.notifyPopup(tabId);
     }

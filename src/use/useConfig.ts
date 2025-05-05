@@ -83,9 +83,10 @@ const defaultConfig = {
         a: "00:00:00",
         b: "00:00:00"
     },
-    isRecording: false,
     crossorigin: false,
     videoSelector: { defaultDom: 'video' },
+    recordStatus: undefined,
+    recordInfo: '',
     subtitle: {
         on: false
     }

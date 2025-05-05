@@ -66,7 +66,7 @@ export default class VideoRoll {
 
     static looper: Looper;
 
-    static VrFunctions: any = {}
+    static VrFunctions: any = {};
 
     static setRollConfig(rollConfig: IRollConfig) {
         this.rollConfig = rollConfig;
@@ -273,11 +273,10 @@ export default class VideoRoll {
 
         for (let i = 0; i < videos.length; i++) {
             const video = videos[i];
-            console.log(video.currentTime, 'currentTime - ', i);
+
             if (i === 0) {
                 this.setRealVideoPlayer(video);
             } else if (this.isRealVideoPlayer(video)) {
-                console.log('sett', i)
                 this.setRealVideoPlayer(video);
             }
 
@@ -328,22 +327,20 @@ export default class VideoRoll {
         if (
             this.realVideoPlayer.player.currentTime === 0 &&
             this.realVideoPlayer.player.paused &&
-            player.currentTime > 0 && !player.paused
+            player.currentTime > 0 &&
+            !player.paused
         ) {
-            console.log('t1')
             return true;
         }
-            
+
         if (
             !player.paused &&
             !player.ended &&
             player.readyState > 0 &&
             player.currentTime > 0
         ) {
-            console.log('t2')
             return true;
         }
-            
 
         if ("readyState" in player && player.readyState === 0) return false;
 
@@ -358,7 +355,6 @@ export default class VideoRoll {
 
         if (isSmaller) return false;
 
-        console.log('hhhh')
         return true;
     }
 
@@ -896,7 +892,7 @@ export default class VideoRoll {
         const vrStyle = document.getElementById(
             "video-roll-vr-style"
         ) as HTMLStyleElement;
-    
+
         if (vrStyle) {
             vrStyle.innerHTML = `#video-roll-vr-mask {
                 display: ${vr.on ? "block" : "none"};
@@ -1013,64 +1009,93 @@ export default class VideoRoll {
                 text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
             }`;
         }
-    
+
         if (!video) return this;
-    
+
         if (!vr.on && mask && this.VrFunctions.onPointerDown) {
             const dom = document.getElementById("video-roll-vr");
             const controls = document.getElementById("video-roll-vr-controls");
             const progress = document.getElementById("video-roll-vr-progress");
             const timeDisplay = document.getElementById("video-roll-vr-time");
-            const hoverTimeDisplay = document.getElementById("video-roll-vr-hover-time");
-            
+            const hoverTimeDisplay = document.getElementById(
+                "video-roll-vr-hover-time"
+            );
+
             // 移除事件监听器
-            document.removeEventListener("mousedown", this.VrFunctions.onPointerDown);
-            document.removeEventListener("mousemove", this.VrFunctions.onPointerMove);
-            document.removeEventListener("mouseup", this.VrFunctions.onPointerUp);
-            
-            document.removeEventListener("touchstart", this.VrFunctions.onPointerDown);
-            document.removeEventListener("touchmove", this.VrFunctions.onPointerMove);
-            document.removeEventListener("touchend", this.VrFunctions.onPointerUp);
-            
-            window.removeEventListener("resize", this.VrFunctions.onWindowResize);
-            
+            document.removeEventListener(
+                "mousedown",
+                this.VrFunctions.onPointerDown
+            );
+            document.removeEventListener(
+                "mousemove",
+                this.VrFunctions.onPointerMove
+            );
+            document.removeEventListener(
+                "mouseup",
+                this.VrFunctions.onPointerUp
+            );
+
+            document.removeEventListener(
+                "touchstart",
+                this.VrFunctions.onPointerDown
+            );
+            document.removeEventListener(
+                "touchmove",
+                this.VrFunctions.onPointerMove
+            );
+            document.removeEventListener(
+                "touchend",
+                this.VrFunctions.onPointerUp
+            );
+
+            window.removeEventListener(
+                "resize",
+                this.VrFunctions.onWindowResize
+            );
+
             // 移除mask上的事件监听
             if (mask) {
-                mask.removeEventListener("mousemove", this.VrFunctions.showControls);
-                mask.removeEventListener("touchmove", this.VrFunctions.showControls);
+                mask.removeEventListener(
+                    "mousemove",
+                    this.VrFunctions.showControls
+                );
+                mask.removeEventListener(
+                    "touchmove",
+                    this.VrFunctions.showControls
+                );
             }
-            
+
             // 移除DOM元素
             dom?.remove();
             controls?.remove();
             progress?.remove();
             timeDisplay?.remove();
             hoverTimeDisplay?.remove();
-            
+
             this.VrFunctions = {};
             return this;
         }
-    
+
         if (vr.on && mask) {
             const dom = document.getElementById("video-roll-vr");
-    
+
             if (dom) {
                 return this;
             }
-    
+
             // 创建Canvas元素
             const canvas = document.createElement("canvas");
             mask.appendChild(canvas);
             canvas.width = video.offsetWidth * devicePixelRatio;
             canvas.height = video.offsetHeight * devicePixelRatio;
             canvas.setAttribute("id", "video-roll-vr");
-            
+
             // 创建控制UI
             const controls = document.createElement("div");
             controls.setAttribute("id", "video-roll-vr-controls");
             controls.className = "video-roll-vr-controls";
             mask.appendChild(controls);
-            
+
             // 播放/暂停按钮
             const playPauseBtn = document.createElement("button");
             playPauseBtn.textContent = video.paused ? "播放" : "暂停";
@@ -1084,7 +1109,7 @@ export default class VideoRoll {
                 }
             };
             controls.appendChild(playPauseBtn);
-            
+
             // 退出VR模式按钮
             const exitBtn = document.createElement("button");
             exitBtn.textContent = "退出VR";
@@ -1093,7 +1118,7 @@ export default class VideoRoll {
                 this.updateVr(video, this.rollConfig.vr);
             };
             controls.appendChild(exitBtn);
-            
+
             // 重置视角按钮
             const resetBtn = document.createElement("button");
             resetBtn.textContent = "重置视角";
@@ -1102,42 +1127,45 @@ export default class VideoRoll {
                 lat = 0;
             };
             controls.appendChild(resetBtn);
-            
+
             // 创建进度条
             const progress = document.createElement("div");
             progress.setAttribute("id", "video-roll-vr-progress");
             progress.className = "video-roll-vr-progress";
             mask.appendChild(progress);
-            
+
             const progressBar = document.createElement("div");
             progressBar.className = "video-roll-vr-progress-bar";
             progress.appendChild(progressBar);
-            
+
             // 创建时间显示
             const timeDisplay = document.createElement("div");
             timeDisplay.setAttribute("id", "video-roll-vr-time");
             timeDisplay.className = "video-roll-vr-time";
             mask.appendChild(timeDisplay);
-            
+
             // 创建悬停时间提示
             const hoverTimeDisplay = document.createElement("div");
             hoverTimeDisplay.setAttribute("id", "video-roll-vr-hover-time");
             hoverTimeDisplay.className = "video-roll-vr-hover-time";
             mask.appendChild(hoverTimeDisplay);
-            
+
             // 格式化时间函数
             const formatTime = (seconds) => {
                 const minutes = Math.floor(seconds / 60);
                 const remainingSeconds = Math.floor(seconds % 60);
-                return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+                return `${minutes}:${
+                    remainingSeconds < 10 ? "0" : ""
+                }${remainingSeconds}`;
             };
-            
+
             // 更新进度条和时间显示
             const updateProgressBar = () => {
-                if (!video.paused || true) { // 即使暂停也更新一次
+                if (!video.paused || true) {
+                    // 即使暂停也更新一次
                     const percent = (video.currentTime / video.duration) * 100;
                     progressBar.style.width = `${percent}%`;
-                    
+
                     // 更新时间显示
                     const currentTime = formatTime(video.currentTime);
                     const totalTime = formatTime(video.duration);
@@ -1146,63 +1174,63 @@ export default class VideoRoll {
                 requestAnimationFrame(updateProgressBar);
             };
             updateProgressBar();
-            
+
             // 进度条拖拽功能
             progress.addEventListener("click", (e) => {
                 const rect = progress.getBoundingClientRect();
                 const pos = (e.clientX - rect.left) / rect.width;
                 video.currentTime = pos * video.duration;
             });
-            
+
             // 进度条悬停显示时间功能
             progress.addEventListener("mousemove", (e) => {
                 const rect = progress.getBoundingClientRect();
                 const pos = (e.clientX - rect.left) / rect.width;
                 const hoverTime = pos * video.duration;
-                
+
                 // 更新悬停时间显示
                 hoverTimeDisplay.textContent = formatTime(hoverTime);
                 hoverTimeDisplay.style.display = "block";
-                
+
                 // 计算悬停时间显示的位置，跟随鼠标
                 const hoverTimeRect = hoverTimeDisplay.getBoundingClientRect();
                 const leftPos = e.clientX - hoverTimeRect.width / 2;
                 const topPos = rect.top - hoverTimeRect.height - 5; // 在进度条上方5px处显示
-                
+
                 hoverTimeDisplay.style.left = `${leftPos}px`;
                 hoverTimeDisplay.style.top = `${topPos}px`;
             });
-            
+
             // 鼠标离开进度条时隐藏悬停时间
             progress.addEventListener("mouseleave", () => {
                 hoverTimeDisplay.style.display = "none";
             });
-            
+
             // UI自动隐藏功能
             let timeout: number | null = null;
-            this.VrFunctions.showControls = function() {
+            this.VrFunctions.showControls = function () {
                 controls.classList.remove("hidden");
                 progress.classList.remove("hidden");
                 timeDisplay.classList.remove("hidden");
-                
+
                 if (timeout) {
                     clearTimeout(timeout);
                 }
-                
+
                 timeout = setTimeout(() => {
                     controls.classList.add("hidden");
                     progress.classList.add("hidden");
                     timeDisplay.classList.add("hidden");
                 }, 3000);
             };
-            
+
             // 初始显示控制UI
             this.VrFunctions.showControls();
-            
+
             // 鼠标移动时显示控制UI
             mask.addEventListener("mousemove", this.VrFunctions.showControls);
             mask.addEventListener("touchmove", this.VrFunctions.showControls);
-    
+
             // Initialize Three.js scene
             let scene, camera, renderer, sphere, videoTexture;
             let lon = 0,
@@ -1214,7 +1242,7 @@ export default class VideoRoll {
                 onPointerDownPointerY = 0;
             let onPointerDownLon = 0,
                 onPointerDownLat = 0;
-    
+
             const init = () => {
                 // Create Three.js renderer with improved quality
                 renderer = new THREE.WebGLRenderer({
@@ -1222,11 +1250,11 @@ export default class VideoRoll {
                     antialias: true,
                     alpha: true,
                     precision: "highp",
-                    powerPreference: "high-performance"
+                    powerPreference: "high-performance",
                 });
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 renderer.setPixelRatio(Math.max(window.devicePixelRatio, 2)); // 提高像素比
-    
+
                 // Create scene and camera
                 scene = new THREE.Scene();
                 camera = new THREE.PerspectiveCamera(
@@ -1236,15 +1264,16 @@ export default class VideoRoll {
                     1000
                 );
                 camera.target = new THREE.Vector3(0, 0, 0);
-    
+
                 // Create high quality video texture
                 videoTexture = new THREE.VideoTexture(video);
                 videoTexture.minFilter = THREE.LinearFilter;
                 videoTexture.magFilter = THREE.LinearFilter;
                 videoTexture.format = THREE.RGBFormat;
-                videoTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                videoTexture.anisotropy =
+                    renderer.capabilities.getMaxAnisotropy();
                 videoTexture.generateMipmaps = true;
-    
+
                 // Create a higher quality sphere geometry with more segments
                 const geometry = new THREE.SphereGeometry(500, 320, 160); // 增加分段数量
                 geometry.scale(-1, 1, 1); // Invert sphere geometry to view from inside
@@ -1253,45 +1282,73 @@ export default class VideoRoll {
                 });
                 sphere = new THREE.Mesh(geometry, material);
                 scene.add(sphere);
-    
+
                 camera.position.set(0, 0, 0);
                 // Add event listeners for mouse and touch controls
-                document.addEventListener("mousedown", this.VrFunctions.onPointerDown, false);
-                document.addEventListener("mousemove", this.VrFunctions.onPointerMove, false);
-                document.addEventListener("mouseup", this.VrFunctions.onPointerUp, false);
-    
-                document.addEventListener("touchstart", this.VrFunctions.onPointerDown, false);
-                document.addEventListener("touchmove", this.VrFunctions.onPointerMove, false);
-                document.addEventListener("touchend", this.VrFunctions.onPointerUp, false);
-    
+                document.addEventListener(
+                    "mousedown",
+                    this.VrFunctions.onPointerDown,
+                    false
+                );
+                document.addEventListener(
+                    "mousemove",
+                    this.VrFunctions.onPointerMove,
+                    false
+                );
+                document.addEventListener(
+                    "mouseup",
+                    this.VrFunctions.onPointerUp,
+                    false
+                );
+
+                document.addEventListener(
+                    "touchstart",
+                    this.VrFunctions.onPointerDown,
+                    false
+                );
+                document.addEventListener(
+                    "touchmove",
+                    this.VrFunctions.onPointerMove,
+                    false
+                );
+                document.addEventListener(
+                    "touchend",
+                    this.VrFunctions.onPointerUp,
+                    false
+                );
+
                 // Resize canvas when window resizes
-                window.addEventListener("resize", this.VrFunctions.onWindowResize, false);
-            }
-    
-            this.VrFunctions.onWindowResize = function() {
+                window.addEventListener(
+                    "resize",
+                    this.VrFunctions.onWindowResize,
+                    false
+                );
+            };
+
+            this.VrFunctions.onWindowResize = function () {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
-            }
-    
-            this.VrFunctions.onPointerDown = function(event) {
+            };
+
+            this.VrFunctions.onPointerDown = function (event) {
                 isUserInteracting = true;
-    
+
                 const clientX = event.clientX || event.touches[0].clientX;
                 const clientY = event.clientY || event.touches[0].clientY;
-    
+
                 onPointerDownPointerX = clientX;
                 onPointerDownPointerY = clientY;
-    
+
                 onPointerDownLon = lon;
                 onPointerDownLat = lat;
-            }
-    
-            this.VrFunctions.onPointerMove = function(event) {
+            };
+
+            this.VrFunctions.onPointerMove = function (event) {
                 if (isUserInteracting) {
                     const clientX = event.clientX || event.touches[0].clientX;
                     const clientY = event.clientY || event.touches[0].clientY;
-    
+
                     lon =
                         (onPointerDownPointerX - clientX) * 0.1 +
                         onPointerDownLon;
@@ -1299,33 +1356,33 @@ export default class VideoRoll {
                         (clientY - onPointerDownPointerY) * 0.1 +
                         onPointerDownLat;
                 }
-            }
-    
-            this.VrFunctions.onPointerUp = function() {
+            };
+
+            this.VrFunctions.onPointerUp = function () {
                 isUserInteracting = false;
-            }
-    
+            };
+
             function animate() {
                 requestAnimationFrame(animate);
-    
+
                 lat = Math.max(-85, Math.min(85, lat));
                 phi = THREE.MathUtils.degToRad(90 - lat);
                 theta = THREE.MathUtils.degToRad(lon);
-    
+
                 camera.target.x = 500 * Math.sin(phi) * Math.cos(theta);
                 camera.target.y = 500 * Math.cos(phi);
                 camera.target.z = 500 * Math.sin(phi) * Math.sin(theta);
                 camera.lookAt(camera.target);
-    
+
                 // Render the scene with high quality
                 renderer.render(scene, camera);
             }
-    
+
             // Initialize and start animation
             init();
             animate();
         }
-        
+
         return this;
     }
 
@@ -1379,7 +1436,7 @@ export default class VideoRoll {
             src: v.src,
             percentage: v.percentage ?? 0,
             currentTime: v.currentTime ?? 0,
-            paused: v.paused
+            paused: v.paused,
         }));
     }
 
@@ -1480,12 +1537,12 @@ export default class VideoRoll {
             if (v.id !== video.dataset.rollId) {
                 v.isReal = false;
             }
-        })
-        
+        });
+
         callback({
             text: String(this.videoNumbers),
             videoList: this.buildVideoList(),
-        })
+        });
     }
 
     static watchVideoProgress(video: HTMLVideoElement, callback: Function) {
@@ -1621,9 +1678,8 @@ export default class VideoRoll {
         )
             return true;
 
-        if (mutationItem.target.querySelectorAll('video')) return true;
+        if (mutationItem.target.querySelectorAll("video")) return true;
 
-        console.log('false', mutationItem)
         return false;
     }
 
@@ -1666,7 +1722,7 @@ export default class VideoRoll {
                         "data-index",
                         "preload",
                         "controls",
-                        "muted"
+                        "muted",
                     ],
                     attributes: true,
                 });
@@ -1749,7 +1805,17 @@ export default class VideoRoll {
         }
 
         this.recorder.startRecord(
-            this.realVideoPlayer.player as HTMLVideoElement
+            this.realVideoPlayer.player as HTMLVideoElement,
+            (info) => {
+                sendRuntimeMessage(this.rollConfig.tabId, {
+                    type: ActionType.RECORD_INFO,
+                    rollConfig: {
+                        ...this.rollConfig,
+                        recordStatus: this.recorder.status,
+                        ...info
+                    }
+                });
+            }
         );
     }
 
@@ -1757,6 +1823,10 @@ export default class VideoRoll {
         if (this.recorder) {
             this.recorder.stopRecord();
         }
+    }
+
+    static getRecordStatus() {
+        return this.recorder?.status ?? undefined;
     }
 
     static updateLoop(abLoop: Abloop) {
@@ -1790,12 +1860,16 @@ export default class VideoRoll {
         this.downloadList = downloadList;
     }
 
-    static downloadSingleVideo(videoInfo: any, rollConfig: IRollConfig, favIcon: string) {
+    static downloadSingleVideo(
+        videoInfo: any,
+        rollConfig: IRollConfig,
+        favIcon: string
+    ) {
         sendRuntimeMessage(this.rollConfig.tabId, {
             type: ActionType.DOWNLOAD_SINGLE_VIDEO,
             videoInfo,
             rollConfig: this.rollConfig,
-            favIcon
+            favIcon,
         });
     }
 

@@ -1,5 +1,5 @@
 /*
- * @description: zoom Component
+ * @description: speed Component
  * @Author: Gouxinyu
  * @Date: 2022-09-19 22:53:23
  */
@@ -34,14 +34,14 @@ export default defineComponent({
                 value: 1
             },
             {
+                title: '1.5x',
+                selected: false,
+                value: 1.5
+            },
+            {
                 title: '2.0x',
                 selected: false,
                 value: 2
-            },
-            {
-                title: '4.0x',
-                selected: false,
-                value: 4
             },
             {
                 title: '16.0x',
@@ -84,7 +84,7 @@ export default defineComponent({
                     ),
                 }}>
                     <div class="video-roll-long-box">
-                        <div v-tooltip={browser.i18n.getMessage('action_reset')}class={`video-roll-switch ${rollConfig.playbackRate !== 1 ? 'video-roll-switch-on' : 'video-roll-switch-off'}`} onClick={() => setPlaybackRateValue(1)}>
+                        <div v-tooltip={browser.i18n.getMessage('action_reset')} class={`video-roll-switch ${rollConfig.playbackRate !== 1 ? 'video-roll-switch-on' : 'video-roll-switch-off'}`} onClick={() => setPlaybackRateValue(1)}>
                             <ReloadOutline class="reset-icon"></ReloadOutline>
                         </div>
                         <div class="video-roll-zoom">
