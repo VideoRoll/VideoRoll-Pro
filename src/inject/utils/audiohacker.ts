@@ -59,19 +59,19 @@ export default class Audiohacker {
     mix2: GainNode;
     delay1: DelayNode;
     delay2: DelayNode;
-    delay: DelayNode;
-    panner: PannerNode;
-    pannerGain: GainNode;
-    pannerFilter: BiquadFilterNode;
-    pannerLowPassFilter: BiquadFilterNode;
-    pannerHighPassFilter: BiquadFilterNode;
-    pannerMidPassFilter: BiquadFilterNode;
-    pannerLowGainNode: GainNode;
-    pannerHighGainNode: GainNode;
-    pannerMidGainNode: GainNode;
-    pannerConvolver: ConvolverNode;
-    pannerCompressor: DynamicsCompressorNode;
-    stereo: StereoPannerNode;
+    delay: DelayNode | null = null;
+    panner: PannerNode | null = null;
+    pannerGain: GainNode | null = null;
+    pannerFilter: BiquadFilterNode | null = null;
+    pannerLowPassFilter: BiquadFilterNode | null = null;
+    pannerHighPassFilter: BiquadFilterNode | null = null;
+    pannerMidPassFilter: BiquadFilterNode | null = null;
+    pannerLowGainNode: GainNode | null = null;
+    pannerHighGainNode: GainNode | null = null;
+    pannerMidGainNode: GainNode | null = null;
+    pannerConvolver: ConvolverNode | null = null;
+    pannerCompressor: DynamicsCompressorNode | null = null;
+    stereo: StereoPannerNode | null = null;
 
     constructor(
         context: AudioContext,
@@ -325,7 +325,7 @@ export default class Audiohacker {
         }
     }
 
-    lerp(start, end, t) {
+    lerp(start: number, end: number, t: number) {
         return start + (end - start) * t; // 线性插值函数
     }
 
@@ -373,14 +373,17 @@ export default class Audiohacker {
             this.pannerHighGainNode = this.context.createGain();
             this.pannerConvolver = this.context.createConvolver();
             this.pannerCompressor = this.context.createDynamicsCompressor();
-
         }
+
+        if (!this.panner || !this.pannerGain || !this.pannerLowPassFilter || 
+            !this.pannerMidPassFilter || !this.pannerHighPassFilter ||
+            !this.pannerLowGainNode || !this.pannerMidGainNode || !this.pannerHighGainNode) {
+            return;
+        }
+
         if (isOn === true) {
             try {
                 this.mediaSource.disconnect(this.input);
-                // this.pannerGain.disconnect(this.pannerGain);
-                // this.mediaSource.disconnect(this.delay);
-                // this.delay.disconnect(this.context.destination);
             } catch (e) {}
 
             this.pannerLowPassFilter.type = 'lowpass';
@@ -415,7 +418,7 @@ export default class Audiohacker {
             const updateInterval = 16; // 目标更新间隔（约60Hz）
         
             const animate = () => {
-                if (!this.panner) {
+                if (!this.panner || !this.pannerGain) {
                     return;
                 }
 

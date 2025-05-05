@@ -1,4 +1,4 @@
-import Audiohacker from "./audiohacker";
+import Audiohacker from "audio-hacker";
 import { ActionType, IRollConfig } from "src/types/type.d";
 
 export default class AudioController {
@@ -27,7 +27,6 @@ export default class AudioController {
 
             if (this.audioCtx) {
                 for (const event of this.doneEvents) {
-                    console.log(event, "downevent");
                     event();
                 }
                 this.doneEvents = [];
@@ -39,7 +38,6 @@ export default class AudioController {
 
     done(callback: Function) {
         if (typeof callback === "function") {
-            console.log("callback");
             this.doneEvents.push(callback);
         }
     }
@@ -137,8 +135,6 @@ export default class AudioController {
     }
 
     async update(streamId: string, rollConfig: IRollConfig) {
-        console.log(this.streamId, '---straemId')
-
         if (streamId) {
             this.streamId = streamId;
         }
@@ -150,12 +146,9 @@ export default class AudioController {
         if (!this.audioHacker) return this;
 
         if (this.isBaseValue()) {
-            console.log('isBase')
             this.reset();
             return;
         }
-
-        console.log('update ---------', this.rollConfig);
 
         this.audioHacker.setVolume(rollConfig.volume);
         this.audioHacker.setDelay(rollConfig.delay);

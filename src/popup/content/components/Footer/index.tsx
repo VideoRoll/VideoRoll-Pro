@@ -5,9 +5,8 @@
  */
 
 import { defineComponent, inject, ref, watch } from "vue";
-import browser from 'webextension-polyfill'
-import { PlayerPlay, PlayerPause } from "@vicons/tabler";
 import "./index.less";
+import { formatTime } from "../../utils";
 
 export default defineComponent({
     name: "Footer",
@@ -20,24 +19,6 @@ export default defineComponent({
         watch(() => realVideo.value, (value) => {
             controlVideo.value = realVideo.value;
         }, { deep: true });
-
-
-        // watch(() => realVideo)
-        function formatTime(value: string) {
-            const seconds = Number(value);
-            const h = Math.floor(seconds / 3600); // 小时
-            const m = Math.floor((seconds % 3600) / 60); // 分钟
-            const s = Math.floor(seconds % 60); // 秒
-
-            // 如果小时为 0，不显示小时
-            const formattedHours =
-                h > 0 ? String(h).padStart(2, "0") + ":" : "";
-            const formattedMinutes = String(m).padStart(2, "0");
-            const formattedSeconds = String(s).padStart(2, "0");
-
-            if (isNaN(h) || isNaN(m) || isNaN(s)) return '00:00'; 
-            return `${formattedHours}${formattedMinutes}:${formattedSeconds}`;
-        }
 
         const changeStatus = (status: boolean, callback: Function) => {
             callback();

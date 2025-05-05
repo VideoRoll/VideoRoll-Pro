@@ -44,7 +44,6 @@ export function removeLocalStorage(key: string) {
 export function setStorageByKey(config: IRollConfig) {
     const domain = getDomain(config.url);
     if (config.enable === false) {
-        console.log(domain, 'domain');
         return browser.storage.sync.set({
             [`video-roll-disabled-${domain}`]: domain
         });

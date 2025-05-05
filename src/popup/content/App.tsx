@@ -182,9 +182,7 @@ export default defineComponent({
                 switch (type) {
                     case ActionType.UPDATE_STORAGE:
                         Object.keys(config).forEach((key) => {
-                            if (key in rollConfig) {
-                                rollConfig[key] = config[key];
-                            }
+                            rollConfig[key] = config[key];
                         });
                         break;
                     case ActionType.UPDATE_BADGE:
@@ -217,8 +215,10 @@ export default defineComponent({
                             focused: true,
                         });
                         break;
-                    case ActionType.STOP_RECORD:
-                        rollConfig.isRecording = false;
+                    case ActionType.RECORD_INFO:
+                        rollConfig.recordStatus = config.recordStatus;
+                        rollConfig.recordInfo = config.recordInfo;
+                        rollConfig.recordTime = config.recordTime;
                         break;
                     case ActionType.USER_INFO:
                         console.log(userInfo, '2222user----');

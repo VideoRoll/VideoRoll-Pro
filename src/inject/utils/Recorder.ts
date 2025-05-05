@@ -1,14 +1,20 @@
 import { saveAs } from "file-saver";
+import { sendRuntimeMessage } from "src/util";
 
 export default class Record {
     mediaRecorder: any = null;
     _recordedChunks = [];
+    _startRecordTime = 0;
     constructor() {
         // this.addElement(video);
     }
 
     get status() {
-        return this.mediaRecorder?.state;
+        return this.mediaRecorder?.state ?? undefined;
+    }
+
+    get time() {
+        return this._startRecordTime;
     }
 
     addElement(video: HTMLVideoElement) {
@@ -33,7 +39,14 @@ export default class Record {
         }
     }
 
-    startRecord(video: HTMLVideoElement) {
+    startRecord(video: HTMLVideoElement, callback: Function) {
+        if (!video) {
+            callback({
+                recordInfo: "未识别到视频",
+                recordTime: this._startRecordTime,
+            });
+        }
+
         const dom = document.querySelector(".video-roll-record-canvas");
 
         if (dom) {
@@ -56,39 +69,81 @@ export default class Record {
         if (!video.paused && video.readyState === 4) {
             // if user chooses only video
             // drawVideoOnCanvas();
+
             try {
                 //截取到媒体流
                 const stream = video?.captureStream?.(60); // 25 FPS
 
-                this.mediaRecorder = new MediaRecorder(stream);
+                this.mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: "video/mp4",
+                });
+
+                this._startRecordTime = video.currentTime;
+
                 // 当有数据可用时，处理数据
                 this.mediaRecorder.ondataavailable = (event: any) => {
-                    this._recordedChunks.push(event.data);
+                    if (event.data.size > 0) {
+                        this._recordedChunks.push(event.data);
+                    }
                 };
 
-                this.download();
+                this.mediaRecorder.onerror = (event: any) => {
+                    this._recordedChunks = [];
+                    this._startRecordTime = 0;
+                    callback({
+                        recordInfo: event,
+                        recordTime: this._startRecordTime,
+                    });
+                };
+
+                this.download(callback);
 
                 this.mediaRecorder.start();
 
-                console.log("start recording", this.mediaRecorder);
-            } catch (error) {}
+                callback({
+                    recordInfo: undefined,
+                    recordTime: this._startRecordTime,
+                    recordStatus: this.status,
+                });
+            } catch (error) {
+                this._recordedChunks = [];
+                this._startRecordTime = 0;
+                callback({
+                    recordInfo: error,
+                    recordTime: this._startRecordTime,
+                });
+            }
+
+            return;
         }
+
+        callback({
+            recordInfo: "当前视频状态无法录制",
+            recordTime: this._startRecordTime,
+        });
     }
 
-    stopRecord() {
+    stopRecord(video) {
         this.mediaRecorder.stop();
-        console.log("stop recording", this.mediaRecorder);
     }
 
-    download() {
+    download(callback: Function) {
         // 当录制停止时，生成视频文件
         this.mediaRecorder.onstop = () => {
-            const blob = new Blob(this._recordedChunks, { type: "video/webm" });
+            const blob = new Blob(this._recordedChunks, { type: "video/mp4" });
 
             // 使用 file-saver 保存 Blob 文件
-            saveAs(blob, "recorded-video.webm");
-            console.log("download recording", this.mediaRecorder);
+            saveAs(
+                blob,
+                `${document.title ? document.title : "recorded-video"}.mp4`
+            );
             this._recordedChunks = [];
+            this._startRecordTime = 0;
+
+            callback({
+                recordInfo: "视频录制完成",
+                recordTime: this._startRecordTime,
+            });
         };
     }
 }

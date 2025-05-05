@@ -1,5 +1,3 @@
-import { h } from 'vue';
-import { IComponentConfig, IContainerConfig, IRowConfig, ISwiperConfig, ITabConfig, IFragmentConfig } from 'src/popup/content/utils/useComponents'
 import { ColorPicker } from 'vue3-colorpicker';
 
 export default function render(config: any, onChange: Function) {
