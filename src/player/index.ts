@@ -1,9 +1,8 @@
 import { createApp } from "vue";
 
-import './index.less';
-import "../share"
-
 import App from "./app";
+
+import "../share"
 
 import ConfigProvider from "vant/es/config-provider/index.mjs";
 import RadioGroup from "vant/es/radio-group/index.mjs";
@@ -11,7 +10,6 @@ import Radio from "vant/es/radio/index.mjs";
 import Switch from "vant/es/switch/index.mjs";
 import Divider from "vant/es/divider/index.mjs";
 import Button from "vant/es/button/index.mjs";
-import Form from "vant/es/form/index.mjs";
 import Field from "vant/es/field/index.mjs";
 import CellGroup from "vant/es/cell-group/index.mjs";
 import Loading from "vant/es/loading/index.mjs";
@@ -19,7 +17,7 @@ import Cell from "vant/es/cell/index.mjs";
 import Icon from "vant/es/icon/index.mjs";
 import Dialog from "vant/es/dialog/index.mjs";
 import Progress from "vant/es/progress/index.mjs";
-
+import Uploader from 'vant/es/uploader/index.mjs';
 
 createApp(App)
     .use(ConfigProvider)
@@ -28,7 +26,7 @@ createApp(App)
     .use(Divider)
     .use(Switch)
     .use(Button)
-    .use(Form)
+    .use(Uploader)
     .use(Field)
     .use(CellGroup)
     .use(Loading)
@@ -36,4 +34,4 @@ createApp(App)
     .use(Icon)
     .use(Dialog)
     .use(Progress)
-    .mount("#download-root");
+    .mount("#player-root");

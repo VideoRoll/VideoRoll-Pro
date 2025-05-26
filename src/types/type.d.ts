@@ -179,6 +179,7 @@ export interface IRollConfig {
     subtitle: Subtitle
     recordStatus: 'inactive' | 'recording' | 'paused' | undefined
     recordInfo: string
+    skipAd: boolean
     [key: string]: number | string | undefined | Abloop | Subtitle | Vr | AdvancedPictureInPicture | Iframes | Document | Flip | IFilter | IScale | Zoom | Deg | IMove | Pitch | Focus | boolean | VideoSelector
 }
 
