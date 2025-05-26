@@ -5,32 +5,37 @@
  */
 import { defineComponent, inject } from "vue";
 import type { IRollConfig } from "../../../../types/type.d";
-import browser from 'webextension-polyfill'
+import browser from "webextension-polyfill";
 import "./index.less";
 
 export default defineComponent({
-    name: "Iframe",
-    setup() {
-        const rollConfig = inject("rollConfig") as IRollConfig;
+  name: "Iframe",
+  setup() {
+    const rollConfig = inject("rollConfig") as IRollConfig;
 
-        return () => (
+    return () => (
+      <div>
+        <van-empty
+          image="error"
+          description={browser.i18n.getMessage("tips_empty")}
+        />
+        <div>
+          {rollConfig.iframes?.length ? (
             <div>
-                <van-empty image="error" description={browser.i18n.getMessage('tips_empty')} />
-                <div>
-                    {
-                        rollConfig.iframes?.length ?
-                            <div>
-                                <p class="iframes-title">Open Iframes To Roll</p>
-                                <div class="iframes-wrapper">
-                                    {
-                                        (rollConfig.iframes).map((url) => <div class="iframe-item"><a href={url} target="_blank">{url}</a></div>)
-                                    }
-                                </div>
-
-                            </div> : null
-                    }
-                </div>
+              <p class="iframes-title">Open Iframes To Roll</p>
+              <div class="iframes-wrapper">
+                {rollConfig.iframes.map((url) => (
+                  <div class="iframe-item">
+                    <a href={url} target="_blank">
+                      {url}
+                    </a>
+                  </div>
+                ))}
+              </div>
             </div>
-        );
-    },
+          ) : null}
+        </div>
+      </div>
+    );
+  },
 });

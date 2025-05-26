@@ -1,4 +1,4 @@
-import AudioController from "src/inject/utils/AudioController";
+import AudioController from "src/inject/classes/AudioController";
 import { ActionType } from "src/types/type.d";
 
 const tabs = new Map();

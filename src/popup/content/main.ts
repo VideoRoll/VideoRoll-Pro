@@ -5,10 +5,12 @@
  */
 
 /// <reference path="../types/shims-vue.d.ts" />
-import { createApp } from "../../share.ts";
+import { createApp } from "vue";
 
-// import { Row } from 'vant';
 import FloatingVue from 'floating-vue'
+import "floating-vue/dist/style.css";
+
+import "../../share"
 
 import App from "./App";
 

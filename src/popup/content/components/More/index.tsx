@@ -25,6 +25,11 @@ export default defineComponent({
             update("store", rollConfig.store);
         };
 
+        const setSkipAd = (value: boolean) => {
+            rollConfig.skipAd = value;
+            update("skipAd", rollConfig.skipAd);
+        };
+
         return () => (
             <div class="more-box">
                 <div class="more-content">
@@ -34,6 +39,10 @@ export default defineComponent({
                 <div class="more-content">
                     <div>{browser.i18n.getMessage('more_auto_resize')}</div>
                     <van-switch size={16} v-model={rollConfig.isAutoChangeSize} onChange={setAutomatically} />
+                </div>
+                <div class="more-content">
+                    <div>{browser.i18n.getMessage('more_auto_resize')}</div>
+                    <van-switch size={16} v-model={rollConfig.skipAd} onChange={setSkipAd} />
                 </div>
             </div>
         );

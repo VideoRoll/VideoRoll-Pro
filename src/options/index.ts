@@ -1,7 +1,7 @@
-import { createApp } from "../share.ts";
+import { createApp } from "vue";
 
 import './index.less';
-
+import "vant/lib/index.css";
 import App from "./app";
 
 import ConfigProvider from "vant/es/config-provider/index.mjs";

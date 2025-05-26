@@ -89,7 +89,8 @@ const defaultConfig = {
     recordInfo: '',
     subtitle: {
         on: false
-    }
+    },
+    skipAd: true
 } as IRollConfig;
 
 function getDefaultConfig() {
