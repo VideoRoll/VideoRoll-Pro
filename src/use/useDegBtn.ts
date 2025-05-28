@@ -3,7 +3,7 @@
  * @Author: Gouxinyu
  * @Date: 2022-09-11 11:12:50
  */
-import { shallowRef } from 'vue';
+import { shallowRef } from "vue";
 
 function useDegBtn() {
     const degBtns = shallowRef([

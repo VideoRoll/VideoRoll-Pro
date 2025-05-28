@@ -1,4 +1,4 @@
-import { h } from 'vue';
+import { h } from "vue";
 import { IComponentConfig, IContainerConfig, IRowConfig, ISwiperConfig, ITabConfig, IFragmentConfig } from 'src/popup/content/utils/useComponents'
 
 export default function render(children: IRowConfig[] | IContainerConfig[] | IComponentConfig[] | ISwiperConfig[] | ITabConfig[] | IFragmentConfig[]) {

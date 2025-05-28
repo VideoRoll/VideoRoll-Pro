@@ -7,12 +7,15 @@ import {
   h,
   reactive,
   computed,
+  watch,
 } from "vue";
 
 import Hls from "hls.js";
 import Plyr from "plyr";
 import "plyr/dist/plyr.css";
 import "./index.less";
+import debounce from "lodash-es/debounce";
+import { showLoadingToast, closeToast } from "vant/es/toast/index.mjs";
 
 export default defineComponent({
   name: "App",
@@ -20,6 +23,11 @@ export default defineComponent({
     const player = ref();
     const videoRef = ref();
     const checked = ref("1");
+    const url = ref("");
+    const fileUrl = ref("");
+    const fileName = ref("");
+    const hls = ref();
+
     onMounted(async () => {
       setTimeout(() => {
         const video = videoRef.value;
@@ -46,34 +54,68 @@ export default defineComponent({
           playsinline: true,
         });
 
-        // if (data.type === "HLS") {
-        //   if (!Hls.isSupported()) {
-        //     video.src = data.url;
-        //   } else {
-        //     // For more Hls.js options, see https://github.com/dailymotion/hls.js
-        //     const hls = new Hls();
-        //     hls.loadSource(data.url);
-        //     hls.attachMedia(video);
-        //   }
-        // } else {
-        //   video.src = data.url;
-        // }
+        const params = new URLSearchParams(window.location.search);
+        const urlParam = params.get("url");
+        if (urlParam) {
+          url.value = urlParam;
+          checked.value = "2";
+        }
       }, 100);
     });
 
     const afterRead = (file: File) => {
       if (file) {
+        showLoadingToast({
+          duration: 1000,
+          forbidClick: true,
+          message: "loading...",
+        });
+        fileName.value = file.file.name;
         const fileURL = URL.createObjectURL(file.file);
+        fileUrl.value = fileURL;
         videoRef.value.src = fileURL;
-        player.value.play();
       }
     };
 
+    const onUpdate = (value: string) => {
+      if (value) {
+        showLoadingToast({
+          duration: 1000,
+          forbidClick: true,
+          message: "loading...",
+        });
+
+        if (!Hls.isSupported()) {
+          videoRef.value.src = value;
+        } else {
+          // For more Hls.js options, see https://github.com/dailymotion/hls.js
+
+          hls.value = new Hls();
+          hls.value.loadSource(value);
+          hls.value.attachMedia(videoRef.value);
+        }
+      }
+    };
+
+    watch(
+      () => checked.value,
+      () => {
+        if (checked.value === "1" && fileUrl.value) {
+          hls.value?.destroy?.();
+          videoRef.value.src = fileUrl.value;
+          return;
+        }
+
+        if (url.value) {
+          onUpdate(url.value);
+        }
+      }
+    );
+
     return () => (
       <van-config-provider theme="dark">
-        {/* <Header></Header> */}
-        <main>
-          <div class="player-box">
+        <main class="flex flex-row">
+          <div class="player-box flex-1 p-10 ">
             <video
               ref={videoRef}
               id="video-roll-player"
@@ -81,23 +123,55 @@ export default defineComponent({
               controls
             ></video>
           </div>
-          <div class="flex flex-row">
-            <van-uploader
-              after-read={afterRead}
-              max-count={1}
-              accept="video/*"
-              reupload
-            >
-              <div class="upload-box">+点击上传或拖拽</div>
-            </van-uploader>
+          <div class="w-1/4 p-10">
             <van-radio-group
               v-model={checked.value}
               shape="dot"
               direction="horizontal"
+              class="mb-4"
             >
               <van-radio name="1">Local File</van-radio>
               <van-radio name="2">Stream URL</van-radio>
             </van-radio-group>
+            <div class="w-full">
+              {checked.value === "2" ? (
+                <van-field
+                  class="w-full"
+                  v-model={url.value}
+                  placeholder="Enter stream URL"
+                  clearable
+                  onUpdate:modelValue={debounce(onUpdate, 400)}
+                  v-slots={{
+                    label: () => (
+                      // <van-popover
+                      //   v-model:show="showPopover"
+                      //   v-slots={{
+                      //     reference: () => (
+                      //       <van-button type="primary">浅色风格</van-button>
+                      //     ),
+                      //   }}
+                      // ></van-popover>
+                      <></>
+                    ),
+                  }}
+                />
+              ) : (
+                <van-uploader
+                  class="w-full upload-box"
+                  after-read={afterRead}
+                  max-count={1}
+                  accept="video/*"
+                  reupload
+                >
+                  <div class="w-full h-200px flex flex-col justify-center items-center border-dashed border-2 border-[#a494c6] text-white rounded-4">
+                    {fileName.value && (
+                      <span class="mb-4">{fileName.value}</span>
+                    )}
+                    <span>+点击上传或拖拽</span>
+                  </div>
+                </van-uploader>
+              )}
+            </div>
           </div>
         </main>
       </van-config-provider>
