@@ -55,13 +55,13 @@ chrome.runtime.onInstalled.addListener((params: any) => {
   const reason = params.reason;
   switch (reason) {
     case "install":
-      createURL("https://videoroll.gomi.site");
+      createURL("https://videoroll.app");
       break;
     case "update":
-      createURL("https://videoroll.gomi.site");
+      createURL("https://videoroll.app");
       break;
     case "uninstall":
-      createURL("https://videoroll.gomi.site");
+      createURL("https://videoroll.app");
       break;
     default:
       break;
@@ -87,6 +87,7 @@ async function getStreamId() {
  */
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   currentTabId = tabId;
+  console.log("tab updated", tabId, changeInfo, tab);
   setupStorage();
   sendTabMessage(
     tabId,
@@ -101,6 +102,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.tabs.onActivated.addListener((activeInfo) => {
   const { tabId } = activeInfo;
   currentTabId = tabId;
+  console.log("tab activated", tabId);
   setupStorage();
   sendTabMessage(
     tabId,

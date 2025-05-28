@@ -13,7 +13,8 @@ import { IconPinInvoke } from "@tabler/icons-vue";
 import Hls from "hls.js";
 import Plyr from "plyr";
 import "plyr/dist/plyr.css";
-import * as QRCode from "easyqrcodejs";
+import QRCode from "easyqrcodejs";
+import { createURL } from "src/util";
 
 export default defineComponent({
   name: "VideoList",
@@ -114,6 +115,10 @@ export default defineComponent({
       }
     };
 
+    const openPlayer = (data: any) => {
+      createURL(chrome.runtime.getURL(`player/player.html?url=${data.url}&type=${data.type}`));
+    };
+
     return () => (
       <div>
         <van-notice-bar
@@ -167,20 +172,27 @@ export default defineComponent({
                                             </van-tag>
                                         ) : null} */}
                   </div>
-                  {/* <van-button type="primary" size="small" disabled={v.percentage !== 100} onClick={() => onTriggerDownload(v.id)} >下载</van-button> */}
                 </div>
                 <div class="video-action">
-                  <Download
+                  <span
                     class="list-icon"
                     onClick={() => downloadSingleVideo(v)}
-                  ></Download>
-                  <IconPinInvoke class="list-icon"></IconPinInvoke>
-                  <PlayerPlay
-                    class="list-icon"
-                    onClick={() => onPlay(v)}
-                  ></PlayerPlay>
-                  <Qrcode class="list-icon" onClick={() => showQR(v)}></Qrcode>
-                  <Link class="list-icon"></Link>
+                  >
+                    <Download />
+                  </span>
+                  <span class="list-icon" onClick={() => openPlayer(v)}>
+                    <IconPinInvoke />
+                  </span>
+
+                  <span class="list-icon" onClick={() => onPlay(v)}>
+                    <PlayerPlay />
+                  </span>
+                  <span class="list-icon" onClick={() => showQR(v)}>
+                    <Qrcode />
+                  </span>
+                  <span class="list-icon" onClick={() => showQR(v)}>
+                    <Link />
+                  </span>
                 </div>
               </div>
               <div class="extra-info">

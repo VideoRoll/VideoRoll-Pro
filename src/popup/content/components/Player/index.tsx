@@ -7,14 +7,13 @@ import { defineComponent, inject, ref, shallowReactive } from "vue";
 import { TimerOutline } from "@vicons/ionicons5";
 import "./index.less";
 import browser from "webextension-polyfill";
-import { IRollConfig } from "src/types/type";
+import { createURL } from "src/util";
 
 export default defineComponent({
   name: "Player",
   setup() {
     const openPlayer = () => {
-      const newUrl = browser.runtime.getURL("player/player.html");
-      browser.tabs.create({ url: newUrl });
+      createURL(browser.runtime.getURL("player/player.html"));
     };
 
     return () => (
