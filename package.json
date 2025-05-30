@@ -75,9 +75,6 @@
   },
   "homepage": "https://github.com/gxy5202/video-roll#readme",
   "dependencies": {
-    "@ffmpeg/core": "^0.12.10",
-    "@ffmpeg/ffmpeg": "^0.12.15",
-    "@ffmpeg/util": "^0.12.2",
     "@supabase/supabase-js": "^2.45.6",
     "@tabler/icons-vue": "^3.31.0",
     "@vant/touch-emulator": "^1.4.0",
