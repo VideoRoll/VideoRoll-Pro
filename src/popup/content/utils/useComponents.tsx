@@ -159,7 +159,7 @@ export default function useComponents() {
               children: [
                 {
                   type: "component",
-                  component: <Reposition></Reposition>,
+                  component: <Reposition />,
                 },
               ],
             },

@@ -5,6 +5,8 @@ import "./global.css";
 import FloatingVue from "floating-vue";
 import "floating-vue/dist/style.css";
 
+import { vPermission } from "./directive";
+
 import ConfigProvider from "vant/es/config-provider/index.mjs";
 import Sidebar from "vant/es/sidebar/index.mjs";
 import SidebarItem from "vant/es/sidebar-item/index.mjs";
@@ -41,10 +43,10 @@ import Circle from "vant/es/circle/index.mjs";
 import Image from "vant/es/image/index.mjs";
 import Row from "vant/es/row/index.mjs";
 import Dialog from "vant/es/dialog/index.mjs";
-import Uploader from 'vant/es/uploader/index.mjs';
+import Uploader from "vant/es/uploader/index.mjs";
 import Overlay from "vant/es/overlay/index.mjs";
 
-export function createVideoRollApp(app, selector) {
+export function createVideoRollApp(app: any, selector: string) {
   createApp(app)
     .use(ConfigProvider)
     .use(RadioGroup)
@@ -85,5 +87,6 @@ export function createVideoRollApp(app, selector) {
     .use(Circle)
     .use(Image)
     .use(FloatingVue)
+    .directive("permission", vPermission)
     .mount(selector);
 }

@@ -5,7 +5,7 @@ export default defineConfig({
     entry: [
       {
         patterns: ["./src/**/*.{js,ts,jsx,tsx}"],
-        outFile: "./src/global.css",
+        outFile: "./src/lib/global.css",
       },
     ],
   },
