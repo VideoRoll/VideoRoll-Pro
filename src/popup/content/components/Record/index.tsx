@@ -19,14 +19,19 @@ import browser from "webextension-polyfill";
 import { IRollConfig } from "src/types/type";
 import { showLoadingToast, showToast } from "vant/es/toast/index.mjs";
 import { formatTime } from "../../utils";
+import { vPermission } from "../../../../lib/directive";
 
 export default defineComponent({
   name: "Record",
+  directives: {
+    permission: vPermission
+  },
   setup() {
     const startRecord = inject("startRecord") as Function;
     const stopRecord = inject("stopRecord") as Function;
     const rollConfig = inject("rollConfig") as IRollConfig;
     const realVideo = inject("realVideo") as any;
+    const user = inject("user");
     const isRecording = ref(false);
     const recordTime = ref(0);
     const startRecordTime = ref(0);
@@ -118,26 +123,25 @@ export default defineComponent({
     });
 
     return () => (
-      <>
-        <div
-          v-tooltip={browser.i18n.getMessage("video_loop")}
-          class={`video-roll-focus video-roll-item video-roll-off ${
-            isRecording.value ? "video-roll-recording" : ""
-          }`}
-          onClick={onRecord}
-        >
-          <div class="video-roll-icon-box">
-            <span class="video-roll-label video-roll-flex">
-              <RadioButtonOnOutline class="video-roll-icon"></RadioButtonOnOutline>
-              {isRecording.value && recordTime.value > 0 ? (
-                <span style="font-size: 10px">
-                  {formatTime(recordTime.value)}
-                </span>
-              ) : null}
-            </span>
-          </div>
+      <div
+        v-tooltip={browser.i18n.getMessage("tab_record")}
+        class={`video-roll-focus video-roll-item video-roll-off ${
+          isRecording.value ? "video-roll-recording" : ""
+        }`}
+        onClick={onRecord}
+        v-permission={[user.value?.role]}
+      >
+        <div class="video-roll-icon-box">
+          <span class="video-roll-label video-roll-flex">
+            <RadioButtonOnOutline class="video-roll-icon"></RadioButtonOnOutline>
+            {isRecording.value && recordTime.value > 0 ? (
+              <span style="font-size: 10px">
+                {formatTime(recordTime.value)}
+              </span>
+            ) : null}
+          </span>
         </div>
-      </>
+      </div>
     );
   },
 });

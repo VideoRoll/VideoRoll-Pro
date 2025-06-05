@@ -26,7 +26,7 @@ export default defineComponent({
     const updateEnable = inject("updateEnable") as Function;
     const rollConfig = inject("rollConfig") as IRollConfig;
     const update = inject("update") as Function;
-    const user = inject("user");
+    const user = inject("user") as any;
 
     const toGithub = () => {
       createURL("https://github.com/gxy5202/VideoRoll");
@@ -54,7 +54,7 @@ export default defineComponent({
     };
 
     const toUser = () => {
-      createURL("https://videoroll.app/en/signin");
+      createURL(process.env.ENV === 'development' ? "http://127.0.0.1:3001/en/signin" : "https://videoroll.app/en/signin");
     };
 
     const setEnable = (value: boolean) => {
@@ -62,13 +62,6 @@ export default defineComponent({
       update("enable", rollConfig.enable);
       updateEnable(rollConfig.enable);
     };
-
-    watch(
-      () => user.value,
-      (val) => {
-        console.log(val.user_metadata);
-      }
-    );
 
     return () => (
       <div class="video-roll-header">
@@ -130,7 +123,7 @@ export default defineComponent({
                   <div
                     class="video-roll-setting-btn"
                     onClick={toUser}
-                    v-tooltip={browser.i18n.getMessage("tips_feedback")}
+                    v-tooltip={'个人中心'}
                   >
                     <van-image
                       round
@@ -144,7 +137,7 @@ export default defineComponent({
                   <div
                     class="video-roll-setting-btn"
                     onClick={toUser}
-                    v-tooltip={browser.i18n.getMessage("tips_feedback")}
+                    v-tooltip={'登录'}
                   >
                     <UserExclamation class="logo-usd"></UserExclamation>
                   </div>

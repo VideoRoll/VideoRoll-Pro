@@ -247,5 +247,59 @@
    },
    "tips_wechatGroup": {
       "message": "Группа WeChat"
+   },
+   "download_no_segments": {
+      "message": "Нет доступных сегментов для загрузки!"
+   },
+   "download_size": {
+      "message": "Размер"
+   },
+   "download_segments": {
+      "message": "Сегменты"
+   },
+   "download_ts": {
+      "message": "Скачать TS"
+   },
+   "download_mp4": {
+      "message": "Скачать MP4"
+   },
+   "abloop_enable": {
+      "message": "Включить AB Loop"
+   },
+   "abloop_a": {
+      "message": "A"
+   },
+   "abloop_b": {
+      "message": "B"
+   },
+   "player_local_file": {
+      "message": "Локальный файл"
+   },
+   "player_stream_url": {
+      "message": "URL потока"
+   },
+   "player_enter_stream_url": {
+      "message": "Введите URL потока"
+   },
+   "player_upload_or_drag": {
+      "message": "+Нажмите для загрузки или перетащите"
+   },
+   "tab_download": {
+      "message": "Скачать"
+   },
+   "tab_qr": {
+      "message": "QR"
+   },
+   "tab_player": {
+      "message": "Плеер"
+   },
+   "tab_abloop": {
+      "message": "A-B петля"
+   },
+   "tab_vr": {
+      "message": "VR"
+   },
+   "tab_record": {
+      "message": "Запись"
    }
 }

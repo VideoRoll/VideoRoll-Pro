@@ -18,7 +18,7 @@ export default defineComponent({
 
     return () => (
       <div
-        v-tooltip={browser.i18n.getMessage("video_loop")}
+        v-tooltip={browser.i18n.getMessage("tab_player")}
         class={`video-roll-focus video-roll-item video-roll-off`}
         onClick={openPlayer}
       >

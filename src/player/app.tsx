@@ -16,6 +16,7 @@ import "plyr/dist/plyr.css";
 import "./index.less";
 import debounce from "lodash-es/debounce";
 import { showLoadingToast, closeToast } from "vant/es/toast/index.mjs";
+import browser from "webextension-polyfill";
 
 export default defineComponent({
   name: "App",
@@ -130,15 +131,15 @@ export default defineComponent({
               direction="horizontal"
               class="mb-4"
             >
-              <van-radio name="1">Local File</van-radio>
-              <van-radio name="2">Stream URL</van-radio>
+              <van-radio name="1">{browser.i18n.getMessage("player_local_file")}</van-radio>
+              <van-radio name="2">{browser.i18n.getMessage("player_stream_url")}</van-radio>
             </van-radio-group>
             <div class="w-full">
               {checked.value === "2" ? (
                 <van-field
                   class="w-full"
                   v-model={url.value}
-                  placeholder="Enter stream URL"
+                  placeholder={browser.i18n.getMessage("player_enter_stream_url")}
                   clearable
                   onUpdate:modelValue={debounce(onUpdate, 400)}
                   v-slots={{
@@ -167,7 +168,7 @@ export default defineComponent({
                     {fileName.value && (
                       <span class="mb-4">{fileName.value}</span>
                     )}
-                    <span>+点击上传或拖拽</span>
+                    <span>{browser.i18n.getMessage("player_upload_or_drag")}</span>
                   </div>
                 </van-uploader>
               )}

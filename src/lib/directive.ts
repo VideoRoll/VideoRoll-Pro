@@ -1,52 +1,85 @@
 // src/directives/permission.ts
-import { Directive, DirectiveBinding, ObjectDirective } from 'vue'
+import { DirectiveBinding, ObjectDirective } from "vue";
+import { showDialog } from "./share";
+import { createURL } from "src/util";
 
 // 权限指令的类型定义
-interface PermissionDirectiveBinding extends Omit<DirectiveBinding, 'modifiers'> {
-  value: string | string[] // 需要的权限码
+interface PermissionDirectiveBinding
+  extends Omit<DirectiveBinding, "modifiers"> {
+  value: string | string[]; // 需要的权限码
   modifiers: {
-    disable?: boolean // 是否禁用元素而不仅是阻止点击
-  }
+    disable?: boolean; // 是否禁用元素而不仅是阻止点击
+  };
 }
 
 // 权限检查函数 (实际项目中可以从 store 或 API 获取)
 const checkPermission = (requiredPermission: string | string[]): boolean => {
   // 这里模拟权限检查，实际项目中应该从 store 或全局状态获取
-  const userPermissions = ['pro'] // 模拟当前用户权限
-  
+  const userPermissions = ["authenticated", "pro"]; // 模拟当前用户权限
+
   if (Array.isArray(requiredPermission)) {
-    return requiredPermission.some(perm => userPermissions.includes(perm))
+    return requiredPermission.some((perm) => userPermissions.includes(perm));
   }
-  return userPermissions.includes(requiredPermission)
-}
+  return userPermissions.includes(requiredPermission);
+};
 
 // 权限指令实现
 export const vPermission: ObjectDirective<HTMLElement, string | string[]> = {
-  mounted(el: HTMLElement, binding: PermissionDirectiveBinding) {
-    const hasPermission = checkPermission(binding.value)
-    
-    if (!hasPermission) {
-      if (binding.modifiers.disable) {
-        // 禁用模式：直接禁用元素
-        el.style.opacity = '0.5'
-        el.style.pointerEvents = 'none'
-      } else {
-        // 默认模式：拦截点击事件
-        el.addEventListener('click', stopEvent, true)
+  updated(el: HTMLElement, binding: PermissionDirectiveBinding) {
+    // 始终绑定点击事件，在事件中校验权限
+    const clickHandler = (e: Event) => {
+      console.log(binding.value);
+      const hasPermission = checkPermission(binding.value);
+      if (!hasPermission) {
+        if (binding.modifiers.disable) {
+          el.style.opacity = "0.5";
+          el.style.pointerEvents = "none";
+        } else {
+          stopEvent(e);
+        }
       }
+    };
+    if ((el as any)._vPermissionClickHandler) {
+      el.removeEventListener(
+        "click",
+        (el as any)._vPermissionClickHandler,
+        true
+      );
+    }
+
+    // 保存 handler 以便卸载时移除
+    (el as any)._vPermissionClickHandler = clickHandler;
+    el.addEventListener("click", clickHandler, true);
+  },
+  beforeUnmount(el: HTMLElement) {
+    // 移除事件监听
+    const handler = (el as any)._vPermissionClickHandler;
+    if (handler) {
+      el.removeEventListener("click", handler, true);
+      delete (el as any)._vPermissionClickHandler;
     }
   },
-  beforeUnmount(el: HTMLElement, binding: PermissionDirectiveBinding) {
-    if (!checkPermission(binding.value)) {
-      el.removeEventListener('click', stopEvent, true)
-    }
-  }
-}
+};
 
 // 阻止事件冒泡和默认行为
 function stopEvent(e: Event) {
-  e.preventDefault()
-  e.stopPropagation()
+  e.preventDefault();
+  e.stopPropagation();
   // 可以在这里添加全局权限提示
-  console.warn('您没有执行此操作的权限')
+  console.warn("您没有执行此操作的权限");
+  showDialog({
+    title: "Login",
+    message: "Login in to unlock this feature",
+    theme: "round-button",
+    confirmButtonText: "login",
+    confirmButtonColor: "#7367F0",
+    closeOnClickOverlay: "true",
+  }).then(() => {
+    createURL(
+      process.env.ENV === "development"
+        ? "http://127.0.0.1:3001/en/signin"
+        : "https://videoroll.app/en/signin"
+    );
+    // on close
+  });
 }

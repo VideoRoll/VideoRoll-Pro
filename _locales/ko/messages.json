@@ -247,5 +247,23 @@
    },
    "tips_wechatGroup": {
       "message": "WeChat 그룹"
-   }
+   },
+   "download_no_segments": { "message": "업로드할 수 있는 세그먼트가 없습니다!" },
+   "download_size": { "message": "크기" },
+   "download_segments": { "message": "세그먼트" },
+   "download_ts": { "message": "TS 다운로드" },
+   "download_mp4": { "message": "MP4 다운로드" },
+   "abloop_enable": { "message": "AB 루프 활성화" },
+   "abloop_a": { "message": "A" },
+   "abloop_b": { "message": "B" },
+   "player_local_file": { "message": "로컬 파일" },
+   "player_stream_url": { "message": "스트림 URL" },
+   "player_enter_stream_url": { "message": "스트림 URL 입력" },
+   "player_upload_or_drag": { "message": "+업로드 또는 드래그하려면 클릭" },
+   "tab_download": { "message": "다운로드" },
+   "tab_qr": { "message": "QR" },
+   "tab_player": { "message": "플레이어" },
+   "tab_abloop": { "message": "A-B 루프" },
+   "tab_vr": { "message": "VR" },
+   "tab_record": { "message": "녹화" }
 }

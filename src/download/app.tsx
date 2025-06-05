@@ -14,6 +14,7 @@ import {
 
 import "./index.less";
 import { M3U8Downloader } from "./class/M3u8downloader";
+import browser from "webextension-polyfill";
 // import { OPTIONS_MENU } from "./config";
 // import Panel from "./components/Panel";
 
@@ -103,7 +104,7 @@ export default defineComponent({
     // 手动下载，一般用于下载失败后未自动下载，将失败的片段重新下载完成后使用
     function handleDownload() {
       if (!segments.value.length) {
-        return alert("没有可以下载的片段！");
+        return alert(browser.i18n.getMessage("download_no_segments"));
       }
       downloader.value.download();
     }
@@ -132,9 +133,9 @@ export default defineComponent({
         <main>
           <div class="download-page">
             <div class="download-info">
-              <div>Size: {formatBytes(progress.totalBytes)}</div>
+              <div>{browser.i18n.getMessage("download_size")}: {formatBytes(progress.totalBytes)}</div>
               <div>
-                Segments: {progress.downloaded}/{progress.total}
+                {browser.i18n.getMessage("download_segments")}: {progress.downloaded}/{progress.total}
               </div>
             </div>
             <div class="download-percentage">
@@ -153,7 +154,7 @@ export default defineComponent({
                 size="small"
                 onClick={downloadTS}
               >
-                下载TS
+                {browser.i18n.getMessage("download_ts")}
               </van-button>
               <van-button
                 disabled={!isButtonEnable.value}
@@ -161,7 +162,7 @@ export default defineComponent({
                 size="small"
                 onClick={downloadMP4}
               >
-                下载MP4
+                {browser.i18n.getMessage("download_mp4")}
               </van-button>
             </div>
           </div>

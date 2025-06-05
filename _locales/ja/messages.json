@@ -247,5 +247,23 @@
    },
    "tips_wechatGroup": {
       "message": "WeChatグループ"
-   }
+   },
+  "download_no_segments": { "message": "アップロード可能なセグメントがありません！" },
+  "download_size": { "message": "サイズ" },
+  "download_segments": { "message": "セグメント" },
+  "download_ts": { "message": "TSをダウンロード" },
+  "download_mp4": { "message": "MP4をダウンロード" },
+  "abloop_enable": { "message": "ABループを有効化" },
+  "abloop_a": { "message": "A" },
+  "abloop_b": { "message": "B" },
+  "player_local_file": { "message": "ローカルファイル" },
+  "player_stream_url": { "message": "ストリームURL" },
+  "player_enter_stream_url": { "message": "ストリームURLを入力" },
+  "player_upload_or_drag": { "message": "+クリックしてアップロードまたはドラッグ" },
+  "tab_download": { "message": "ダウンロード" },
+  "tab_qr": { "message": "QR" },
+  "tab_player": { "message": "プレーヤー" },
+  "tab_abloop": { "message": "A-Bループ" },
+  "tab_vr": { "message": "VR" },
+  "tab_record": { "message": "録画" }
 }

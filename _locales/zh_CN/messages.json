@@ -247,5 +247,59 @@
    },
    "tips_wechatGroup": {
       "message": "微信交流群"
+   },
+   "download_no_segments": {
+      "message": "没有可以下载的片段！"
+   },
+   "download_size": {
+      "message": "大小"
+   },
+   "download_segments": {
+      "message": "分片"
+   },
+   "download_ts": {
+      "message": "下载TS"
+   },
+   "download_mp4": {
+      "message": "下载MP4"
+   },
+   "abloop_enable": {
+      "message": "是否开启"
+   },
+   "abloop_a": {
+      "message": "A点"
+   },
+   "abloop_b": {
+      "message": "B点"
+   },
+   "player_local_file": {
+      "message": "本地文件"
+   },
+   "player_stream_url": {
+      "message": "流地址"
+   },
+   "player_enter_stream_url": {
+      "message": "请输入流地址"
+   },
+   "player_upload_or_drag": {
+      "message": "+点击上传或拖拽"
+   },
+   "tab_download": {
+      "message": "下载"
+   },
+   "tab_qr": {
+      "message": "二维码"
+   },
+   "tab_player": {
+      "message": "播放器"
+   },
+   "tab_abloop": {
+      "message": "A-B循环"
+   },
+   "tab_vr": {
+      "message": "VR"
+   },
+   "tab_record": {
+      "message": "录制"
    }
 }
