@@ -1,7 +1,5 @@
-/*
- * @description: useComponents
- * @Author: Gouxinyu
- * @Date: 2022-09-11 11:12:50
+/**
+ * useComponent
  */
 import { shallowReactive } from "vue";
 import {
@@ -210,7 +208,7 @@ export default function useComponents() {
           children: [
             {
               type: "container",
-              title: "QR",
+              title: browser.i18n.getMessage("tab_qr"),
               showTitle: true,
               col: 6,
               children: [
@@ -269,7 +267,19 @@ export default function useComponents() {
           children: [
             {
               type: "container",
-              title: "A-B Loop",
+              title: browser.i18n.getMessage("tab_player"),
+              showTitle: true,
+              col: 6,
+              children: [
+                {
+                  type: "component",
+                  component: <Player></Player>,
+                },
+              ],
+            },
+            {
+              type: "container",
+              title: browser.i18n.getMessage("tab_abloop"),
               showTitle: true,
               class: "container-badge-pro",
               col: 6,
@@ -282,7 +292,7 @@ export default function useComponents() {
             },
             {
               type: "container",
-              title: "VR",
+              title: browser.i18n.getMessage("tab_vr"),
               showTitle: true,
               class: "container-badge-pro",
               col: 6,
@@ -295,7 +305,7 @@ export default function useComponents() {
             },
             {
               type: "container",
-              title: "Record",
+              title: browser.i18n.getMessage("tab_record"),
               showTitle: true,
               class: "container-badge-pro",
               col: 6,
@@ -303,19 +313,6 @@ export default function useComponents() {
                 {
                   type: "component",
                   component: <Record></Record>,
-                },
-              ],
-            },
-            {
-              type: "container",
-              title: "Player",
-              showTitle: true,
-              class: "container-badge-pro",
-              col: 6,
-              children: [
-                {
-                  type: "component",
-                  component: <Player></Player>,
                 },
               ],
             },
@@ -507,7 +504,7 @@ export default function useComponents() {
         <Tooltip>
           <div
             class="tab-title"
-            v-tooltip={browser.i18n.getMessage("tabs_list")}
+            v-tooltip={browser.i18n.getMessage("tab_download")}
           >
             <Download class="tab-icon" />
           </div>

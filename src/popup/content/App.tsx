@@ -3,9 +3,7 @@ import {
   ref,
   onMounted,
   provide,
-  watch,
-  onUnmounted,
-  onBeforeMount,
+  watch
 } from "vue";
 import browser from "webextension-polyfill";
 import Head from "./components/Head";
@@ -220,7 +218,6 @@ export default defineComponent({
             rollConfig.recordTime = config.recordTime;
             break;
           case ActionType.USER_INFO:
-            console.log(userInfo, "2222user----");
             user.value = userInfo?.user;
             break;
           case ActionType.GET_DOWNLOAD_LIST:
@@ -252,7 +249,7 @@ export default defineComponent({
 
     const renderComponent = () => {
       if (rollConfig.enable) {
-        // if (rollConfig.videoNumber === 0) return <Iframe></Iframe>;
+        if (rollConfig.videoNumber === 0) return <Iframe></Iframe>;
 
         return <GridPanel></GridPanel>;
       }

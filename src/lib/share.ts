@@ -90,3 +90,6 @@ export function createVideoRollApp(app: any, selector: string) {
     .directive("permission", vPermission)
     .mount(selector);
 }
+
+export * from 'vant/es/dialog/index.mjs';
+export * from 'vant/es/toast/index.mjs'

@@ -247,5 +247,59 @@
    },
    "tips_wechatGroup": {
       "message": "WeChat Group"
+   },
+   "download_no_segments": {
+      "message": "No segments available to download!"
+   },
+   "download_size": {
+      "message": "Size"
+   },
+   "download_segments": {
+      "message": "Segments"
+   },
+   "download_ts": {
+      "message": "Download TS"
+   },
+   "download_mp4": {
+      "message": "Download MP4"
+   },
+   "abloop_enable": {
+      "message": "Enable AB Loop"
+   },
+   "abloop_a": {
+      "message": "A"
+   },
+   "abloop_b": {
+      "message": "B"
+   },
+   "player_local_file": {
+      "message": "Local File"
+   },
+   "player_stream_url": {
+      "message": "Stream URL"
+   },
+   "player_enter_stream_url": {
+      "message": "Enter stream URL"
+   },
+   "player_upload_or_drag": {
+      "message": "+Click to upload or drag"
+   },
+   "tab_download": {
+      "message": "Download"
+   },
+   "tab_qr": {
+      "message": "QR"
+   },
+   "tab_player": {
+      "message": "Player"
+   },
+   "tab_abloop": {
+      "message": "A-B Loop"
+   },
+   "tab_vr": {
+      "message": "VR"
+   },
+   "tab_record": {
+      "message": "Record"
    }
 }

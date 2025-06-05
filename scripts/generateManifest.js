@@ -1,3 +1,11 @@
+/*
+ * @Author: gomi gxy880520@qq.com
+ * @Date: 2024-09-23 17:01:48
+ * @LastEditors: gomi gxy880520@qq.com
+ * @LastEditTime: 2025-06-05 18:02:28
+ * @FilePath: \website-nextc:\programs\VideoRoll-Pro\scripts\generateManifest.js
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import chalk from "chalk";
 import { mkdir, readFile, writeFile, copyFile } from "node:fs/promises";
 import path from "node:path";
@@ -44,6 +52,15 @@ export default async function generateManifest(browserType) {
             JSON.parse(baseManifest),
             JSON.parse(currentManifest)
         );
+
+        // 判断是否为 development 环境，添加 management 权限
+        // console.log('---', process.env);
+        // if (process.env.ENV === "development") {
+        //     newManifest.permissions = newManifest.permissions || [];
+        //     if (!newManifest.permissions.includes("management")) {
+        //         newManifest.permissions.push("management");
+        //     }
+        // }
 
         await writeFile(
             distManifestPath,

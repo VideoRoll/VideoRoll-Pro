@@ -247,5 +247,23 @@
    },
    "tips_wechatGroup": {
       "message": "Grupo de WeChat"
-   }
+   },
+  "download_no_segments": { "message": "¡No hay segmentos disponibles para descargar!" },
+  "download_size": { "message": "Tamaño" },
+  "download_segments": { "message": "Segmentos" },
+  "download_ts": { "message": "Descargar TS" },
+  "download_mp4": { "message": "Descargar MP4" },
+  "abloop_enable": { "message": "Habilitar AB Loop" },
+  "abloop_a": { "message": "A" },
+  "abloop_b": { "message": "B" },
+  "player_local_file": { "message": "Archivo local" },
+  "player_stream_url": { "message": "URL de transmisión" },
+  "player_enter_stream_url": { "message": "Ingrese la URL de transmisión" },
+  "player_upload_or_drag": { "message": "+Haga clic para subir o arrastrar" },
+  "tab_download": { "message": "Descargar" },
+  "tab_qr": { "message": "QR" },
+  "tab_player": { "message": "Reproductor" },
+  "tab_abloop": { "message": "Bucle A-B" },
+  "tab_vr": { "message": "VR" },
+  "tab_record": { "message": "Grabar" }
 }
