@@ -25,6 +25,33 @@ const checkPermission = (requiredPermission: string | string[]): boolean => {
 
 // 权限指令实现
 export const vPermission: ObjectDirective<HTMLElement, string | string[]> = {
+  mounted(el: HTMLElement, binding: PermissionDirectiveBinding) {
+    // 始终绑定点击事件，在事件中校验权限
+    const clickHandler = (e: Event) => {
+      console.log(binding.value);
+      const hasPermission = checkPermission(binding.value);
+      if (!hasPermission) {
+        if (binding.modifiers.disable) {
+          el.style.opacity = "0.5";
+          el.style.pointerEvents = "none";
+        } else {
+          stopEvent(e);
+        }
+      }
+    };
+
+    if ((el as any)._vPermissionClickHandler) {
+      el.removeEventListener(
+        "click",
+        (el as any)._vPermissionClickHandler,
+        true
+      );
+    }
+
+    // 保存 handler 以便卸载时移除
+    (el as any)._vPermissionClickHandler = clickHandler;
+    el.addEventListener("click", clickHandler, true);
+  },
   updated(el: HTMLElement, binding: PermissionDirectiveBinding) {
     // 始终绑定点击事件，在事件中校验权限
     const clickHandler = (e: Event) => {
@@ -39,6 +66,7 @@ export const vPermission: ObjectDirective<HTMLElement, string | string[]> = {
         }
       }
     };
+
     if ((el as any)._vPermissionClickHandler) {
       el.removeEventListener(
         "click",

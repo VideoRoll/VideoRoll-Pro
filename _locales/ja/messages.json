@@ -265,5 +265,13 @@
   "tab_player": { "message": "プレーヤー" },
   "tab_abloop": { "message": "A-Bループ" },
   "tab_vr": { "message": "VR" },
-  "tab_record": { "message": "録画" }
+  "tab_record": { "message": "録画" },
+  "tips_user_center": {
+      "message": "ユーザーセンター",
+      "description": "Tooltip: user center"
+  },
+  "tips_login": {
+      "message": "ログイン",
+      "description": "Tooltip: login"
+  }
 }

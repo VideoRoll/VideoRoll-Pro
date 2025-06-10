@@ -301,5 +301,13 @@
    },
    "tab_record": {
       "message": "Aufnehmen"
+   },
+   "tips_user_center": {
+      "message": "Benutzerzentrum",
+      "description": "Tooltip: user center"
+   },
+   "tips_login": {
+      "message": "Anmelden",
+      "description": "Tooltip: login"
    }
 }

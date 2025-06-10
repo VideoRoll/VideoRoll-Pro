@@ -301,5 +301,13 @@
    },
    "tab_record": {
       "message": "录制"
+   },
+   "tips_user_center": {
+      "message": "个人中心",
+      "description": "Tooltip: user center"
+   },
+   "tips_login": {
+      "message": "登录",
+      "description": "Tooltip: login"
    }
 }

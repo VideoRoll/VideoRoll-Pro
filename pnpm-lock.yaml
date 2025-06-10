@@ -115,8 +115,8 @@ importers:
         specifier: ^2.15.2
         version: 2.15.2(@parcel/core@2.15.2)(typescript@4.9.5)
       '@types/chrome':
-        specifier: ^0.0.227
-        version: 0.0.227
+        specifier: ^0.0.326
+        version: 0.0.326
       '@types/file-saver':
         specifier: ^2.0.7
         version: 2.0.7
@@ -1870,8 +1870,8 @@ packages:
   '@types/babel__traverse@7.18.3':
     resolution: {integrity: sha512-1kbcJ40lLB7MHsj39U4Sh1uTd2E7rLEa79kmDpI6cy+XiXsteB3POdQomoq4FxszMrO3ZYchkhYJw7A2862b3w==}
 
-  '@types/chrome@0.0.227':
-    resolution: {integrity: sha512-l1sVnf/1wZ/oNPw5X7OJMZjQlqVf3tPO50aE/aETHQRbrYhlHZkwv7lcuOWCimRSkFdHvAW4M+RIBAZACblXng==}
+  '@types/chrome@0.0.326':
+    resolution: {integrity: sha512-WS7jKf3ZRZFHOX7dATCZwqNJgdfiSF0qBRFxaO0LhIOvTNBrfkab26bsZwp6EBpYtqp8loMHJTnD6vDTLWPKYw==}
 
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
@@ -7516,7 +7516,7 @@ snapshots:
     dependencies:
       '@babel/types': 7.21.2
 
-  '@types/chrome@0.0.227':
+  '@types/chrome@0.0.326':
     dependencies:
       '@types/filesystem': 0.0.32
       '@types/har-format': 1.2.10

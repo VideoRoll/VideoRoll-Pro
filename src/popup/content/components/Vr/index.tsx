@@ -2,7 +2,7 @@
  * @Author: gomi gxy880520@qq.com
  * @Date: 2024-09-23 17:01:49
  * @LastEditors: gomi gxy880520@qq.com
- * @LastEditTime: 2025-06-05 15:19:33
+ * @LastEditTime: 2025-06-06 22:11:01
  * @FilePath: \website-nextc:\programs\VideoRoll-Pro\src\popup\content\components\Vr\index.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -38,7 +38,7 @@ export default defineComponent({
       >
         <div class="video-roll-icon-box">
           <span class="video-roll-label">
-            {<GlassesOutline class="video-roll-icon"></GlassesOutline>}
+            <GlassesOutline class="video-roll-icon"></GlassesOutline>
           </span>
         </div>
       </div>

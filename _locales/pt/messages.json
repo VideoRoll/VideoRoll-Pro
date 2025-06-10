@@ -265,5 +265,13 @@
   "tab_player": { "message": "Reprodutor" },
   "tab_abloop": { "message": "Loop A-B" },
   "tab_vr": { "message": "VR" },
-  "tab_record": { "message": "Gravar" }
+  "tab_record": { "message": "Gravar" },
+  "tips_user_center": {
+      "message": "Centro do usuário",
+      "description": "Tooltip: user center"
+  },
+  "tips_login": {
+      "message": "Entrar",
+      "description": "Tooltip: login"
+  }
 }

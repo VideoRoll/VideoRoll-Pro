@@ -6,11 +6,13 @@ import {
   DeviceTv,
   Headphones,
   Download,
-  List,
   Adjustments,
+  Robot
 } from "@vicons/tabler";
 import browser from "webextension-polyfill";
 import { Tooltip } from "floating-vue";
+
+import { JSX } from "vue/jsx-runtime";
 
 // 静态导入所有组件， 避免parcel拆包
 import Rotate from "../components/Rotate";
@@ -38,6 +40,7 @@ import Delay from "../components/Delay";
 import Stereo from "../components/Stereo";
 import VideoList from "../components/VideoList";
 import More from "../components/More";
+import Summarizer from "../components/Summarizer";
 
 interface IConfig {
   type: string;
@@ -515,6 +518,42 @@ export default function useComponents() {
           type: "component",
           component: <VideoList></VideoList>,
         },
+      ],
+    },
+    {
+      type: "tab",
+      title: (
+        <Tooltip>
+          <div
+            class="tab-title"
+            v-tooltip={'AI'}
+          >
+            <Robot class="tab-icon" />
+          </div>
+        </Tooltip>
+      ),
+      children: [
+        {
+          type: "row",
+          style: {
+            margin: "30px 0",
+            height: "40px",
+          },
+          children: [
+            {
+              type: "container",
+              title: 'AI Summarizer',
+              showTitle: true,
+              col: 6,
+              children: [
+                {
+                  type: "component",
+                  component: <Summarizer></Summarizer>,
+                },
+              ],
+            }
+          ],
+        }
       ],
     },
     {

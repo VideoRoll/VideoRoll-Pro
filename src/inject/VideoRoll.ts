@@ -32,6 +32,7 @@ import Looper from "./classes/Looper";
 import AdSkipper from "./classes/AdSkipper";
 
 import AudioController from "./classes/AudioController";
+import Summarizer from "./classes/Summarizer";
 
 export default class VideoRoll {
   static rollConfig: IRollConfig;
@@ -69,6 +70,8 @@ export default class VideoRoll {
   static looper: Looper;
 
   static adSkipper: AdSkipper;
+
+  static summarizer: Summarizer;
 
   static VrFunctions: any = {};
 
@@ -1595,6 +1598,10 @@ export default class VideoRoll {
           this.updatePlaybackRate();
         }
       );
+    }
+
+    if (!this.summarizer) {
+      this.summarizer = new Summarizer();
     }
 
     const videos = [...this.videoElements];
