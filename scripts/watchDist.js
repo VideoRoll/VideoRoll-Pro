@@ -2,17 +2,16 @@
  * @Author: gomi gxy880520@qq.com
  * @Date: 2025-06-05 11:06:43
  * @LastEditors: gomi gxy880520@qq.com
- * @LastEditTime: 2025-06-05 18:10:09
- * @Description: 自动启动浏览器并仅热重载本扩展（puppeteer-core 版本）
+ * @LastEditTime: 2025-06-06 22:40:47
+ * @Description: 使用普通进程启动浏览器并自动热重载扩展（无自动化控制横幅）
  */
 import fs from "node:fs/promises";
-import fsSync from "node:fs"; // 新增
+import fsSync from "node:fs";
 import path from "node:path";
-import { execSync } from "node:child_process";
+import { execSync, spawn } from "node:child_process";
 import { dirname } from "dirname-filename-esm";
 import chokidar from "chokidar";
 import { WebSocketServer } from "ws";
-import puppeteer from "puppeteer-core";
 import { tmpdir } from "node:os";
 
 const __dirname = dirname(import.meta);
@@ -49,25 +48,37 @@ wss.on("connection", (ws) => {
     console.error(`Unsupported browser: ${browser}`);
     process.exit(1);
   }
-
-
   const extPath = await createReloadManagerExtension('23333');
 
-  // 启动 puppeteer 并加载扩展
-  const browserInstance = await puppeteer.launch({
-    headless: false,
-    executablePath: browserBinary,
-    args: [
-      `--disable-extensions-except=${EXT_PATH},${extPath}`,
-      `--load-extension=${EXT_PATH},${extPath}`,
-    ],
+  // 创建临时用户数据目录
+  const userDataDir = path.join(tmpdir(), `chrome-profile-${Date.now()}`);
+  await fs.mkdir(userDataDir, { recursive: true });
+  console.log(`创建临时用户数据目录: ${userDataDir}`);
+
+  // 使用 child_process 直接启动 Chrome（没有自动化控制标记）
+  console.log("正在启动 Chrome...");
+  
+  // 构建启动命令行参数，添加用户数据目录参数
+  const chromeArgs = [
+    `--user-data-dir=${userDataDir}`, // 使用临时用户数据目录
+    `--no-first-run`, // 跳过首次运行设置
+    `--no-default-browser-check`, // 不检查默认浏览器设置
+    `--disable-extensions-except=${EXT_PATH},${extPath}`,
+    `--load-extension=${EXT_PATH},${extPath}`,
+    "chrome://extensions/" // 自动打开扩展页面
+  ];
+  
+  // 直接启动 Chrome 进程
+  const chromeProcess = spawn(browserBinary, chromeArgs, {
+    detached: true, // 让 Chrome 在后台运行，不受 Node 进程影响
+    stdio: 'ignore'
   });
-
-  // 新建标签页并跳转到扩展页面
-  const page = await browserInstance.newPage();
-  await page.goto("chrome://extensions/");
-
+  
+  // 允许父进程退出，而不影响 Chrome
+  chromeProcess.unref();
+  
   console.log("Chrome 启动成功，监听扩展热重载...");
+  console.log("扩展页面已自动打开，请确保开启开发者模式。");
 
   let reloadTimer = null;
   const RELOAD_DEBOUNCE = 1000; // 1s 内只 reload 一次

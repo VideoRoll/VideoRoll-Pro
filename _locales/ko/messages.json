@@ -265,5 +265,13 @@
    "tab_player": { "message": "플레이어" },
    "tab_abloop": { "message": "A-B 루프" },
    "tab_vr": { "message": "VR" },
-   "tab_record": { "message": "녹화" }
+   "tab_record": { "message": "녹화" },
+   "tips_user_center": {
+      "message": "사용자 센터",
+      "description": "Tooltip: user center"
+   },
+   "tips_login": {
+      "message": "로그인",
+      "description": "Tooltip: login"
+   }
 }

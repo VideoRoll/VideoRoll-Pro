@@ -123,7 +123,7 @@ export default defineComponent({
                   <div
                     class="video-roll-setting-btn"
                     onClick={toUser}
-                    v-tooltip={'个人中心'}
+                    v-tooltip={browser.i18n.getMessage("tips_user_center")}
                   >
                     <van-image
                       round
@@ -137,7 +137,7 @@ export default defineComponent({
                   <div
                     class="video-roll-setting-btn"
                     onClick={toUser}
-                    v-tooltip={'登录'}
+                    v-tooltip={browser.i18n.getMessage("tips_login")}
                   >
                     <UserExclamation class="logo-usd"></UserExclamation>
                   </div>

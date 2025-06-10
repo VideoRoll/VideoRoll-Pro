@@ -8,8 +8,6 @@ import {
   inject,
   onMounted,
   ref,
-  shallowReactive,
-  shallowRef,
   watch,
 } from "vue";
 import { RadioButtonOnOutline } from "@vicons/ionicons5";
