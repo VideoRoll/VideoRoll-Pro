@@ -12,8 +12,6 @@ export default defineComponent({
     name: "Footer",
     setup() {
         const realVideo = inject("realVideo") as any;
-        const play = inject("play") as Function;
-        const pause = inject("pause") as Function;
         const controlVideo = ref(realVideo.value);
 
         watch(() => realVideo.value, (value) => {

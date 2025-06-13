@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layout Configuration Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .debug-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>VideoRoll-Pro Layout Configuration Debug</h1>
+        
+        <div class="test-section">
+            <h3>问题分析</h3>
+            <p>现在的情况是：</p>
+            <ul>
+                <li>✅ Popup可以正常显示</li>
+                <li>❌ 保存配置后popup布局没有变化</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>可能的原因</h3>
+            <ul>
+                <li><strong>配置加载时机问题：</strong> Popup可能在配置保存之前就加载了旧配置</li>
+                <li><strong>缓存问题：</strong> 单例模式可能导致配置被缓存，没有重新读取storage</li>
+                <li><strong>响应式更新问题：</strong> 配置更新后计算属性没有重新计算</li>
+                <li><strong>Storage同步问题：</strong> 保存和读取可能存在时序问题</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>解决方案</h3>
+            <p>已实施的修复：</p>
+            <ol>
+                <li><strong>单例模式：</strong> 确保配置在全局共享</li>
+                <li><strong>强制重新加载：</strong> Popup每次打开都直接从storage读取最新配置</li>
+                <li><strong>响应式更新：</strong> 使用reactive对象确保UI自动更新</li>
+                <li><strong>调试信息：</strong> 添加console.log跟踪配置加载过程</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h3>测试步骤</h3>
+            <ol>
+                <li>打开扩展的Options页面</li>
+                <li>进入"布局配置"选项卡</li>
+                <li>修改一些组件的可见性或布局</li>
+                <li>点击"保存"按钮</li>
+                <li>打开popup，检查布局是否发生变化</li>
+                <li>查看浏览器控制台的调试信息</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h3>关键修改文件</h3>
+            <ul>
+                <li><strong>useLayoutConfig.ts:</strong> 改为单例模式，确保配置全局共享</li>
+                <li><strong>useLayoutComponents.tsx:</strong> 每次popup打开强制重新加载配置</li>
+                <li><strong>GridPanel/index.tsx:</strong> 使用新的布局组件系统</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>调试信息检查</h3>
+            <p>在浏览器控制台中查找以下信息：</p>
+            <pre>
+---Force reloaded config from storage: [配置对象]
+---Computing components, isConfigLoaded: true, tabs length: [数量]
+Layout config loaded: [配置对象]
+            </pre>
+            <p>如果看到这些信息，说明配置加载正常。如果没有看到，说明还有其他问题。</p>
+        </div>
+
+        <div class="test-section success">
+            <h3>预期结果</h3>
+            <p>完成上述修改后，应该可以实现：</p>
+            <ul>
+                <li>在Options页面修改布局配置</li>
+                <li>点击保存按钮</li>
+                <li>打开popup时看到更新后的布局</li>
+                <li>配置在浏览器重启后依然保持</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

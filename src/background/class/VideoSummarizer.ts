@@ -23,6 +23,8 @@ interface SummarizeRequest {
   targetLanguage?: string;
 }
 
+import browser from "webextension-polyfill";
+
 /**
  * Background script for YouTube AI Summarizer
  * Handles communication between content script and Chrome's AI
@@ -41,14 +43,9 @@ export class VideoSummarizer {
     this.setupSidePanel();
 
     // Listen for messages from content script
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      return this.handleMessage(message, sender, sendResponse);
-    });
-
-    // 监听命令
-    chrome.commands.onCommand.addListener((command) => {
-      this.handleCommand(command);
-    });
+    // chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    //   return this.handleMessage(message, sender, sendResponse);
+    // });
   }
 
   private setupSidePanel(): void {
@@ -57,7 +54,7 @@ export class VideoSummarizer {
         chrome.sidePanel.setOptions(
           {
             enabled: true,
-            path: "src/sidepanel.html",
+            path: "sidepanel/sidepanel.html",
           },
           () => {
             if (chrome.runtime.lastError) {
@@ -72,26 +69,6 @@ export class VideoSummarizer {
       }
     } else {
       console.warn("该浏览器不支持 Side Panel API");
-    }
-  }
-
-  private handleCommand(command: string): void {
-    console.log("收到命令:", command);
-    if (command === "open-side-panel" && chrome.sidePanel) {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs.length > 0 && tabs[0].id) {
-          const tabId = tabs[0].id;
-          chrome.sidePanel.open({ tabId }, () => {
-            if (chrome.runtime.lastError) {
-              console.error("打开侧边栏失败:", chrome.runtime.lastError);
-            } else {
-              console.log("侧边栏已打开");
-            }
-          });
-        } else {
-          console.error("无法获取当前标签页");
-        }
-      });
     }
   }
 
@@ -168,6 +145,17 @@ export class VideoSummarizer {
           });
       }
     });
+  }
+
+  public getSubtitleUrl(videoId: string) {
+    const cachedData = this.subtitleCache.get(videoId);
+
+    if (cachedData && this.isValidSubtitleUrl(cachedData.url)) {
+      console.log(`Providing cached subtitle URL for video ${cachedData.url}`);
+      return cachedData.url;
+    }
+
+    return '';
   }
 
   private handleMessage(

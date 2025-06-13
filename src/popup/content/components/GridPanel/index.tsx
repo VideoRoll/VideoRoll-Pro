@@ -5,14 +5,14 @@
  */
 
 import { defineComponent, ref, provide, h, VueElement } from "vue";
-import useComponents from "../../utils/useComponents";
+import useLayoutComponents from "../../utils/useLayoutComponents";
 import render from "../../utils/render";
 import "./index.less";
 
 export default defineComponent({
   name: "GridPanel",
   setup() {
-    const components = useComponents();
+    const components = useLayoutComponents();
     const popupShow = ref<boolean>(false);
     const renderContent = ref();
 
@@ -32,12 +32,10 @@ export default defineComponent({
 
     provide("setPopupShow", setPopupShow);
     provide("updateRenderContent", updateRenderContent);
-    provide("onPopupClose", onClose);
-
-    return () => (
+    provide("onPopupClose", onClose);    return () => (
       <div class="video-roll-setting-panel">
         <van-tabs sticky animated offset-top="40">
-          {render(components)}
+          {render(components.value)}
         </van-tabs>
         <van-popup
           v-model:show={popupShow.value}

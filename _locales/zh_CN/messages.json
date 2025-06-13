@@ -145,9 +145,11 @@
    },
    "options_contact": {
       "message": "联系"
-   },
-   "options_donate": {
+   },   "options_donate": {
       "message": "捐赠"
+   },
+   "options_layout": {
+      "message": "界面配置"
    },
    "options_shortcuts_rotate_left": {
       "message": "向左旋转"
@@ -305,9 +307,114 @@
    "tips_user_center": {
       "message": "个人中心",
       "description": "Tooltip: user center"
-   },
-   "tips_login": {
+   },   "tips_login": {
       "message": "登录",
       "description": "Tooltip: login"
+   },
+   "options_layout": {
+      "message": "布局配置"
+   },
+   "layout_title": {
+      "message": "弹窗布局配置"
+   },
+   "layout_description": {
+      "message": "自定义弹窗界面的组件布局和可见性"
+   },
+   "layout_visibility": {
+      "message": "组件可见性"
+   },
+   "layout_arrangement": {
+      "message": "布局排列"
+   },
+   "layout_tabs": {
+      "message": "标签页"
+   },
+   "layout_preset_layouts": {
+      "message": "预设布局"
+   },
+   "layout_compact": {
+      "message": "紧凑布局"
+   },
+   "layout_spacious": {
+      "message": "宽松布局"
+   },
+   "layout_single_column": {
+      "message": "单列布局"
+   },
+   "layout_apply": {
+      "message": "应用"
+   },
+   "layout_export": {
+      "message": "导出配置"
+   },
+   "layout_import": {
+      "message": "导入配置"
+   },
+   "layout_reset": {
+      "message": "重置为默认"
+   },
+   "layout_rows_per_tab": {
+      "message": "每个标签页的行数"
+   },
+   "layout_columns_per_row": {
+      "message": "每行的列数"
+   },   "layout_drag_hint": {
+      "message": "拖拽组件以重新排列"
+   },
+   "layout_unsaved_changes": {
+      "message": "未保存"
+   },
+   "layout_save_reminder": {
+      "message": "· 请记得保存更改"
+   },
+   "layout_config_saved": {
+      "message": "配置保存成功！"
+   },
+   "layout_config_reset": {
+      "message": "重置为默认布局成功！"
+   },
+   "layout_config_title": {
+      "message": "界面布局配置"
+   },
+   "layout_config_desc": {
+      "message": "自定义弹窗界面的组件布局和显示"
+   },
+   "layout_tabs_config": {
+      "message": "标签页配置"
+   },
+   "layout_row_title": {
+      "message": "第{0}行"
+   },
+   "layout_max_columns": {
+      "message": "每行显示"
+   },
+   "layout_items": {
+      "message": "个"
+   },
+   "layout_add_row": {
+      "message": "添加行"
+   },
+   "layout_remove_row": {
+      "message": "删除行"
+   },
+   "layout_add_new_row": {
+      "message": "添加新行"
+   },
+   "layout_hide_component": {
+      "message": "隐藏组件"
+   },
+   "layout_show_component": {
+      "message": "显示组件"
+   },
+   "layout_width": {
+      "message": "宽度"
+   },
+   "layout_config_import_error": {
+      "message": "导入配置文件失败"
+   },   "layout_config_reset_confirm": {
+      "message": "确定要重置为默认布局吗？"
+   },
+   "layout_unsaved_warning": {
+      "message": "您有未保存的更改，确定要离开吗？"
    }
 }

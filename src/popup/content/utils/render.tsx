@@ -1,5 +1,5 @@
 import { h } from "vue";
-import { IComponentConfig, IContainerConfig, IRowConfig, ISwiperConfig, ITabConfig, IFragmentConfig } from 'src/popup/content/utils/useComponents'
+import { IComponentConfig, IContainerConfig, IRowConfig, ISwiperConfig, ITabConfig, IFragmentConfig } from 'src/popup/content/utils/useLayoutComponents'
 
 export default function render(children: IRowConfig[] | IContainerConfig[] | IComponentConfig[] | ISwiperConfig[] | ITabConfig[] | IFragmentConfig[]) {
     return children.map((item) => {

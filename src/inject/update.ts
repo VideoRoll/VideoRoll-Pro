@@ -350,3 +350,11 @@ export function play(tabId: number, videoId: any) {
 export function pause(tabId: number, videoId: any) {
     VideoRoll.pause(videoId);
 }
+
+export function summarize(tabId: number, rollConfig: IRollConfig) {
+    VideoRoll.summarize(rollConfig);
+}
+
+export function parseSubtitle(tabId: number, rollConfig: IRollConfig, url: string) {
+    VideoRoll.parseSubtitle(url);
+}

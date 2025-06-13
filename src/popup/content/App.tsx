@@ -97,22 +97,6 @@ export default defineComponent({
       });
     };
 
-    const pause = () => {
-      sendTabMessage(rollConfig.tabId, {
-        rollConfig: clone(rollConfig),
-        type: ActionType.PAUSE,
-        videoId: realVideo.value.id,
-      });
-    };
-
-    const play = () => {
-      sendTabMessage(rollConfig.tabId, {
-        rollConfig: clone(rollConfig),
-        type: ActionType.PLAY,
-        videoId: realVideo.value.id,
-      });
-    };
-
     provide("rollConfig", rollConfig);
     provide("update", updateRollConfig.bind(null, rollConfig));
     provide("onOpenSetting", onOpenSetting);
@@ -128,8 +112,6 @@ export default defineComponent({
     provide("user", user);
     provide("downloadSingleVideo", downloadSingleVideo);
     provide("realVideo", realVideo);
-    provide("play", play);
-    provide("pause", pause);
 
     watch(
       () => tabId.value,
@@ -222,12 +204,6 @@ export default defineComponent({
             break;
           case ActionType.GET_DOWNLOAD_LIST:
             videoList.value = downloadList;
-            break;
-          case ActionType.PLAY:
-            realVideo.value = realVideoList.find((v) => v.isReal);
-            break;
-          case ActionType.PAUSE:
-            realVideo.value = realVideoList.find((v) => v.isReal);
             break;
           default:
             break;

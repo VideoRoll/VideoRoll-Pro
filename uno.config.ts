@@ -1,4 +1,4 @@
-import { defineConfig, presetWind3, presetAttributify } from "unocss";
+import { defineConfig, presetWind3, presetAttributify, presetTypography } from "unocss";
 
 export default defineConfig({
   cli: {
@@ -12,6 +12,7 @@ export default defineConfig({
   presets: [
     presetWind3(),
     presetAttributify(), // 可选
+    presetTypography()
   ],
   content: {
     pipeline: {
