@@ -1867,4 +1867,32 @@ export default class VideoRoll {
       rollConfig: this.rollConfig,
     });
   }
+
+  static async parseSubtitle(url: string) {
+    if (!this.summarizer) {
+      this.summarizer = new Summarizer();
+    }
+    console.log('----parseSubtitle', url);
+    await this.summarizer.downloadModel();
+    const data = await this.summarizer.getSubtitleByUrl(url);
+    console.log('----0subtitle', data);
+    const summary = await this.summarizer.generateSummary(data as string, this.rollConfig.tabId);
+    console.log('---0summary', summary);
+  }
+
+  static summarize() {
+    if (!this.summarizer) {
+      this.summarizer = new Summarizer();
+    }
+
+    this.summarizer.downloadModel().then(() => {
+      this.summarizer?.generateSummary();
+    }).catch((err) => {
+      console.error("Error downloading model:", err);
+      // sendRuntimeMessage(this.rollConfig.tabId, {
+      //   type: ActionType.SUMMARY_ERROR,
+      //   error: "模型下载失败，请稍后再试。",
+      // });
+    });
+  }
 }

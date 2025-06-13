@@ -330,6 +330,27 @@ export default function useComponents() {
           children: [
             {
               type: "container",
+              title: 'Summarize',
+              showTitle: true,
+              col: 6,
+              children: [
+                {
+                  type: "component",
+                  component: <Summarizer></Summarizer>,
+                },
+              ],
+            }
+          ],
+        },
+        {
+          type: "row",
+          style: {
+            margin: "30px 0",
+            height: "40px",
+          },
+          children: [
+            {
+              type: "container",
               col: 24,
               title: browser.i18n.getMessage("video_speed"),
               showTitle: true,
@@ -518,42 +539,6 @@ export default function useComponents() {
           type: "component",
           component: <VideoList></VideoList>,
         },
-      ],
-    },
-    {
-      type: "tab",
-      title: (
-        <Tooltip>
-          <div
-            class="tab-title"
-            v-tooltip={'AI'}
-          >
-            <Robot class="tab-icon" />
-          </div>
-        </Tooltip>
-      ),
-      children: [
-        {
-          type: "row",
-          style: {
-            margin: "30px 0",
-            height: "40px",
-          },
-          children: [
-            {
-              type: "container",
-              title: 'AI Summarizer',
-              showTitle: true,
-              col: 6,
-              children: [
-                {
-                  type: "component",
-                  component: <Summarizer></Summarizer>,
-                },
-              ],
-            }
-          ],
-        }
       ],
     },
     {

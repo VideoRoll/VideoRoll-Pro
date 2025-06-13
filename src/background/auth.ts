@@ -21,7 +21,6 @@ export function injectAuth() {
   function get() {
     window.addEventListener("message", function (event) {
       if (event.data.type === "videoroll_auth_signin") {
-        console.log("---message", event.data);
         if (event.data.data.user) {
           chrome.storage.local.set({
             user: event.data.data.user,
@@ -34,15 +33,10 @@ export function injectAuth() {
   }
 
   chrome.tabs.onUpdated.addListener(function listener(tabId, info, tab) {
-    if (
-      tab.url?.startsWith(process.env.ENV === 'development' ? "http://127.0.0.1:3001" : "https://videoroll.app")
-    ) {
-      // chrome.tabs.onUpdated.removeListener(listener);
-      chrome.scripting.executeScript({
-        target: { tabId },
-        func: get,
-      });
-    }
+    chrome.scripting.executeScript({
+      target: { tabId },
+      func: get,
+    });
   });
 
   chrome.tabs.onActivated.addListener(async (activeInfo) => {
@@ -50,6 +44,24 @@ export function injectAuth() {
 
     chrome.scripting.executeScript({
       target: { tabId },
+      func: get,
+    });
+  });
+
+  chrome.tabs.onHighlighted.addListener(async (activeInfo) => {
+    const { tabIds } = activeInfo;
+
+    tabIds.forEach((tabId) => {
+      chrome.scripting.executeScript({
+        target: { tabId },
+        func: get,
+      });
+    });
+  });
+
+  chrome.tabs.onReplaced.addListener(async (addedTabId) => {
+    chrome.scripting.executeScript({
+      target: { tabId: addedTabId },
       func: get,
     });
   });

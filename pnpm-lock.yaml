@@ -59,6 +59,9 @@ importers:
       m3u8-parser:
         specifier: ^7.2.0
         version: 7.2.0
+      marked:
+        specifier: ^15.0.12
+        version: 15.0.12
       mpd-parser:
         specifier: ^1.3.1
         version: 1.3.1
@@ -150,6 +153,9 @@ importers:
       '@unocss/preset-attributify':
         specifier: ^66.1.2
         version: 66.1.2
+      '@unocss/preset-typography':
+        specifier: ^66.2.0
+        version: 66.2.0
       '@unocss/preset-uno':
         specifier: ^66.1.2
         version: 66.1.2
@@ -2050,8 +2056,14 @@ packages:
   '@unocss/core@66.1.2':
     resolution: {integrity: sha512-mN9h1hHEuhDcdbI4z74o7UnxlBZYVsJpYcdC1YLWBKROcLYTkuyZ7hgBzpo1FBNox2Bt3JnrSinVDmc44Bxjow==}
 
+  '@unocss/core@66.2.0':
+    resolution: {integrity: sha512-jq+UPvmf271MjY/RoREBmjSCzTYdjzdlgBcjmtymYjBRg7a6a0GiSuhdL0D20cwQ4MoBvlO1tIzgCqnqImACBg==}
+
   '@unocss/extractor-arbitrary-variants@66.1.2':
     resolution: {integrity: sha512-F570wH9VYeFTb4r8qgcbN5QpEVIAvFC1zOnrAPUr6B6kbU2YChMXxHP7PHK0AzLHnEr458Pwpzl6hmP6bzxZ8g==}
+
+  '@unocss/extractor-arbitrary-variants@66.2.0':
+    resolution: {integrity: sha512-tRvWLbLLZweCv+eujbkvjflNclbkrJHhW2asuBUcaHXCzXIHCYgbBdF3lV5ww1lBBfEUWekgyFC/9fbB4rh1fg==}
 
   '@unocss/inspector@66.1.2':
     resolution: {integrity: sha512-ftdZzFP5DAKDzgBI078xDDZbNNVq1RV/yhpNkviBvWCUsgRWc6o3G8swqJPIvFaphmUms0RIYH9shmXilVXFtA==}
@@ -2071,11 +2083,17 @@ packages:
   '@unocss/preset-mini@66.1.2':
     resolution: {integrity: sha512-oiDe+VhwZ8B5Z0UGfggtOwgpRZMLtH1RTDFvmJmJEXYYX5BPWknS6wYcQzxy0i/y9ym0xp2QnEaTpGmR7LKdkg==}
 
+  '@unocss/preset-mini@66.2.0':
+    resolution: {integrity: sha512-ESOinBvDeCVKFvS1goI1+sp9tgasO0WSQmwaB+G+GK9uA8LMMMuslOjha3gUUVCskY9V+e5pVmZEJ6YmA72bJQ==}
+
   '@unocss/preset-tagify@66.1.2':
     resolution: {integrity: sha512-Xw5sFJGuzmGnfAXMI0kAiWDBh4DT3cOyphcyY9grBxbmxgqQDxRFHOV3Eg85lWK6X5cScOv3DhO0ndGv5ND8YA==}
 
   '@unocss/preset-typography@66.1.2':
     resolution: {integrity: sha512-+k9zp27Ak8rB6LPFDwq9fcwd3+ivFeSvXFQ2d4fBCwGGOAKHIA7qHLg3etxRaMhGd3YUPv/6d7FWpBbQgUVYZw==}
+
+  '@unocss/preset-typography@66.2.0':
+    resolution: {integrity: sha512-27vlixFSjdF6SHodFhqIiXXmMxk11UXAFML+yHc/6jW01hpUnaFlwns+Jg47bLlVVvjLuVlTkgGr6oRftDA29g==}
 
   '@unocss/preset-uno@66.1.2':
     resolution: {integrity: sha512-JL9YkDwluu1YGhzBaxO60XkKtZBagL13z3K6dsjsghbs+dKVlh35rhlIm5TZ+NdLAzcLM8PHhXm2ausjSd54Bg==}
@@ -2097,6 +2115,10 @@ packages:
 
   '@unocss/rule-utils@66.1.2':
     resolution: {integrity: sha512-nn0ehvDh7yyWq2mcBDLVpmMAivjRATUroZ8ETinyN1rmfsGesm71R0d1gV3K+Z6YC7a3+dMLc+/qzI7VK3AG/Q==}
+    engines: {node: '>=14'}
+
+  '@unocss/rule-utils@66.2.0':
+    resolution: {integrity: sha512-T2Gg8WwLeCi7QaOss6EKC5Ypmbls+dqet5sMRsiIE5Mi04j3ndS0+lTwV/x7X6NnN6kCoh0IlwCdBUU4tkJbkQ==}
     engines: {node: '>=14'}
 
   '@unocss/transformer-attributify-jsx@66.1.2':
@@ -4107,6 +4129,11 @@ packages:
 
   makeerror@1.0.12:
     resolution: {integrity: sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==}
+
+  marked@15.0.12:
+    resolution: {integrity: sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==}
+    engines: {node: '>= 18'}
+    hasBin: true
 
   marky@1.2.5:
     resolution: {integrity: sha512-q9JtQJKjpsVxCRVgQ+WapguSbKC3SQ5HEzFGPAJMStgh3QjCawp00UKv3MTTAArTmGmmPUvllHZoNbZ3gs0I+Q==}
@@ -7734,9 +7761,15 @@ snapshots:
 
   '@unocss/core@66.1.2': {}
 
+  '@unocss/core@66.2.0': {}
+
   '@unocss/extractor-arbitrary-variants@66.1.2':
     dependencies:
       '@unocss/core': 66.1.2
+
+  '@unocss/extractor-arbitrary-variants@66.2.0':
+    dependencies:
+      '@unocss/core': 66.2.0
 
   '@unocss/inspector@66.1.2(vue@3.5.13(typescript@4.9.5))':
     dependencies:
@@ -7776,6 +7809,12 @@ snapshots:
       '@unocss/extractor-arbitrary-variants': 66.1.2
       '@unocss/rule-utils': 66.1.2
 
+  '@unocss/preset-mini@66.2.0':
+    dependencies:
+      '@unocss/core': 66.2.0
+      '@unocss/extractor-arbitrary-variants': 66.2.0
+      '@unocss/rule-utils': 66.2.0
+
   '@unocss/preset-tagify@66.1.2':
     dependencies:
       '@unocss/core': 66.1.2
@@ -7785,6 +7824,12 @@ snapshots:
       '@unocss/core': 66.1.2
       '@unocss/preset-mini': 66.1.2
       '@unocss/rule-utils': 66.1.2
+
+  '@unocss/preset-typography@66.2.0':
+    dependencies:
+      '@unocss/core': 66.2.0
+      '@unocss/preset-mini': 66.2.0
+      '@unocss/rule-utils': 66.2.0
 
   '@unocss/preset-uno@66.1.2':
     dependencies:
@@ -7818,6 +7863,11 @@ snapshots:
   '@unocss/rule-utils@66.1.2':
     dependencies:
       '@unocss/core': 66.1.2
+      magic-string: 0.30.17
+
+  '@unocss/rule-utils@66.2.0':
+    dependencies:
+      '@unocss/core': 66.2.0
       magic-string: 0.30.17
 
   '@unocss/transformer-attributify-jsx@66.1.2':
@@ -10207,6 +10257,8 @@ snapshots:
   makeerror@1.0.12:
     dependencies:
       tmpl: 1.0.5
+
+  marked@15.0.12: {}
 
   marky@1.2.5: {}
 

@@ -15,5 +15,10 @@ export function sendRuntimeMessage(tabId: number, options: any, callback?: Funct
         if (typeof callback === 'function') {
             callback(response);
         }
-    }).catch((err) => console.debug(err));
+
+        return response;
+    }).catch((err) => {
+        console.debug(err);
+        return err;
+    });
 }

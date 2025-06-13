@@ -11,8 +11,14 @@ import { useGeneralConfig } from "src/options/use/useGeneralConfig";
 import browser from "webextension-polyfill";
 import { getUser, injectAuth } from "./auth";
 import VideoDetector from "./class/VideoDetector";
+import { VideoSummarizer } from "./class/VideoSummarizer";
 
 let currentTabId: number | undefined;
+
+
+injectAuth();
+new VideoDetector();
+const summarizer = new VideoSummarizer();
 
 async function hasOffscreenDocument() {
   if ("getContexts" in chrome.runtime) {
@@ -119,7 +125,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 chrome.runtime.onMessage.addListener(async (a, b, send) => {
   if (typeof currentTabId !== "number") return;
 
-  const { rollConfig, type, text, tabId } = a;
+  const { rollConfig, type, text, tabId, videoId } = a;
 
   switch (type) {
     case ActionType.UPDATE_STORAGE:
@@ -196,7 +202,18 @@ chrome.runtime.onMessage.addListener(async (a, b, send) => {
         streamId,
         rollConfig: rollConfig,
       });
+      break;
     }
+    case ActionType.GET_SUBTITLE_URL: {
+      const data = summarizer.getSubtitleUrl(videoId);
+      sendRuntimeMessage(tabId, {
+        type: ActionType.GET_SUBTITLE_URL_FROM_BACKGROUND,
+        subtitleUrl: data,
+        tabId: currentTabId
+      });
+      break;
+    }
+      
     default:
       break;
   }
@@ -219,6 +236,3 @@ chrome.tabs.onRemoved.addListener((tabId) => {
     tabId,
   });
 });
-
-injectAuth();
-new VideoDetector();

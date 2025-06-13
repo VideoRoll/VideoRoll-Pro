@@ -145,9 +145,11 @@
    },
    "options_contact": {
       "message": "Contact"
-   },
-   "options_donate": {
+   },   "options_donate": {
       "message": "Donate"
+   },
+   "options_layout": {
+      "message": "Layout"
    },
    "options_shortcuts_rotate_left": {
       "message": "Rotate Left"
@@ -305,9 +307,78 @@
    "tips_user_center": {
       "message": "User Center",
       "description": "Tooltip: user center"
-   },
-   "tips_login": {
+   },   "tips_login": {
       "message": "Login",
       "description": "Tooltip: login"
+   },
+   "layout_title": {
+      "message": "Layout Configuration"
+   },
+   "layout_description": {
+      "message": "Customize the popup interface layout by toggling components, reordering tabs, and adjusting layout settings."
+   },
+   "layout_components": {
+      "message": "Components"
+   },
+   "layout_tabs": {
+      "message": "Tabs"
+   },
+   "layout_settings": {
+      "message": "Layout Settings"
+   },
+   "layout_preset": {
+      "message": "Preset Layouts"
+   },
+   "layout_preset_compact": {
+      "message": "Compact"
+   },
+   "layout_preset_spacious": {
+      "message": "Spacious"
+   },
+   "layout_preset_single_column": {
+      "message": "Single Column"
+   },
+   "layout_export": {
+      "message": "Export Configuration"
+   },
+   "layout_import": {
+      "message": "Import Configuration"
+   },
+   "layout_reset": {
+      "message": "Reset to Default"
+   },
+   "layout_columns": {
+      "message": "Columns per Row"
+   },
+   "layout_spacing": {
+      "message": "Component Spacing"
+   },
+   "layout_save": {
+      "message": "Save Layout"
+   },
+   "layout_saved": {
+      "message": "Layout saved successfully!"
+   },
+   "layout_import_success": {
+      "message": "Layout imported successfully!"
+   },
+   "layout_import_error": {
+      "message": "Error importing layout configuration"
+   },   "layout_reset_confirm": {
+      "message": "Are you sure you want to reset to default layout?"
+   },
+   "layout_unsaved_changes": {
+      "message": "Unsaved"
+   },
+   "layout_save_reminder": {
+      "message": "· Please remember to save changes"
+   },
+   "layout_config_saved": {
+      "message": "Configuration saved successfully!"
+   },   "layout_config_reset": {
+      "message": "Reset to default layout successfully!"
+   },
+   "layout_unsaved_warning": {
+      "message": "You have unsaved changes. Are you sure you want to leave?"
    }
 }

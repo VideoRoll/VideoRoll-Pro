@@ -39,7 +39,12 @@ export enum ActionType {
     DOWNLOAD_SINGLE_VIDEO,
     PLAY,
     PAUSE,
-    RECORD_INFO
+    RECORD_INFO,
+    SUMMARIZING,
+    SUMMARIZE_DONE,
+    GET_SUBTITLE_URL,
+    GET_SUBTITLE_URL_FROM_BACKGROUND,
+    PARSE_SUBTITLE
 }
 
 export enum FlipType {
