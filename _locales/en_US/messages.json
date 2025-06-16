@@ -145,7 +145,8 @@
    },
    "options_contact": {
       "message": "Contact"
-   },   "options_donate": {
+   },
+   "options_donate": {
       "message": "Donate"
    },
    "options_layout": {
@@ -307,7 +308,8 @@
    "tips_user_center": {
       "message": "User Center",
       "description": "Tooltip: user center"
-   },   "tips_login": {
+   },
+   "tips_login": {
       "message": "Login",
       "description": "Tooltip: login"
    },
@@ -364,7 +366,8 @@
    },
    "layout_import_error": {
       "message": "Error importing layout configuration"
-   },   "layout_reset_confirm": {
+   },
+   "layout_reset_confirm": {
       "message": "Are you sure you want to reset to default layout?"
    },
    "layout_unsaved_changes": {
@@ -373,12 +376,94 @@
    "layout_save_reminder": {
       "message": "· Please remember to save changes"
    },
+   "layout_component_hidden": {
+      "message": "Hidden"
+   },
    "layout_config_saved": {
       "message": "Configuration saved successfully!"
-   },   "layout_config_reset": {
+   },
+   "layout_config_reset": {
       "message": "Reset to default layout successfully!"
    },
    "layout_unsaved_warning": {
       "message": "You have unsaved changes. Are you sure you want to leave?"
+   },
+   "clear_shortcut": {
+      "message": "Clear shortcut"
+   },
+   "shortcut_cleared": {
+      "message": "Shortcut cleared successfully"
+   },
+   "layout_visibility": {
+      "message": "Component Visibility"
+   },
+   "layout_arrangement": {
+      "message": "Layout Arrangement"
+   },
+   "layout_preset_layouts": {
+      "message": "Preset Layouts"
+   },
+   "layout_compact": {
+      "message": "Compact Layout"
+   },
+   "layout_spacious": {
+      "message": "Spacious Layout"
+   },
+   "layout_single_column": {
+      "message": "Single Column Layout"
+   },
+   "layout_apply": {
+      "message": "Apply"
+   },
+   "layout_rows_per_tab": {
+      "message": "Rows per Tab"
+   },
+   "layout_columns_per_row": {
+      "message": "Columns per Row"
+   },
+   "layout_drag_hint": {
+      "message": "Drag components to rearrange"
+   },
+   "layout_config_title": {
+      "message": "Interface Layout Configuration"
+   },
+   "layout_config_desc": {
+      "message": "Customize popup interface component layout and display"
+   },
+   "layout_tabs_config": {
+      "message": "Tabs Configuration"
+   },
+   "layout_row_title": {
+      "message": "Row {0}"
+   },
+   "layout_max_columns": {
+      "message": "Display per row"
+   },
+   "layout_items": {
+      "message": "items"
+   },
+   "layout_add_row": {
+      "message": "Add Row"
+   },
+   "layout_remove_row": {
+      "message": "Remove Row"
+   },
+   "layout_add_new_row": {
+      "message": "Add New Row"
+   },
+   "layout_hide_component": {
+      "message": "Hide Component"
+   },
+   "layout_show_component": {
+      "message": "Show Component"
+   },
+   "layout_width": {
+      "message": "Width"
+   },
+   "layout_config_import_error": {
+      "message": "Failed to import configuration file"
+   },
+   "layout_config_reset_confirm": {
+      "message": "Are you sure you want to reset to default layout?"
    }
 }

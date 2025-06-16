@@ -2,7 +2,7 @@
  * @Author: gomi gxy880520@qq.com
  * @Date: 2025-06-05 11:06:43
  * @LastEditors: gomi gxy880520@qq.com
- * @LastEditTime: 2025-06-06 22:40:47
+ * @LastEditTime: 2025-06-16 22:38:48
  * @Description: 使用普通进程启动浏览器并自动热重载扩展（无自动化控制横幅）
  */
 import fs from "node:fs/promises";

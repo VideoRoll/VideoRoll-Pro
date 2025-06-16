@@ -249,7 +249,7 @@
       "message": "WeChat Gruppe"
    },
    "download_no_segments": {
-      "message": "Kein Segment zum Herunterladen verfügbar!"
+      "message": "Keine Segmente zum Download verfügbar!"
    },
    "download_size": {
       "message": "Größe"
@@ -264,13 +264,13 @@
       "message": "MP4 herunterladen"
    },
    "abloop_enable": {
-      "message": "AB Loop aktivieren"
+      "message": "A-B Schleife aktivieren"
    },
    "abloop_a": {
-      "message": "A"
+      "message": "Punkt A"
    },
    "abloop_b": {
-      "message": "B"
+      "message": "Punkt B"
    },
    "player_local_file": {
       "message": "Lokale Datei"
@@ -279,28 +279,28 @@
       "message": "Stream-URL"
    },
    "player_enter_stream_url": {
-      "message": "Stream-URL eingeben"
+      "message": "Bitte geben Sie die Stream-URL ein"
    },
    "player_upload_or_drag": {
-      "message": "+Klicken zum Hochladen oder Ziehen"
+      "message": "+Klicken zum Hochladen oder ziehen"
    },
    "tab_download": {
       "message": "Herunterladen"
    },
    "tab_qr": {
-      "message": "QR"
+      "message": "QR-Code"
    },
    "tab_player": {
       "message": "Player"
    },
    "tab_abloop": {
-      "message": "A-B-Schleife"
+      "message": "A-B Schleife"
    },
    "tab_vr": {
       "message": "VR"
    },
    "tab_record": {
-      "message": "Aufnehmen"
+      "message": "Aufnahme"
    },
    "tips_user_center": {
       "message": "Benutzerzentrum",
@@ -309,5 +309,122 @@
    "tips_login": {
       "message": "Anmelden",
       "description": "Tooltip: login"
+   },
+   "options_layout": {
+      "message": "[DE] 布局配置"
+   },
+   "layout_title": {
+      "message": "Layout-Konfiguration"
+   },
+   "layout_description": {
+      "message": "Anpassen des Popup-Interface-Layouts und der Komponentensichtbarkeit"
+   },
+   "layout_visibility": {
+      "message": "Komponentensichtbarkeit"
+   },
+   "layout_arrangement": {
+      "message": "Layout-Anordnung"
+   },
+   "layout_tabs": {
+      "message": "Registerkarten"
+   },
+   "layout_preset_layouts": {
+      "message": "Vorgefertigte Layouts"
+   },
+   "layout_compact": {
+      "message": "Kompaktes Layout"
+   },
+   "layout_spacious": {
+      "message": "Geräumiges Layout"
+   },
+   "layout_single_column": {
+      "message": "Einspalten-Layout"
+   },
+   "layout_apply": {
+      "message": "Anwenden"
+   },
+   "layout_export": {
+      "message": "Konfiguration exportieren"
+   },
+   "layout_import": {
+      "message": "Konfiguration importieren"
+   },
+   "layout_reset": {
+      "message": "Auf Standard zurücksetzen"
+   },
+   "layout_rows_per_tab": {
+      "message": "Zeilen pro Registerkarte"
+   },
+   "layout_columns_per_row": {
+      "message": "Spalten pro Zeile"
+   },
+   "layout_drag_hint": {
+      "message": "Ziehen Sie Komponenten zum Neuanordnen"
+   },
+   "layout_unsaved_changes": {
+      "message": "Nicht gespeichert"
+   },
+   "layout_save_reminder": {
+      "message": "· Bitte denken Sie daran, Änderungen zu speichern"
+   },
+   "layout_component_hidden": {
+      "message": "Versteckt"
+   },
+   "layout_config_saved": {
+      "message": "Konfiguration erfolgreich gespeichert!"
+   },
+   "layout_config_reset": {
+      "message": "Standard-Layout erfolgreich zurückgesetzt!"
+   },
+   "layout_config_title": {
+      "message": "Interface-Layout-Konfiguration"
+   },
+   "layout_config_desc": {
+      "message": "Anpassen des Komponentenlayouts und der Anzeige der Popup-Oberfläche"
+   },
+   "layout_tabs_config": {
+      "message": "Registerkarten-Konfiguration"
+   },
+   "layout_row_title": {
+      "message": "Zeile {0}"
+   },
+   "layout_max_columns": {
+      "message": "Jede Zeile anzeigen"
+   },
+   "layout_items": {
+      "message": "Artikel"
+   },
+   "layout_add_row": {
+      "message": "Zeile hinzufügen"
+   },
+   "layout_remove_row": {
+      "message": "Zeile löschen"
+   },
+   "layout_add_new_row": {
+      "message": "Neue Zeile hinzufügen"
+   },
+   "layout_hide_component": {
+      "message": "Komponente ausblenden"
+   },
+   "layout_show_component": {
+      "message": "Komponente anzeigen"
+   },
+   "layout_width": {
+      "message": "Breite"
+   },
+   "layout_config_import_error": {
+      "message": "Fehler beim Importieren der Konfigurationsdatei"
+   },
+   "layout_config_reset_confirm": {
+      "message": "Sind Sie sicher, dass Sie auf das Standard-Layout zurücksetzen möchten?"
+   },
+   "layout_unsaved_warning": {
+      "message": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie gehen möchten?"
+   },
+   "clear_shortcut": {
+      "message": "Tastenkürzel löschen"
+   },
+   "shortcut_cleared": {
+      "message": "Tastenkürzel erfolgreich gelöscht"
    }
 }

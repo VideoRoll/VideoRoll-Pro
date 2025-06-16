@@ -41,3 +41,58 @@
     width: 10em;
 }
 
+// 快捷键项目容器
+.shortcut-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    
+    .shortcuts-input-body {
+        flex: 1;
+    }
+    
+    .clear-button {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border: none;
+        background: var(--van-gray-4);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10;
+        
+        &:hover {
+            background: var(--van-danger-color);
+            transform: translateY(-50%) scale(1.05);
+        }
+        
+        .clear-icon {
+            width: 14px;
+            height: 14px;
+            color: var(--van-gray-7);
+        }
+        
+        &:hover .clear-icon {
+            color: var(--van-white);
+        }
+    }
+    
+    // 当有快捷键值时才显示清除按钮
+    &:not(.has-value) .clear-button {
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    &.has-value .clear-button {
+        opacity: 1;
+        pointer-events: all;
+    }
+}
+

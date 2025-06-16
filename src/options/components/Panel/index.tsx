@@ -1,18 +1,10 @@
 import { defineComponent, h } from "vue";
 
-
-import './index.less';
+import "./index.less";
 
 export default defineComponent({
-    name: "Panel",
-    slots: ['content'],
-    setup(props, { slots }) {
-        return () => (
-            <div class="options-panel">
-                {
-                    h(slots.content as any)
-                }
-            </div>
-        );
-    }
+  name: "Panel",
+  setup(props: Record<string, any>, { slots }: { slots: any }) {
+    return () => <div class="options-panel">{slots.content?.()}</div>;
+  },
 });

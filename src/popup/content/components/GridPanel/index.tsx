@@ -4,7 +4,7 @@
  * @Date: 2022-09-19 22:53:23
  */
 
-import { defineComponent, ref, provide, h, VueElement } from "vue";
+import { defineComponent, ref, provide, h, VueElement, onMounted } from "vue";
 import useLayoutComponents from "../../utils/useLayoutComponents";
 import render from "../../utils/render";
 import "./index.less";
@@ -32,11 +32,15 @@ export default defineComponent({
 
     provide("setPopupShow", setPopupShow);
     provide("updateRenderContent", updateRenderContent);
-    provide("onPopupClose", onClose);    return () => (
+    provide("onPopupClose", onClose);
+    return () => (
       <div class="video-roll-setting-panel">
-        <van-tabs sticky animated offset-top="40">
-          {render(components.value)}
-        </van-tabs>
+        {components.value.length ? (
+          <van-tabs sticky animated offset-top="40">
+            {render(components.value)}
+          </van-tabs>
+        ) : null}
+
         <van-popup
           v-model:show={popupShow.value}
           onClose={onClose}

@@ -264,31 +264,31 @@
       "message": "Télécharger MP4"
    },
    "abloop_enable": {
-      "message": "Activer AB Loop"
+      "message": "Activer la boucle A-B"
    },
    "abloop_a": {
-      "message": "A"
+      "message": "Point A"
    },
    "abloop_b": {
-      "message": "B"
+      "message": "Point B"
    },
    "player_local_file": {
       "message": "Fichier local"
    },
    "player_stream_url": {
-      "message": "URL du flux"
+      "message": "URL de flux"
    },
    "player_enter_stream_url": {
-      "message": "Entrez l'URL du flux"
+      "message": "Veuillez saisir l'URL du flux"
    },
    "player_upload_or_drag": {
-      "message": "+Cliquez pour téléverser ou glisser-déposer"
+      "message": "+Cliquer pour télécharger ou glisser"
    },
    "tab_download": {
       "message": "Télécharger"
    },
    "tab_qr": {
-      "message": "QR"
+      "message": "Code QR"
    },
    "tab_player": {
       "message": "Lecteur"
@@ -297,7 +297,7 @@
       "message": "Boucle A-B"
    },
    "tab_vr": {
-      "message": "VR"
+      "message": "RV"
    },
    "tab_record": {
       "message": "Enregistrer"
@@ -307,7 +307,124 @@
       "description": "Tooltip: user center"
    },
    "tips_login": {
-      "message": "Connexion",
+      "message": "Se connecter",
       "description": "Tooltip: login"
+   },
+   "options_layout": {
+      "message": "[FR] 布局配置"
+   },
+   "layout_title": {
+      "message": "Configuration de mise en page"
+   },
+   "layout_description": {
+      "message": "Personnaliser la mise en page de l'interface popup et la visibilité des composants"
+   },
+   "layout_visibility": {
+      "message": "Visibilité des composants"
+   },
+   "layout_arrangement": {
+      "message": "Arrangement de mise en page"
+   },
+   "layout_tabs": {
+      "message": "Onglets"
+   },
+   "layout_preset_layouts": {
+      "message": "Mises en page prédéfinies"
+   },
+   "layout_compact": {
+      "message": "Mise en page compacte"
+   },
+   "layout_spacious": {
+      "message": "Mise en page spacieuse"
+   },
+   "layout_single_column": {
+      "message": "Mise en page une colonne"
+   },
+   "layout_apply": {
+      "message": "Appliquer"
+   },
+   "layout_export": {
+      "message": "Exporter la configuration"
+   },
+   "layout_import": {
+      "message": "Importer la configuration"
+   },
+   "layout_reset": {
+      "message": "Réinitialiser par défaut"
+   },
+   "layout_rows_per_tab": {
+      "message": "Lignes par onglet"
+   },
+   "layout_columns_per_row": {
+      "message": "Colonnes par ligne"
+   },
+   "layout_drag_hint": {
+      "message": "Glissez les composants pour les réorganiser"
+   },
+   "layout_unsaved_changes": {
+      "message": "Non sauvegardé"
+   },
+   "layout_save_reminder": {
+      "message": "· Veuillez vous rappeler de sauvegarder les modifications"
+   },
+   "layout_component_hidden": {
+      "message": "Masqué"
+   },
+   "layout_config_saved": {
+      "message": "Configuration sauvegardée avec succès !"
+   },
+   "layout_config_reset": {
+      "message": "Mise en page par défaut réinitialisée avec succès !"
+   },
+   "layout_config_title": {
+      "message": "Configuration de mise en page d'interface"
+   },
+   "layout_config_desc": {
+      "message": "Personnaliser la mise en page des composants et l'affichage de l'interface popup"
+   },
+   "layout_tabs_config": {
+      "message": "Configuration des onglets"
+   },
+   "layout_row_title": {
+      "message": "Ligne {0}"
+   },
+   "layout_max_columns": {
+      "message": "Afficher chaque ligne"
+   },
+   "layout_items": {
+      "message": "élément"
+   },
+   "layout_add_row": {
+      "message": "Ajouter une ligne"
+   },
+   "layout_remove_row": {
+      "message": "Supprimer la ligne"
+   },
+   "layout_add_new_row": {
+      "message": "Ajouter une nouvelle ligne"
+   },
+   "layout_hide_component": {
+      "message": "Masquer le composant"
+   },
+   "layout_show_component": {
+      "message": "Afficher le composant"
+   },
+   "layout_width": {
+      "message": "Largeur"
+   },
+   "layout_config_import_error": {
+      "message": "Échec de l'importation du fichier de configuration"
+   },
+   "layout_config_reset_confirm": {
+      "message": "Êtes-vous sûr de vouloir réinitialiser la mise en page par défaut ?"
+   },
+   "layout_unsaved_warning": {
+      "message": "Vous avez des modifications non sauvegardées, êtes-vous sûr de vouloir partir ?"
+   },
+   "clear_shortcut": {
+      "message": "Effacer raccourci"
+   },
+   "shortcut_cleared": {
+      "message": "Raccourci effacé avec succès"
    }
 }

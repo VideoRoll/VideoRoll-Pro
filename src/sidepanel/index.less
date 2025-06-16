@@ -50,9 +50,39 @@ body {
   ::-webkit-scrollbar-thumb:hover {
     background: rgba(155, 155, 155, 0.6);
   }
-
   ::-webkit-scrollbar-track {
     background: transparent;
     background: rgba(200, 200, 200, 0.2);
+  }
+}
+
+// Select dropdown dark theme optimization
+select {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: var(--van-primary-color) !important;
+    box-shadow: 0 0 0 1px rgba(164, 148, 198, 0.3);
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: var(--van-primary-color) !important;
+    box-shadow: 0 0 0 2px rgba(164, 148, 198, 0.4);
+  }
+  
+  option {
+    background: #374151;
+    color: white;
+  }
+  
+  option:hover {
+    background: var(--van-primary-color);
+    color: white;
+  }
+  
+  option:checked {
+    background: var(--van-primary-color);
+    color: white;
   }
 }

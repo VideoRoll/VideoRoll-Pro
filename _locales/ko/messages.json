@@ -248,24 +248,60 @@
    "tips_wechatGroup": {
       "message": "WeChat 그룹"
    },
-   "download_no_segments": { "message": "업로드할 수 있는 세그먼트가 없습니다!" },
-   "download_size": { "message": "크기" },
-   "download_segments": { "message": "세그먼트" },
-   "download_ts": { "message": "TS 다운로드" },
-   "download_mp4": { "message": "MP4 다운로드" },
-   "abloop_enable": { "message": "AB 루프 활성화" },
-   "abloop_a": { "message": "A" },
-   "abloop_b": { "message": "B" },
-   "player_local_file": { "message": "로컬 파일" },
-   "player_stream_url": { "message": "스트림 URL" },
-   "player_enter_stream_url": { "message": "스트림 URL 입력" },
-   "player_upload_or_drag": { "message": "+업로드 또는 드래그하려면 클릭" },
-   "tab_download": { "message": "다운로드" },
-   "tab_qr": { "message": "QR" },
-   "tab_player": { "message": "플레이어" },
-   "tab_abloop": { "message": "A-B 루프" },
-   "tab_vr": { "message": "VR" },
-   "tab_record": { "message": "녹화" },
+   "download_no_segments": {
+      "message": "다운로드할 수 있는 세그먼트가 없습니다!"
+   },
+   "download_size": {
+      "message": "크기"
+   },
+   "download_segments": {
+      "message": "세그먼트"
+   },
+   "download_ts": {
+      "message": "TS 다운로드"
+   },
+   "download_mp4": {
+      "message": "MP4 다운로드"
+   },
+   "abloop_enable": {
+      "message": "A-B루프 활성화"
+   },
+   "abloop_a": {
+      "message": "A지점"
+   },
+   "abloop_b": {
+      "message": "B지점"
+   },
+   "player_local_file": {
+      "message": "로컬 파일"
+   },
+   "player_stream_url": {
+      "message": "스트림 URL"
+   },
+   "player_enter_stream_url": {
+      "message": "스트림 URL을 입력하세요"
+   },
+   "player_upload_or_drag": {
+      "message": "+업로드하려면 클릭하거나 드래그"
+   },
+   "tab_download": {
+      "message": "다운로드"
+   },
+   "tab_qr": {
+      "message": "QR코드"
+   },
+   "tab_player": {
+      "message": "플레이어"
+   },
+   "tab_abloop": {
+      "message": "A-B루프"
+   },
+   "tab_vr": {
+      "message": "VR"
+   },
+   "tab_record": {
+      "message": "녹화"
+   },
    "tips_user_center": {
       "message": "사용자 센터",
       "description": "Tooltip: user center"
@@ -273,5 +309,122 @@
    "tips_login": {
       "message": "로그인",
       "description": "Tooltip: login"
+   },
+   "options_layout": {
+      "message": "[KO] 布局配置"
+   },
+   "layout_title": {
+      "message": "레이아웃 설정"
+   },
+   "layout_description": {
+      "message": "팝업 인터페이스 레이아웃과 컴포넌트 가시성을 사용자 정의"
+   },
+   "layout_visibility": {
+      "message": "컴포넌트 가시성"
+   },
+   "layout_arrangement": {
+      "message": "레이아웃 배치"
+   },
+   "layout_tabs": {
+      "message": "탭"
+   },
+   "layout_preset_layouts": {
+      "message": "프리셋 레이아웃"
+   },
+   "layout_compact": {
+      "message": "컴팩트 레이아웃"
+   },
+   "layout_spacious": {
+      "message": "여유있는 레이아웃"
+   },
+   "layout_single_column": {
+      "message": "단일 컬럼 레이아웃"
+   },
+   "layout_apply": {
+      "message": "적용"
+   },
+   "layout_export": {
+      "message": "설정 내보내기"
+   },
+   "layout_import": {
+      "message": "설정 가져오기"
+   },
+   "layout_reset": {
+      "message": "기본값으로 재설정"
+   },
+   "layout_rows_per_tab": {
+      "message": "탭당 행 수"
+   },
+   "layout_columns_per_row": {
+      "message": "행당 열 수"
+   },
+   "layout_drag_hint": {
+      "message": "컴포넌트를 드래그하여 재정렬"
+   },
+   "layout_unsaved_changes": {
+      "message": "저장되지 않음"
+   },
+   "layout_save_reminder": {
+      "message": "· 변경사항을 저장하는 것을 잊지 마세요"
+   },
+   "layout_component_hidden": {
+      "message": "숨김"
+   },
+   "layout_config_saved": {
+      "message": "설정이 성공적으로 저장되었습니다!"
+   },
+   "layout_config_reset": {
+      "message": "기본 레이아웃이 성공적으로 재설정되었습니다!"
+   },
+   "layout_config_title": {
+      "message": "인터페이스 레이아웃 설정"
+   },
+   "layout_config_desc": {
+      "message": "팝업 인터페이스의 컴포넌트 레이아웃과 표시를 사용자 정의"
+   },
+   "layout_tabs_config": {
+      "message": "탭 설정"
+   },
+   "layout_row_title": {
+      "message": "제{0}행"
+   },
+   "layout_max_columns": {
+      "message": "각 행에 표시"
+   },
+   "layout_items": {
+      "message": "개"
+   },
+   "layout_add_row": {
+      "message": "행 추가"
+   },
+   "layout_remove_row": {
+      "message": "행 삭제"
+   },
+   "layout_add_new_row": {
+      "message": "새 행 추가"
+   },
+   "layout_hide_component": {
+      "message": "컴포넌트 숨기기"
+   },
+   "layout_show_component": {
+      "message": "컴포넌트 보이기"
+   },
+   "layout_width": {
+      "message": "너비"
+   },
+   "layout_config_import_error": {
+      "message": "설정 파일 가져오기 실패"
+   },
+   "layout_config_reset_confirm": {
+      "message": "기본 레이아웃으로 재설정하시겠습니까?"
+   },
+   "layout_unsaved_warning": {
+      "message": "저장되지 않은 변경사항이 있습니다. 정말로 나가시겠습니까?"
+   },
+   "clear_shortcut": {
+      "message": "단축키 지우기"
+   },
+   "shortcut_cleared": {
+      "message": "단축키가 성공적으로 지워졌습니다"
    }
 }

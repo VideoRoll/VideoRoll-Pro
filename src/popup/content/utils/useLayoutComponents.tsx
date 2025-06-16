@@ -2,15 +2,15 @@
  * useLayoutComponents - 使用布局配置的组件系统
  */
 import { computed, onMounted, ref } from "vue";
-import {
-  DeviceTv,
-  Headphones,
-  Download,
-  Adjustments,
-} from "@vicons/tabler";
-import browser from "webextension-polyfill";
+import { DeviceTv, Headphones, Download, Adjustments } from "@vicons/tabler";
 import { Tooltip } from "floating-vue";
-import { useLayoutConfig, TabConfig, RowConfig, ComponentItem } from "../../../options/utils/useLayoutConfig";
+import {
+  TabConfig,
+  RowConfig,
+  ComponentItem,
+  LayoutConfig,
+  loadLayoutConfigFromStorage,
+} from "../../../shared/utils/layoutConfigStorage";
 
 import { JSX } from "vue/jsx-runtime";
 
@@ -86,21 +86,38 @@ interface ITabConfig extends IConfig {
 }
 
 export default function useLayoutComponents() {
-  const { layoutConfig, loadConfig } = useLayoutConfig();
+  // 使用独立的布局配置状态
+  const layoutConfig = ref<LayoutConfig>({
+    tabs: [],
+    version: "1.0.0",
+  });
   const isConfigLoaded = ref(false);
+
+  // 加载配置的独立方法
+  const loadConfig = async () => {
+    console.log("useLayoutComponents: Loading configuration...");
+    try {
+      const config = await loadLayoutConfigFromStorage();
+      layoutConfig.value = config;
+      isConfigLoaded.value = true;
+      console.log(
+        "useLayoutComponents: Configuration loaded successfully, tabs count:",
+        config.tabs.length
+      );
+    } catch (error) {
+      console.error(
+        "useLayoutComponents: Failed to load configuration:",
+        error
+      );
+      isConfigLoaded.value = true; // 即使失败也要标记为已加载，使用默认配置
+    }
+  };
 
   // 强制重新加载配置的方法
   const reloadConfig = async () => {
-    console.log('Force reloading configuration...');
+    console.log("useLayoutComponents: Force reloading configuration...");
     isConfigLoaded.value = false;
-    try {
-      await loadConfig();
-      isConfigLoaded.value = true;
-      console.log('Configuration force reloaded successfully');
-    } catch (error) {
-      console.error('Failed to force reload configuration:', error);
-      isConfigLoaded.value = true;
-    }
+    await loadConfig();
   };
 
   // 组件映射表
@@ -137,39 +154,26 @@ export default function useLayoutComponents() {
     Headphones: <Headphones class="tab-icon" />,
     Download: <Download class="tab-icon" />,
     Adjustments: <Adjustments class="tab-icon" />,
-  };  // 每次popup打开时加载最新配置
+  }; // 每次popup打开时加载最新配置
   onMounted(async () => {
-    console.log('useLayoutComponents mounted, loading configuration...');
-    try {
-      await loadConfig();
-      isConfigLoaded.value = true;
-      console.log('Configuration loaded successfully for popup:', JSON.stringify(layoutConfig, null, 2));
-    } catch (error) {
-      console.error('Failed to load configuration for popup:', error);
-      isConfigLoaded.value = true; // 即使失败也要标记为已加载，使用默认配置
-    }
+    await loadConfig();
   });
-
   // 根据配置生成组件结构
   const components = computed(() => {
-    console.log('---Computing components, isConfigLoaded:', isConfigLoaded.value, 'tabs length:', layoutConfig.tabs.length);
-    
-    if (!isConfigLoaded.value || !layoutConfig.tabs.length) {
-      console.log('---Config not loaded or no tabs, returning empty array');
+    if (!isConfigLoaded.value || !layoutConfig.value.tabs.length) {
       return [];
-    }return layoutConfig.tabs
+    }
+
+    const componentsConfig = layoutConfig.value.tabs
       .filter((tab: TabConfig) => tab.visible)
       .map((tab: TabConfig) => {
         // 为特殊标签页提供自定义内容
-        if (tab.id === 'download') {
+        if (tab.id === "download") {
           return {
             type: "tab",
             title: (
               <Tooltip>
-                <div
-                  class="tab-title"
-                  v-tooltip={tab.name}
-                >
+                <div class="tab-title" v-tooltip={tab.name}>
                   {iconMap[tab.icon] || <Download class="tab-icon" />}
                 </div>
               </Tooltip>
@@ -183,15 +187,12 @@ export default function useLayoutComponents() {
           };
         }
 
-        if (tab.id === 'more') {
+        if (tab.id === "more") {
           return {
             type: "tab",
             title: (
               <Tooltip>
-                <div
-                  class="tab-title"
-                  v-tooltip={tab.name}
-                >
+                <div class="tab-title" v-tooltip={tab.name}>
                   {iconMap[tab.icon] || <Adjustments class="tab-icon" />}
                 </div>
               </Tooltip>
@@ -225,21 +226,22 @@ export default function useLayoutComponents() {
           type: "tab",
           title: (
             <Tooltip>
-              <div
-                class="tab-title"
-                v-tooltip={tab.name}
-              >
+              <div class="tab-title" v-tooltip={tab.name}>
                 {iconMap[tab.icon] || <DeviceTv class="tab-icon" />}
               </div>
             </Tooltip>
-          ),          children: tab.rows
-            .filter((row: RowConfig) => row.components.some((comp: ComponentItem) => comp.visible))
+          ),
+          children: tab.rows
+            .filter((row: RowConfig) =>
+              row.components.some((comp: ComponentItem) => comp.visible)
+            )
             .map((row: RowConfig) => ({
               type: "row",
               style: {
                 margin: "30px 0",
                 height: "40px",
-              },              children: row.components
+              },
+              children: row.components
                 .filter((comp: ComponentItem) => comp.visible)
                 .map((comp: ComponentItem) => ({
                   type: "container",
@@ -253,15 +255,28 @@ export default function useLayoutComponents() {
                       component: componentMap[comp.id] || null,
                     },
                   ],
-                }))
-            }))        };
+                })),
+            })),
+        };
       }) as ITabConfig[];
+    console.log("useLayoutComponents: Components generated", componentsConfig);
+    return componentsConfig;
   });
 
   // 获取组件的特殊样式类
   const getComponentClass = (componentId: string): string | undefined => {
-    const proComponents = ['abloop', 'vr', 'record', 'panner', 'pitch', 'delay', 'stereo'];
-    return proComponents.includes(componentId) ? 'container-badge-pro' : undefined;
+    const proComponents = [
+      "abloop",
+      "vr",
+      "record",
+      "panner",
+      "pitch",
+      "delay",
+      "stereo",
+    ];
+    return proComponents.includes(componentId)
+      ? "container-badge-pro"
+      : undefined;
   };
 
   return components;
