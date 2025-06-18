@@ -10,10 +10,6 @@ import {
   defineComponent,
   ref,
   onMounted,
-  provide,
-  h,
-  reactive,
-  computed,
   watch,
 } from "vue";
 

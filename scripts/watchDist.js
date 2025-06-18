@@ -2,7 +2,7 @@
  * @Author: gomi gxy880520@qq.com
  * @Date: 2025-06-05 11:06:43
  * @LastEditors: gomi gxy880520@qq.com
- * @LastEditTime: 2025-06-16 22:38:48
+ * @LastEditTime: 2025-06-17 19:46:40
  * @Description: 使用普通进程启动浏览器并自动热重载扩展（无自动化控制横幅）
  */
 import fs from "node:fs/promises";
@@ -32,6 +32,53 @@ if (fsSync.existsSync(envPath)) {
 }
 const EXT_PATH = path.resolve(__dirname, "../dist");
 
+// 全局变量存储临时数据路径和浏览器进程
+let userDataDir = "";
+let extPath = "";
+let chromeProcess = null;
+
+// 清理函数
+async function cleanup() {
+  console.log("\n正在清理临时数据...");
+  
+  // 关闭 WebSocket 服务器
+  if (wss) {
+    wss.close();
+    console.log("WebSocket 服务器已关闭");
+  }
+  
+  // 关闭浏览器进程
+  if (chromeProcess && !chromeProcess.killed) {
+    chromeProcess.kill('SIGTERM');
+    console.log("浏览器进程已关闭");
+  }
+  
+  // 清除临时扩展目录
+  if (extPath && fsSync.existsSync(extPath)) {
+    try {
+      await fs.rm(extPath, { recursive: true, force: true });
+      console.log(`临时扩展目录已清除: ${extPath}`);
+    } catch (error) {
+      console.warn(`清除临时扩展目录失败: ${error.message}`);
+    }
+  }
+  
+  console.log("清理完成，程序退出");
+  process.exit(0);
+}
+
+// 监听 Ctrl+C 信号
+process.on('SIGINT', cleanup);
+process.on('SIGTERM', cleanup);
+process.on('uncaughtException', (error) => {
+  console.error('程序发生未捕获异常:', error);
+  cleanup();
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('程序发生未处理的 Promise 拒绝:', reason);
+  cleanup();
+});
+
 // 启动 WebSocket 服务
 const wss = new WebSocketServer({ port: 23333 });
 wss.on("connection", (ws) => {
@@ -47,13 +94,12 @@ wss.on("connection", (ws) => {
   } else if (browser !== "chromium") {
     console.error(`Unsupported browser: ${browser}`);
     process.exit(1);
-  }
-  const extPath = await createReloadManagerExtension('23333');
+  }  extPath = await createReloadManagerExtension('23333');
 
-  // 创建临时用户数据目录
-  const userDataDir = path.join(tmpdir(), `chrome-profile-${Date.now()}`);
+  // 创建临时用户数据目录（固定名称，可覆盖）
+  userDataDir = path.join(tmpdir(), 'chrome-dev-profile');
   await fs.mkdir(userDataDir, { recursive: true });
-  console.log(`创建临时用户数据目录: ${userDataDir}`);
+  console.log(`使用临时用户数据目录: ${userDataDir}`);
 
   // 使用 child_process 直接启动 Chrome（没有自动化控制标记）
   console.log("正在启动 Chrome...");
@@ -69,16 +115,16 @@ wss.on("connection", (ws) => {
   ];
   
   // 直接启动 Chrome 进程
-  const chromeProcess = spawn(browserBinary, chromeArgs, {
+  chromeProcess = spawn(browserBinary, chromeArgs, {
     detached: true, // 让 Chrome 在后台运行，不受 Node 进程影响
     stdio: 'ignore'
   });
   
   // 允许父进程退出，而不影响 Chrome
   chromeProcess.unref();
-  
-  console.log("Chrome 启动成功，监听扩展热重载...");
+    console.log("Chrome 启动成功，监听扩展热重载...");
   console.log("扩展页面已自动打开，请确保开启开发者模式。");
+  console.log("按 Ctrl+C 可清理临时数据并退出程序。");
 
   let reloadTimer = null;
   const RELOAD_DEBOUNCE = 1000; // 1s 内只 reload 一次
@@ -98,8 +144,8 @@ wss.on("connection", (ws) => {
 })();
 
 export async function createReloadManagerExtension(wsPort) {
-  // 创建临时目录
-  const extPath = path.join(tmpdir(), `reload-manager-extension-${Date.now()}`);
+  // 创建临时目录（固定名称，可覆盖）
+  const extPath = path.join(tmpdir(), 'reload-manager-extension');
   await fs.mkdir(extPath, { recursive: true });
 
   // MV3 manifest

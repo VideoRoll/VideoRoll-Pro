@@ -20,9 +20,9 @@ import {
   createAudioCapture,
   updateDownloadList,
   downloadSingleVideo,
-  play,
-  pause,
   parseSubtitle,
+  checkModel,
+  downloadModel,
 } from "./update";
 import { sendRuntimeMessage } from "../util";
 import browser from "webextension-polyfill";
@@ -153,6 +153,13 @@ function injectScript() {
           break;
         case ActionType.PARSE_SUBTITLE:
           parseSubtitle(tabId, { ...rollConfig }, subtitleUrl);
+          break;
+        case ActionType.CHECK_SUMMARIZER:
+          console.log("Checking summarizer model availability...");
+          checkModel(tabId, { ...rollConfig });
+          break;
+        case ActionType.DOWNLOAD_SUMMARIZER:
+          downloadModel(tabId, { ...rollConfig });
           break;
         default:
           return;

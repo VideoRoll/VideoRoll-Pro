@@ -2,7 +2,7 @@
  * @Author: gomi gxy880520@qq.com
  * @Date: 2024-09-23 17:01:48
  * @LastEditors: gomi gxy880520@qq.com
- * @LastEditTime: 2025-06-16 20:48:28
+ * @LastEditTime: 2025-06-17 23:40:50
  * @FilePath: \website-nextc:\programs\VideoRoll-Pro\src\options\index.less
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -30,7 +30,7 @@ body {
 #options-root {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
 
@@ -44,6 +44,11 @@ body {
         margin-bottom: 20px;
     }
 
+    .options-nav {
+        position: sticky;
+        top: 90px;
+    }
+
     background-color: var(--background-color);
 
     .options-header {
@@ -55,6 +60,9 @@ body {
         color: #fff;
         font-size: 30px;
         font-weight: bold;
+        position: sticky;
+        z-index: 99;
+        top: 0;
         .discord-icon {
             cursor: pointer;
         }
@@ -73,13 +81,11 @@ body {
         height: 100%;
         display: flex;
         flex: 1;
-        overflow-y: auto;
         .van-config-provider {
             height: 100%;
         }
 
         .options-panel {
-            flex: 1;
             padding-bottom: 50px;
         }
 

@@ -60,10 +60,14 @@ export default class VideoSummarizer {
     this.isInitialized = false;
     this.initializationPromise = null;
   }
-  public async downloadModel(): Promise<void> {
+  public async checkModel(tabId: number): Promise<void> {
     // 如果已经初始化，直接返回
     if (this.isInitialized) {
       console.log("Summarizer 已初始化，直接返回");
+      sendRuntimeMessage(tabId, {
+        type: ActionType.SUMMARIZER_AVAILABLE,
+        tabId,
+      });
       return;
     }
 
@@ -75,7 +79,7 @@ export default class VideoSummarizer {
 
     // 开始新的初始化
     console.log("开始初始化 Summarizer...");
-    this.initializationPromise = this.performInitialization();
+    this.initializationPromise = this.performInitialization(tabId);
 
     try {
       await this.initializationPromise;
@@ -83,21 +87,128 @@ export default class VideoSummarizer {
       this.initializationPromise = null;
     }
   }
+  public async downloadModel(tabId: number): Promise<void> {
+    try {
+      // 先检查可用性
+      const availability = await window.Summarizer.availability();
+      console.log("Download model - availability:", availability);
 
-  private async performInitialization(): Promise<void> {
+      if (availability === "unavailable") {
+        throw new Error("Summarizer API unavailable on this device");
+      }
+
+      if (availability !== "downloadable") {
+        throw new Error(`Cannot download model, current status: ${availability}`);
+      }
+
+      const options: SummaryOptions = {
+        sharedContext: "This is a YouTube video transcript summary.",
+        type: "key-points",
+        format: "markdown",
+        length: "long",
+      };
+
+      console.log("开始创建 Summarizer 实例以下载模型...");
+      
+      try {
+        this.summarizer = await window.Summarizer.create(options);
+      } catch (createError) {
+        console.error("创建 Summarizer 实例失败:", createError);
+        const errorMessage = createError instanceof Error ? createError.message : String(createError);
+        throw new Error(`Failed to create Summarizer for download: ${errorMessage}`);
+      }
+
+      // The Summarizer API can be used after the model is downloaded
+      console.log("需要下载模型，开始监听下载进度...");
+
+      if (this.summarizer) {
+        // 添加多种事件监听器以获得更多信息
+        this.summarizer.addEventListener("downloadprogress", (e) => {
+          const progress = e.total ? (e.loaded / e.total) * 100 : e.loaded * 100;
+          console.log(
+            `Summarizer 模型下载进度: ${progress.toFixed(2)}% (${e.loaded}/${
+              e.total || "unknown"
+            })`
+          );
+          sendRuntimeMessage(tabId, {
+            type: ActionType.SUMMARIZER_DOWNLOADING,
+            tabId,
+            payload: {
+              progress,
+            },
+          });
+        });
+
+        // 添加其他可能的事件监听器
+        try {
+          this.summarizer.addEventListener("ready", () => {
+            console.log("Summarizer ready event fired");
+          });
+        } catch (e) {
+          console.log("ready event listener not supported");
+        }
+
+        try {
+          this.summarizer.addEventListener("error", (e) => {
+            console.error("Summarizer error event:", e);
+          });
+        } catch (e) {
+          console.log("error event listener not supported");
+        }
+
+        console.log("等待模型下载完成...");
+        console.log("summarizer.ready promise:", this.summarizer.ready);
+
+        try {
+          await this.summarizer.ready;
+          console.log("模型下载完成，Summarizer 已就绪");
+          this.isInitialized = true;
+          console.log("Summarizer 服务初始化成功");
+          sendRuntimeMessage(tabId, {
+            type: ActionType.SUMMARIZER_AVAILABLE,
+            tabId,
+          });
+        } catch (readyError) {
+          console.error("等待模型就绪时出错:", readyError);
+          const errorMessage = readyError instanceof Error ? readyError.message : String(readyError);
+          throw new Error(`Model ready failed: ${errorMessage}`);
+        }
+      } else {
+        throw new Error("Failed to create summarizer instance");
+      }
+    } catch (error) {
+      console.error("Download model failed:", error);
+      sendRuntimeMessage(tabId, {
+        type: ActionType.SUMMARIZER_UNAVAILABLE,
+        tabId,
+      });
+      throw error;
+    }
+  }
+  private async performInitialization(tabId: number): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
         if (!("Summarizer" in window)) {
           console.log("Summarizer API 不可用");
+          sendRuntimeMessage(tabId, {
+            type: ActionType.SUMMARIZER_UNAVAILABLE,
+            tabId,
+          });
           reject(new Error("Summarizer API not loaded"));
           return;
         }
-        const availability = await window.Summarizer.availability();
 
-        console.log("--availability", availability);
+        // 首先检查可用性
+        const availability = await window.Summarizer.availability();
+        console.log("Summarizer availability:", availability);
+
         if (availability === "unavailable") {
-          console.log("Summarizer API 不可用");
-          reject(new Error("Summarizer API unavailable"));
+          console.log("Summarizer API 在此设备上不可用");
+          sendRuntimeMessage(tabId, {
+            type: ActionType.SUMMARIZER_UNAVAILABLE,
+            tabId,
+          });
+          reject(new Error("Summarizer API unavailable on this device"));
           return;
         }
 
@@ -109,73 +220,117 @@ export default class VideoSummarizer {
         };
 
         console.log("开始创建 Summarizer 实例...");
-        this.summarizer = await window.Summarizer.create(options);
-        console.log("Summarizer 实例创建成功");
 
         if (availability === "available") {
-          // The Summarizer API can be used immediately
-          console.log("Summarizer 已就绪，可立即使用");
-        } else if (availability === "downloadable") {
-          // The Summarizer API can be used after the model is downloaded
-          console.log("需要下载模型，开始监听下载进度...");
-
-          if (this.summarizer) {
-            // 添加多种事件监听器以获得更多信息
-            this.summarizer.addEventListener("downloadprogress", (e) => {
-              const progress = e.total
-                ? (e.loaded / e.total) * 100
-                : e.loaded * 100;
-              console.log(
-                `Summarizer 模型下载进度: ${progress.toFixed(2)}% (${
-                  e.loaded
-                }/${e.total || "unknown"})`
-              );
+          try {
+            this.summarizer = await window.Summarizer.create(options);
+            this.isInitialized = true;
+            console.log("Summarizer 服务初始化成功 - 模型已可用");
+            sendRuntimeMessage(tabId, {
+              type: ActionType.SUMMARIZER_AVAILABLE,
+              tabId,
             });
-
-            // 添加其他可能的事件监听器
-            try {
-              this.summarizer.addEventListener("ready", () => {
-                console.log("Summarizer ready event fired");
-              });
-            } catch (e) {
-              console.log("ready event listener not supported");
-            }
-
-            try {
-              this.summarizer.addEventListener("error", (e) => {
-                console.error("Summarizer error event:", e);
-              });
-            } catch (e) {
-              console.log("error event listener not supported");
-            }
-
-            console.log("等待模型下载完成...");
-            console.log("summarizer.ready promise:", this.summarizer.ready);
-
-            // 添加超时机制防止无限等待
-            const downloadTimeout = setTimeout(() => {
-              console.error("模型下载超时 (5分钟)");
-              reject(new Error("Model download timeout after 5 minutes"));
-            }, 300000); // 5分钟超时
-
-            try {
-              await this.summarizer.ready;
-              clearTimeout(downloadTimeout);
-              console.log("模型下载完成，Summarizer 已就绪");
-            } catch (readyError) {
-              clearTimeout(downloadTimeout);
-              console.error("等待模型就绪时出错:", readyError);
-              throw new Error(`Model ready failed: ${readyError}`);
-            }
-          } else {
-            throw new Error("Failed to create summarizer instance");
+            resolve();          } catch (createError) {
+            console.error("创建 Summarizer 实例失败:", createError);
+            // 如果创建失败，可能是设备不支持或其他问题
+            sendRuntimeMessage(tabId, {
+              type: ActionType.SUMMARIZER_UNAVAILABLE,
+              tabId,
+            });
+            const errorMessage = createError instanceof Error ? createError.message : String(createError);
+            reject(new Error(`Failed to create Summarizer: ${errorMessage}`));
           }
-        } else {
-          console.warn("未处理的 availability 状态:", availability);
+          return;
         }
-        this.isInitialized = true;
-        console.log("Summarizer 服务初始化成功");
-        resolve();
+
+        if (availability === "downloadable") {
+          console.log("Summarizer 模型需要下载");
+          sendRuntimeMessage(tabId, {
+            type: ActionType.SUMMARIZER_DOWNLOADABLE,
+            tabId,
+          });
+          resolve();
+          return;
+        }
+
+        // 处理其他可能的状态
+        console.warn("未知的 Summarizer 可用性状态:", availability);
+        sendRuntimeMessage(tabId, {
+          type: ActionType.SUMMARIZER_UNAVAILABLE,
+          tabId,
+        });
+        reject(new Error(`Unknown availability status: ${availability}`));
+
+        // if (availability === "available") {
+        //   // The Summarizer API can be used immediately
+        //   console.log("Summarizer 已就绪，可立即使用");
+        //   this.isInitialized = true;
+        //   console.log("Summarizer 服务初始化成功");
+        //   resolve();
+        // } else if (
+        //   availability === "downloadable" ||
+        //   availability === "downloading"
+        // ) {
+        //   // The Summarizer API can be used after the model is downloaded
+        //   console.log("需要下载模型，开始监听下载进度...");
+
+        //   if (this.summarizer) {
+        //     // 添加多种事件监听器以获得更多信息
+        //     this.summarizer.addEventListener("downloadprogress", (e) => {
+        //       const progress = e.total
+        //         ? (e.loaded / e.total) * 100
+        //         : e.loaded * 100;
+        //       console.log(
+        //         `Summarizer 模型下载进度: ${progress.toFixed(2)}% (${
+        //           e.loaded
+        //         }/${e.total || "unknown"})`
+        //       );
+        //     });
+
+        //     // 添加其他可能的事件监听器
+        //     try {
+        //       this.summarizer.addEventListener("ready", () => {
+        //         console.log("Summarizer ready event fired");
+        //       });
+        //     } catch (e) {
+        //       console.log("ready event listener not supported");
+        //     }
+
+        //     try {
+        //       this.summarizer.addEventListener("error", (e) => {
+        //         console.error("Summarizer error event:", e);
+        //       });
+        //     } catch (e) {
+        //       console.log("error event listener not supported");
+        //     }
+
+        //     console.log("等待模型下载完成...");
+        //     console.log("summarizer.ready promise:", this.summarizer.ready);
+
+        //     // 添加超时机制防止无限等待
+        //     const downloadTimeout = setTimeout(() => {
+        //       console.error("模型下载超时 (5分钟)");
+        //       reject(new Error("Model download timeout after 5 minutes"));
+        //     }, 300000); // 5分钟超时
+
+        //     try {
+        //       await this.summarizer.ready;
+        //       clearTimeout(downloadTimeout);
+        //       console.log("模型下载完成，Summarizer 已就绪");
+        //       this.isInitialized = true;
+        //       console.log("Summarizer 服务初始化成功");
+        //       resolve();
+        //     } catch (readyError) {
+        //       clearTimeout(downloadTimeout);
+        //       console.error("等待模型就绪时出错:", readyError);
+        //       throw new Error(`Model ready failed: ${readyError}`);
+        //     }
+        //   } else {
+        //     throw new Error("Failed to create summarizer instance");
+        //   }
+        // } else {
+        //   console.warn("未处理的 availability 状态:", availability);
+        // }
       } catch (error) {
         console.log("Summarizer 服务初始化失败:", error);
         this.isInitialized = false;
@@ -206,12 +361,8 @@ export default class VideoSummarizer {
     try {
       console.log("开始生成摘要，检查初始化状态...");
       if (!this.isInitialized || !this.summarizer) {
-        console.log("Summarizer 未初始化，开始下载模型...");
-        await this.downloadModel();
-      }
-
-      if (!this.summarizer) {
-        throw new Error("Summarizer not initialized after download attempt");
+        console.log("Summarizer 未初始化...");
+        throw new Error("Summarizer 未初始化");
       }
 
       console.log("Summarizer 已就绪，开始生成摘要...");
@@ -406,5 +557,63 @@ export default class VideoSummarizer {
   public reset(): void {
     this.summarizer = null;
     this.isInitialized = false;
+  }
+
+  /**
+   * 检查设备是否真正支持 Summarizer API
+   */
+  private async checkDeviceCapabilities(): Promise<boolean> {
+    try {
+      // 检查基本的 API 可用性
+      if (!("Summarizer" in window)) {
+        console.log("Summarizer API 不存在");
+        return false;
+      }
+
+      // 检查设备是否启用了 AI 功能
+      const availability = await window.Summarizer.availability();
+      console.log("Device AI capabilities check - availability:", availability);
+
+      if (availability === "unavailable") {
+        console.log("设备不支持 Summarizer API 或 AI 功能未启用");
+        return false;
+      }
+
+      // 尝试创建一个最小配置的实例来测试设备兼容性
+      try {
+        const testOptions: SummaryOptions = {
+          type: "summary",
+          format: "text",
+          length: "short",
+        };
+        
+        console.log("测试设备兼容性...");
+        const testSummarizer = await window.Summarizer.create(testOptions);
+        
+        if (testSummarizer) {
+          console.log("设备兼容性测试通过");
+          return true;
+        }
+      } catch (testError) {
+        console.error("设备兼容性测试失败:", testError);
+        
+        // 检查具体的错误类型
+        if (testError instanceof Error) {
+          if (testError.name === "InvalidStateError") {
+            console.error("设备无法创建 AI 会话，可能原因:");
+            console.error("1. 设备硬件不支持");
+            console.error("2. Chrome AI 功能未启用");
+            console.error("3. 系统资源不足");
+            console.error("4. 需要更新 Chrome 版本");
+          }
+        }        return false;
+      }
+
+      // 如果通过了兼容性测试，表示设备支持
+      return true;
+    } catch (error) {
+      console.error("检查设备能力时出错:", error);
+      return false;
+    }
   }
 }

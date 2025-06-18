@@ -351,10 +351,14 @@ export function pause(tabId: number, videoId: any) {
     VideoRoll.pause(videoId);
 }
 
-export function summarize(tabId: number, rollConfig: IRollConfig) {
-    VideoRoll.summarize(rollConfig);
-}
-
 export function parseSubtitle(tabId: number, rollConfig: IRollConfig, url: string) {
     VideoRoll.parseSubtitle(url);
+}
+
+export function checkModel(tabId: number, rollConfig: IRollConfig) {
+    VideoRoll.checkModel();
+}
+
+export function downloadModel(tabId: number, rollConfig: IRollConfig) {
+    VideoRoll.downloadModel();
 }

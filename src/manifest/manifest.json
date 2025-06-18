@@ -34,11 +34,8 @@
       "resources": [
         "inject/index.js",
         "inject/capture.html",
-        "inject/screenshot.js",
         "download/download.html",
-        "download/download.js",
         "player/player.html",
-        "player/player.js",
         "download/lib/mux-mp4.min.js"
       ],
       "matches": ["\u003Call_urls>"]
