@@ -15,7 +15,6 @@
     "dev:chromium": "pnpm run clean && pnpm run copy:static && concurrently \"pnpm run watch:entry\" \"pnpm run watch:manifest-chromium\" \"pnpm run build:manifest-chromium\" \"cross-env BROWSER=\"chromium\" pnpm run watch:dist\" \"pnpm run dev:uno\"",
     "dev:firefox": "pnpm run clean && pnpm run copy:static && concurrently \"pnpm run watch:entry\" \"pnpm run watch:manifest-firefox\" \"pnpm run build:manifest-firefox\" \"cross-env BROWSER=\"firefox\" pnpm run watch:dist\" \"pnpm run dev:uno\"",
     "build:offscreen": "parcel build src/offscreen/offscreen.html --dist-dir dist/offscreen/ --no-source-maps --no-content-hash",
-    "build:share": "parcel build src/lib/share.js --dist-dir dist/lib/ --no-source-maps --no-content-hash",
     "build:popup": "parcel build src/popup/index.html --dist-dir dist/popup/ --no-source-maps --no-content-hash",
     "build:inject": "parcel build src/inject/index.ts --dist-dir dist/inject --no-source-maps --no-content-hash",
     "build:background": "parcel build src/background/index.ts --dist-dir dist/background --no-source-maps --no-content-hash",
@@ -26,7 +25,6 @@
     "build:options-report": "pnpm run build:options --reporter @parcel/reporter-bundle",
     "build:manifest-chromium": "cross-env BROWSER=\"chromium\" node scripts/generateManifest.js",
     "build:manifest-firefox": "cross-env BROWSER=\"firefox\" node scripts/generateManifest.js",
-    "build:html": "parcel build src/popup/index.html src/player/player.html src/offscreen/offscreen.html src/download/download.html src/options/index.html --dist-dir dist --no-source-maps --no-content-hash",
     "build": "pnpm run clean && pnpm run copy:static && pnpm run build:popup && pnpm run build:player && pnpm run build:download && pnpm run build:sidepanel && pnpm run build:options && pnpm run build:offscreen && pnpm run build:inject && pnpm run build:background && pnpm run build:uno && pnpm run build:zip",
     "build:report": "pnpm run clean && pnpm run copy:static && pnpm run build:popup-report",
     "copy:static": "copyfiles -u 1 src/icons/* src/inject/capture.* dist && copyfiles _locales/*/*.json dist",
@@ -43,14 +41,6 @@
     "minBundleSize": 1024,
     "maxParallelRequests": 20
   },
-  "source": [
-    "src/options/index.html",
-    "src/popup/index.html",
-    "src/inject/index.ts",
-    "src/background/index.ts",
-    "src/download/download.html",
-    "src/player/player.html"
-  ],
   "type": "module",
   "repository": {
     "type": "git",
@@ -143,7 +133,6 @@
     "parcel": "^2.15.2",
     "parcel-namer-hashless": "^1.0.7",
     "process": "^0.11.10",
-    "puppeteer-core": "^24.10.0",
     "rimraf": "^6.0.1",
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",

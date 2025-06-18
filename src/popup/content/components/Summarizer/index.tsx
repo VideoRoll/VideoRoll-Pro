@@ -5,9 +5,9 @@
  */
 import { defineComponent, inject, onMounted, ref, watch } from "vue";
 import { RadioButtonOnOutline } from "@vicons/ionicons5";
+import { BrandHipchat } from "@vicons/tabler";
 import browser from "webextension-polyfill";
 import { ActionType, IRollConfig } from "src/types/type.d";
-import { clone, sendTabMessage } from "src/util";
 
 export default defineComponent({
   name: "Summarizer",
@@ -25,7 +25,7 @@ export default defineComponent({
       >
         <div class="video-roll-icon-box">
           <span class="video-roll-label video-roll-flex">
-            <RadioButtonOnOutline class="video-roll-icon"></RadioButtonOnOutline>
+            <BrandHipchat class="video-roll-icon"></BrandHipchat>
           </span>
         </div>
       </div>

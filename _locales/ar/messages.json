@@ -247,5 +247,184 @@
    },
    "tips_wechatGroup": {
       "message": "مجموعة WeChat"
+   },
+   "download_no_segments": {
+      "message": "لا توجد أجزاء متاحة للتحميل!"
+   },
+   "download_size": {
+      "message": "الحجم"
+   },
+   "download_segments": {
+      "message": "الأجزاء"
+   },
+   "download_ts": {
+      "message": "تحميل TS"
+   },
+   "download_mp4": {
+      "message": "تحميل MP4"
+   },
+   "abloop_enable": {
+      "message": "تفعيل التكرار A-B"
+   },
+   "abloop_a": {
+      "message": "النقطة A"
+   },
+   "abloop_b": {
+      "message": "النقطة B"
+   },
+   "player_local_file": {
+      "message": "الملف المحلي"
+   },
+   "player_stream_url": {
+      "message": "رابط البث"
+   },
+   "player_enter_stream_url": {
+      "message": "يرجى إدخال رابط البث"
+   },
+   "player_upload_or_drag": {
+      "message": "+انقر للرفع أو اسحب"
+   },
+   "tab_download": {
+      "message": "تحميل"
+   },
+   "tab_qr": {
+      "message": "رمز QR"
+   },
+   "tab_player": {
+      "message": "المشغل"
+   },
+   "tab_abloop": {
+      "message": "تكرار A-B"
+   },
+   "tab_vr": {
+      "message": "الواقع الافتراضي"
+   },
+   "tab_record": {
+      "message": "تسجيل"
+   },
+   "tips_user_center": {
+      "message": "مركز المستخدم",
+      "description": "Tooltip: user center"
+   },
+   "tips_login": {
+      "message": "تسجيل الدخول",
+      "description": "Tooltip: login"
+   },
+   "options_layout": {
+      "message": "[AR] 布局配置"
+   },
+   "layout_title": {
+      "message": "تكوين التخطيط"
+   },
+   "layout_description": {
+      "message": "تخصيص تخطيط واجهة النافذة المنبثقة ورؤية المكونات"
+   },
+   "layout_visibility": {
+      "message": "رؤية المكونات"
+   },
+   "layout_arrangement": {
+      "message": "ترتيب التخطيط"
+   },
+   "layout_tabs": {
+      "message": "علامات التبويب"
+   },
+   "layout_preset_layouts": {
+      "message": "تخطيطات مسبقة الإعداد"
+   },
+   "layout_compact": {
+      "message": "تخطيط مضغوط"
+   },
+   "layout_spacious": {
+      "message": "تخطيط واسع"
+   },
+   "layout_single_column": {
+      "message": "تخطيط عمود واحد"
+   },
+   "layout_apply": {
+      "message": "تطبيق"
+   },
+   "layout_export": {
+      "message": "تصدير التكوين"
+   },
+   "layout_import": {
+      "message": "استيراد التكوين"
+   },
+   "layout_reset": {
+      "message": "إعادة تعيين إلى الافتراضي"
+   },
+   "layout_rows_per_tab": {
+      "message": "عدد الصفوف لكل علامة تبويب"
+   },
+   "layout_columns_per_row": {
+      "message": "الأعمدة لكل صف"
+   },
+   "layout_drag_hint": {
+      "message": "اسحب المكونات لإعادة ترتيبها"
+   },
+   "layout_unsaved_changes": {
+      "message": "غير محفوظ"
+   },
+   "layout_save_reminder": {
+      "message": "· يرجى تذكر حفظ التغييرات"
+   },
+   "layout_component_hidden": {
+      "message": "مخفي"
+   },
+   "layout_config_saved": {
+      "message": "تم حفظ التكوين بنجاح!"
+   },
+   "layout_config_reset": {
+      "message": "تم إعادة تعيين التخطيط الافتراضي بنجاح!"
+   },
+   "layout_config_title": {
+      "message": "تكوين تخطيط الواجهة"
+   },
+   "layout_config_desc": {
+      "message": "تخصيص تخطيط المكونات وعرض الواجهة المنبثقة"
+   },
+   "layout_tabs_config": {
+      "message": "تكوين علامات التبويب"
+   },
+   "layout_row_title": {
+      "message": "الصف {0}"
+   },
+   "layout_max_columns": {
+      "message": "عرض كل صف"
+   },
+   "layout_items": {
+      "message": "عنصر"
+   },
+   "layout_add_row": {
+      "message": "إضافة صف"
+   },
+   "layout_remove_row": {
+      "message": "حذف الصف"
+   },
+   "layout_add_new_row": {
+      "message": "إضافة صف جديد"
+   },
+   "layout_hide_component": {
+      "message": "إخفاء المكون"
+   },
+   "layout_show_component": {
+      "message": "إظهار المكون"
+   },
+   "layout_width": {
+      "message": "العرض"
+   },
+   "layout_config_import_error": {
+      "message": "فشل في استيراد ملف التكوين"
+   },
+   "layout_config_reset_confirm": {
+      "message": "هل أنت متأكد من أنك تريد إعادة تعيين التخطيط الافتراضي؟"
+   },
+   "layout_unsaved_warning": {
+      "message": "لديك تغييرات غير محفوظة، هل أنت متأكد من أنك تريد المغادرة؟"
+   },
+   "clear_shortcut": {
+      "message": "مسح الاختصار"
+   },
+   "shortcut_cleared": {
+      "message": "تم مسح الاختصار بنجاح"
    }
 }

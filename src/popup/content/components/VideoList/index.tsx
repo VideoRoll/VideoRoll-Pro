@@ -181,7 +181,7 @@ export default defineComponent({
                     <Download />
                   </span>
                   <span class="list-icon" onClick={() => openPlayer(v)}>
-                    <IconPinInvoke />
+                    <Maximize />
                   </span>
 
                   <span class="list-icon" onClick={() => onPlay(v)}>

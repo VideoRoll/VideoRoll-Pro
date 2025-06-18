@@ -1,6 +1,6 @@
 import './index.less';
 
 import { createVideoRollApp } from '../lib/share';
-import App from "./App";
+import app from "./app";
 
-createVideoRollApp(App, '#download-root')
+createVideoRollApp(app, '#download-root')

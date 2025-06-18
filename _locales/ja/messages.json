@@ -248,30 +248,183 @@
    "tips_wechatGroup": {
       "message": "WeChatグループ"
    },
-  "download_no_segments": { "message": "アップロード可能なセグメントがありません！" },
-  "download_size": { "message": "サイズ" },
-  "download_segments": { "message": "セグメント" },
-  "download_ts": { "message": "TSをダウンロード" },
-  "download_mp4": { "message": "MP4をダウンロード" },
-  "abloop_enable": { "message": "ABループを有効化" },
-  "abloop_a": { "message": "A" },
-  "abloop_b": { "message": "B" },
-  "player_local_file": { "message": "ローカルファイル" },
-  "player_stream_url": { "message": "ストリームURL" },
-  "player_enter_stream_url": { "message": "ストリームURLを入力" },
-  "player_upload_or_drag": { "message": "+クリックしてアップロードまたはドラッグ" },
-  "tab_download": { "message": "ダウンロード" },
-  "tab_qr": { "message": "QR" },
-  "tab_player": { "message": "プレーヤー" },
-  "tab_abloop": { "message": "A-Bループ" },
-  "tab_vr": { "message": "VR" },
-  "tab_record": { "message": "録画" },
-  "tips_user_center": {
+   "download_no_segments": {
+      "message": "ダウンロード可能なセグメントがありません！"
+   },
+   "download_size": {
+      "message": "サイズ"
+   },
+   "download_segments": {
+      "message": "セグメント"
+   },
+   "download_ts": {
+      "message": "TSをダウンロード"
+   },
+   "download_mp4": {
+      "message": "MP4をダウンロード"
+   },
+   "abloop_enable": {
+      "message": "A-Bループを有効にする"
+   },
+   "abloop_a": {
+      "message": "Aポイント"
+   },
+   "abloop_b": {
+      "message": "Bポイント"
+   },
+   "player_local_file": {
+      "message": "ローカルファイル"
+   },
+   "player_stream_url": {
+      "message": "ストリームURL"
+   },
+   "player_enter_stream_url": {
+      "message": "ストリームURLを入力してください"
+   },
+   "player_upload_or_drag": {
+      "message": "+クリックでアップロードまたはドラッグ"
+   },
+   "tab_download": {
+      "message": "ダウンロード"
+   },
+   "tab_qr": {
+      "message": "QRコード"
+   },
+   "tab_player": {
+      "message": "プレーヤー"
+   },
+   "tab_abloop": {
+      "message": "A-Bループ"
+   },
+   "tab_vr": {
+      "message": "VR"
+   },
+   "tab_record": {
+      "message": "録画"
+   },
+   "tips_user_center": {
       "message": "ユーザーセンター",
       "description": "Tooltip: user center"
-  },
-  "tips_login": {
+   },
+   "tips_login": {
       "message": "ログイン",
       "description": "Tooltip: login"
-  }
+   },
+   "options_layout": {
+      "message": "[JA] 布局配置"
+   },
+   "layout_title": {
+      "message": "レイアウト設定"
+   },
+   "layout_description": {
+      "message": "ポップアップインターフェースのレイアウトとコンポーネントの表示をカスタマイズ"
+   },
+   "layout_visibility": {
+      "message": "コンポーネントの表示"
+   },
+   "layout_arrangement": {
+      "message": "レイアウト配置"
+   },
+   "layout_tabs": {
+      "message": "タブ"
+   },
+   "layout_preset_layouts": {
+      "message": "プリセットレイアウト"
+   },
+   "layout_compact": {
+      "message": "コンパクトレイアウト"
+   },
+   "layout_spacious": {
+      "message": "広々レイアウト"
+   },
+   "layout_single_column": {
+      "message": "単一列レイアウト"
+   },
+   "layout_apply": {
+      "message": "適用"
+   },
+   "layout_export": {
+      "message": "設定をエクスポート"
+   },
+   "layout_import": {
+      "message": "設定をインポート"
+   },
+   "layout_reset": {
+      "message": "デフォルトにリセット"
+   },
+   "layout_rows_per_tab": {
+      "message": "タブあたりの行数"
+   },
+   "layout_columns_per_row": {
+      "message": "行あたりの列数"
+   },
+   "layout_drag_hint": {
+      "message": "コンポーネントをドラッグして並び替え"
+   },
+   "layout_unsaved_changes": {
+      "message": "未保存"
+   },
+   "layout_save_reminder": {
+      "message": "· 変更を保存することを忘れずに"
+   },
+   "layout_component_hidden": {
+      "message": "非表示"
+   },
+   "layout_config_saved": {
+      "message": "設定が正常に保存されました！"
+   },
+   "layout_config_reset": {
+      "message": "デフォルトレイアウトが正常にリセットされました！"
+   },
+   "layout_config_title": {
+      "message": "インターフェースレイアウト設定"
+   },
+   "layout_config_desc": {
+      "message": "ポップアップインターフェースのコンポーネントレイアウトと表示をカスタマイズ"
+   },
+   "layout_tabs_config": {
+      "message": "タブ設定"
+   },
+   "layout_row_title": {
+      "message": "第{0}行"
+   },
+   "layout_max_columns": {
+      "message": "各行に表示"
+   },
+   "layout_items": {
+      "message": "個"
+   },
+   "layout_add_row": {
+      "message": "行を追加"
+   },
+   "layout_remove_row": {
+      "message": "行を削除"
+   },
+   "layout_add_new_row": {
+      "message": "新しい行を追加"
+   },
+   "layout_hide_component": {
+      "message": "コンポーネントを非表示"
+   },
+   "layout_show_component": {
+      "message": "コンポーネントを表示"
+   },
+   "layout_width": {
+      "message": "幅"
+   },
+   "layout_config_import_error": {
+      "message": "設定ファイルのインポートに失敗しました"
+   },
+   "layout_config_reset_confirm": {
+      "message": "デフォルトレイアウトにリセットしてもよろしいですか？"
+   },
+   "layout_unsaved_warning": {
+      "message": "未保存の変更があります。本当に離れますか？"
+   },
+   "clear_shortcut": {
+      "message": "ショートカットをクリア"
+   },
+   "shortcut_cleared": {
+      "message": "ショートカットが正常にクリアされました"
+   }
 }

@@ -37,7 +37,7 @@
 
 .config-actions button {
   padding: 6px 12px;
-  border: 1px solid var(--van-gray-4);
+  border: 1px solid var(--van-gray-6);
   background: var(--van-sidebar-selected-background);
   border-radius: 4px;
   cursor: pointer;
@@ -51,17 +51,21 @@
 }
 
 .tab-selector {
-  display: flex;
-  gap: 8px;
+  // display: flex;
+  // gap: 8px;
   margin-bottom: 20px;
   padding: 16px;
   background: var(--background-color-2);
   border-radius: 8px;
+
+  .van-tabs__nav {
+    background-color: transparent !important;
+  }
 }
 
 .tab-btn {
   padding: 8px 16px;
-  border: 1px solid var(--van-gray-4);
+  border: 1px solid var(--van-gray-6);
   background: var(--van-sidebar-selected-background);
   border-radius: 6px;
   cursor: pointer;
@@ -76,20 +80,20 @@
 
 .tab-btn.active {
   background: var(--van-primary-color);
-  color: var(--van-sidebar-selected-background);
+  color: var(--van-gray-1);
   border-color: var(--van-primary-color);
 }
 
 .rows-config {
-  space: 20px;
+  margin-top: 20px;
 }
 
 .row-config {
   margin-bottom: 24px;
   padding: 16px;
-  border: 2px dashed var(--van-gray-3);
+  border: 2px dashed var(--van-gray-8);
   border-radius: 8px;
-  background: var(--background-color-2);
+  background: transparent;
 }
 
 .row-header {
@@ -98,12 +102,12 @@
   align-items: center;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid var(--van-gray-3);
+  border-bottom: 1px solid var(--van-gray-8);
 }
 
 .row-header span {
   font-weight: 600;
-  color: var(--van-gray-8);
+  color: var(--van-gray-1);
 }
 
 .row-controls {
@@ -123,8 +127,42 @@
 .row-controls select {
   padding: 4px 8px;
   border: 1px solid var(--van-gray-4);
+  background: var(--van-gray-6);
+  color: var(--van-gray-1);
   border-radius: 4px;
   font-size: 12px;
+  transition: all 0.3s ease;
+}
+
+.row-controls select:hover {
+  border-color: var(--van-primary-color);
+  background: var(--van-gray-5);
+  box-shadow: 0 0 0 1px rgba(164, 148, 198, 0.3);
+}
+
+.row-controls select:focus {
+  outline: none;
+  border-color: var(--van-primary-color);
+  background: var(--van-primary-color);
+  color: var(--van-gray-1);
+  box-shadow: 0 0 0 2px rgba(164, 148, 198, 0.4);
+}
+
+.row-controls select:active {
+  background: var(--van-primary-color);
+  color: var(--van-gray-1);
+}
+
+.row-controls select option {
+  background: var(--van-gray-6);
+  color: var(--van-gray-1);
+}
+
+.row-controls select option:checked,
+.row-controls select option:checked,
+.row-controls select option:focus {
+  background: var(--van-primary-color);
+  color: var(--van-gray-1);
 }
 
 .row-controls button {
@@ -133,7 +171,7 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  border: 1px solid var(--van-gray-4);
+  border: 1px solid var(--van-gray-6);
   background: var(--van-sidebar-selected-background);
   border-radius: 4px;
   cursor: pointer;
@@ -153,7 +191,7 @@
 
 .component-item {
   padding: 12px;
-  border: 1px solid var(--van-gray-4);
+  border: 1px solid var(--van-gray-6);
   background: var(--van-sidebar-selected-background);
   border-radius: 6px;
   cursor: move;
@@ -168,6 +206,32 @@
 .component-item.hidden {
   opacity: 0.5;
   background: var(--van-gray-2);
+}
+
+.component-item.hidden .component-controls select {
+  background: var(--van-gray-5);
+  color: var(--van-gray-2);
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.component-item.hidden .component-controls select:hover {
+  // border-color: var(--van-primary-color);
+  background: var(--van-gray-4);
+  box-shadow: 0 0 0 1px rgba(164, 148, 198, 0.3);
+  opacity: 0.9;
+}
+
+.component-item.hidden .component-controls select:focus {
+  background: var(--van-primary-color);
+  color: var(--van-gray-1);
+  opacity: 1;
+  box-shadow: 0 0 0 2px rgba(164, 148, 198, 0.4);
+}
+
+.component-item.hidden .component-controls select option:hover {
+  background: var(--van-primary-color);
+  color: var(--van-gray-1);
 }
 
 .component-header {
@@ -188,7 +252,7 @@
   flex: 1;
   font-size: 13px;
   font-weight: 500;
-  color: var(--van-gray-7);
+  color: var(--van-gray-1);
 }
 
 .component-header button {
@@ -205,7 +269,8 @@
 }
 
 .component-header button:hover {
-  background: var(--van-gray-2);
+  background: var(--background-color-2);
+
 }
 
 .icon {
@@ -230,8 +295,45 @@
 .component-controls select {
   padding: 2px 6px;
   border: 1px solid var(--van-gray-4);
+  background: var(--van-gray-6);
+  color: var(--van-gray-1);
   border-radius: 3px;
   font-size: 11px;
+  transition: all 0.3s ease;
+}
+
+.component-controls select:hover {
+  border-color: var(--van-primary-color);
+  background: var(--van-gray-5);
+  box-shadow: 0 0 0 1px rgba(164, 148, 198, 0.3);
+}
+
+.component-controls select:focus {
+  outline: none;
+  border-color: var(--van-primary-color);
+  background: var(--van-primary-color);
+  color: var(--van-gray-1);
+  box-shadow: 0 0 0 2px rgba(164, 148, 198, 0.4);
+}
+
+.component-controls select:active {
+  background: var(--van-primary-color);
+  color: var(--van-gray-1);
+}
+
+.component-controls select option {
+  background: var(--van-gray-6);
+  color: var(--van-gray-1);
+}
+
+.component-controls select option:hover {
+  background: var(--van-primary-color);
+  color: var(--van-gray-1);
+}
+
+.component-controls select option:checked {
+  background: var(--van-primary-color);
+  color: var(--van-gray-1);
 }
 
 .add-row-btn {
@@ -241,7 +343,7 @@
   gap: 8px;
   width: 100%;
   padding: 12px;
-  border: 2px dashed var(--van-gray-4);
+  border: 2px dashed var(--van-gray-6);
   background: transparent;
   border-radius: 8px;
   cursor: pointer;
@@ -269,14 +371,14 @@
   gap: 12px;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid var(--van-gray-3);
+  border-bottom: 1px solid var(--van-gray-8);
 }
 
 .tab-config-header h3 {
   flex: 1;
   margin: 0;
   font-size: 16px;
-  color: var(--van-gray-8);
+  color: var(--van-gray-1);
 }
 
 .toggle-switch {
@@ -294,7 +396,7 @@
 }
 
 .toggle-switch::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 2px;
   left: 2px;
@@ -330,7 +432,7 @@
 
 .preset-btn {
   padding: 6px 12px;
-  border: 1px solid var(--van-gray-4);
+  border: 1px solid var(--van-gray-6);
   background: var(--van-sidebar-selected-background);
   border-radius: 4px;
   cursor: pointer;

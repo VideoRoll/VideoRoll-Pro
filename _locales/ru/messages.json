@@ -264,13 +264,13 @@
       "message": "Скачать MP4"
    },
    "abloop_enable": {
-      "message": "Включить AB Loop"
+      "message": "Включить A-B цикл"
    },
    "abloop_a": {
-      "message": "A"
+      "message": "Точка A"
    },
    "abloop_b": {
-      "message": "B"
+      "message": "Точка B"
    },
    "player_local_file": {
       "message": "Локальный файл"
@@ -279,7 +279,7 @@
       "message": "URL потока"
    },
    "player_enter_stream_url": {
-      "message": "Введите URL потока"
+      "message": "Пожалуйста, введите URL потока"
    },
    "player_upload_or_drag": {
       "message": "+Нажмите для загрузки или перетащите"
@@ -288,13 +288,13 @@
       "message": "Скачать"
    },
    "tab_qr": {
-      "message": "QR"
+      "message": "QR-код"
    },
    "tab_player": {
       "message": "Плеер"
    },
    "tab_abloop": {
-      "message": "A-B петля"
+      "message": "A-B цикл"
    },
    "tab_vr": {
       "message": "VR"
@@ -303,11 +303,128 @@
       "message": "Запись"
    },
    "tips_user_center": {
-      "message": "Личный кабинет",
+      "message": "Пользовательский центр",
       "description": "Tooltip: user center"
    },
    "tips_login": {
       "message": "Войти",
       "description": "Tooltip: login"
+   },
+   "options_layout": {
+      "message": "[RU] 布局配置"
+   },
+   "layout_title": {
+      "message": "Конфигурация макета"
+   },
+   "layout_description": {
+      "message": "Настройка макета всплывающего интерфейса и видимости компонентов"
+   },
+   "layout_visibility": {
+      "message": "Видимость компонентов"
+   },
+   "layout_arrangement": {
+      "message": "Расположение макета"
+   },
+   "layout_tabs": {
+      "message": "Вкладки"
+   },
+   "layout_preset_layouts": {
+      "message": "Предустановленные макеты"
+   },
+   "layout_compact": {
+      "message": "Компактный макет"
+   },
+   "layout_spacious": {
+      "message": "Просторный макет"
+   },
+   "layout_single_column": {
+      "message": "Одноколоночный макет"
+   },
+   "layout_apply": {
+      "message": "Применить"
+   },
+   "layout_export": {
+      "message": "Экспорт конфигурации"
+   },
+   "layout_import": {
+      "message": "Импорт конфигурации"
+   },
+   "layout_reset": {
+      "message": "Сбросить к значениям по умолчанию"
+   },
+   "layout_rows_per_tab": {
+      "message": "Строк на вкладку"
+   },
+   "layout_columns_per_row": {
+      "message": "Столбцов в строке"
+   },
+   "layout_drag_hint": {
+      "message": "Перетащите компоненты для перестановки"
+   },
+   "layout_unsaved_changes": {
+      "message": "Не сохранено"
+   },
+   "layout_save_reminder": {
+      "message": "· Пожалуйста, не забудьте сохранить изменения"
+   },
+   "layout_component_hidden": {
+      "message": "Скрыто"
+   },
+   "layout_config_saved": {
+      "message": "Конфигурация успешно сохранена!"
+   },
+   "layout_config_reset": {
+      "message": "Макет по умолчанию успешно сброшен!"
+   },
+   "layout_config_title": {
+      "message": "Конфигурация макета интерфейса"
+   },
+   "layout_config_desc": {
+      "message": "Настройка макета компонентов и отображения всплывающего интерфейса"
+   },
+   "layout_tabs_config": {
+      "message": "Конфигурация вкладок"
+   },
+   "layout_row_title": {
+      "message": "Строка {0}"
+   },
+   "layout_max_columns": {
+      "message": "Показать каждую строку"
+   },
+   "layout_items": {
+      "message": "элемент"
+   },
+   "layout_add_row": {
+      "message": "Добавить строку"
+   },
+   "layout_remove_row": {
+      "message": "Удалить строку"
+   },
+   "layout_add_new_row": {
+      "message": "Добавить новую строку"
+   },
+   "layout_hide_component": {
+      "message": "Скрыть компонент"
+   },
+   "layout_show_component": {
+      "message": "Показать компонент"
+   },
+   "layout_width": {
+      "message": "Ширина"
+   },
+   "layout_config_import_error": {
+      "message": "Ошибка импорта файла конфигурации"
+   },
+   "layout_config_reset_confirm": {
+      "message": "Вы уверены, что хотите сбросить макет по умолчанию?"
+   },
+   "layout_unsaved_warning": {
+      "message": "У вас есть несохраненные изменения, вы уверены, что хотите уйти?"
+   },
+   "clear_shortcut": {
+      "message": "Очистить ярлык"
+   },
+   "shortcut_cleared": {
+      "message": "Ярлык успешно очищен"
    }
 }

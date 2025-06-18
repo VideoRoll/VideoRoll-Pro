@@ -142,14 +142,11 @@
    },
    "options_disabled_list": {
       "message": "禁用列表"
-   },
-   "options_contact": {
+   },   "options_contact": {
       "message": "联系"
-   },   "options_donate": {
-      "message": "捐赠"
    },
-   "options_layout": {
-      "message": "界面配置"
+   "options_donate": {
+      "message": "捐赠"
    },
    "options_shortcuts_rotate_left": {
       "message": "向左旋转"
@@ -363,9 +360,11 @@
    },
    "layout_unsaved_changes": {
       "message": "未保存"
-   },
-   "layout_save_reminder": {
+   },   "layout_save_reminder": {
       "message": "· 请记得保存更改"
+   },
+   "layout_component_hidden": {
+      "message": "已隐藏"
    },
    "layout_config_saved": {
       "message": "配置保存成功！"
@@ -413,8 +412,13 @@
       "message": "导入配置文件失败"
    },   "layout_config_reset_confirm": {
       "message": "确定要重置为默认布局吗？"
-   },
-   "layout_unsaved_warning": {
+   },   "layout_unsaved_warning": {
       "message": "您有未保存的更改，确定要离开吗？"
+   },
+   "clear_shortcut": {
+      "message": "清除快捷键"
+   },
+   "shortcut_cleared": {
+      "message": "快捷键已清除"
    }
 }

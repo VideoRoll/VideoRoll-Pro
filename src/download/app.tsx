@@ -2,9 +2,6 @@ import {
   defineComponent,
   ref,
   onMounted,
-  provide,
-  Transition,
-  h,
   reactive,
   computed,
 } from "vue";
